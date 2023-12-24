@@ -1,7 +1,7 @@
 import { IUserCreation, IUser } from 'src/@types/types';
-import { UserInterface } from './user.interface';
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
+import { UserInterface } from './user.interface';
 
 @Injectable()
 export class InMemoryUser implements UserInterface {

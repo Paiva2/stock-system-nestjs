@@ -1,11 +1,12 @@
 import swc from 'unplugin-swc';
-import { defaultExclude, defineConfig } from 'vitest/config';
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
     globals: true,
     root: './',
-    exclude: [...defaultExclude, '**/*.e2e.{spec,test}.ts'],
+    include: ['**/*.e2e.{spec,test}.ts'],
+    setupFiles: ['./vitest-setup/setup-e2e.ts'],
   },
   plugins: [
     swc.vite({

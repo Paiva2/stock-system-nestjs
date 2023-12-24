@@ -1,8 +1,11 @@
 import { Module } from '@nestjs/common';
 import { UserModule } from './user/user.module';
-import { TestsModule } from './tests/tests.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
-  imports: [UserModule, TestsModule],
+  imports: [
+    ConfigModule.forRoot({ envFilePath: '.env', isGlobal: true }),
+    UserModule,
+  ],
 })
 export class AppModule {}
