@@ -1,20 +1,25 @@
 import {
   Body,
   Controller,
+  HttpCode,
   HttpStatus,
   Post,
   Res,
   ValidationPipe,
-} from '@nestjs/common';
-import { Response } from 'express';
-import { UserService } from './user.service';
-import { RegisterUserDto } from './dto/register-user.dto';
+} from "@nestjs/common";
+import { Response } from "express";
+import { UserService } from "./user.service";
+import { AuthUserDto, RegisterUserDto } from "./dto/user.dto";
+import { AuthService } from "../infra/http/auth/auth.service";
 
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly authService: AuthService,
+  ) {}
 
-  @Post('/register')
+  @Post("/register")
   async registerUserController(
     @Body(ValidationPipe)
     registerUserDto: RegisterUserDto,
@@ -24,6 +29,19 @@ export class UserController {
 
     return res
       .status(HttpStatus.CREATED)
-      .send({ message: 'User registered successfully!' });
+      .send({ message: "User registered successfully!" });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Post("/sign-in")
+  async authUserController(
+    @Body(ValidationPipe) authUserDto: AuthUserDto,
+    @Res() res: Response,
+  ) {
+    const getUser = await this.userService.authUserService(authUserDto);
+
+    const authToken = await this.authService.generateToken(getUser.id);
+
+    return res.status(HttpStatus.OK).send(authToken);
   }
 }
