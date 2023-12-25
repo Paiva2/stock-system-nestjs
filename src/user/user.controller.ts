@@ -1,16 +1,20 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Req,
   Res,
+  UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
-import { Response } from "express";
+import { Request, Response } from "express";
 import { UserService } from "./user.service";
 import { AuthUserDto, RegisterUserDto } from "./dto/user.dto";
 import { AuthService } from "../infra/http/auth/auth.service";
+import { AuthGuard } from "../infra/http/auth/auth.guard";
 
 @Controller()
 export class UserController {
@@ -43,5 +47,16 @@ export class UserController {
     const authToken = await this.authService.generateToken(getUser.id);
 
     return res.status(HttpStatus.OK).send(authToken);
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Get("/profile")
+  async getUserProfileController(@Res() res: Response, @Req() req: Request) {
+    const tokenParsed: { sub: string; iat: number; exp: number } = req["user"];
+
+    const getUser = await this.userService.getUserProfile(tokenParsed.sub);
+
+    return res.status(HttpStatus.OK).send(getUser);
   }
 }

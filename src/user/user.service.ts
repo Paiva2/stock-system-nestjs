@@ -44,7 +44,10 @@ export class UserService {
     return createUser;
   }
 
-  async authUserService(user: { email: string; password: string }) {
+  async authUserService(user: {
+    email: string;
+    password: string;
+  }): Promise<IUser> {
     if (!user.email) {
       throw new BadRequestException("Invalid e-mail provided.");
     }
@@ -74,5 +77,21 @@ export class UserService {
     delete getUser.password;
 
     return getUser;
+  }
+
+  async getUserProfile(userId: string): Promise<IUser> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    const doesUserExists = await this.userInterface.findById(userId);
+
+    if (!doesUserExists) {
+      throw new NotFoundException("User not found.");
+    }
+
+    delete doesUserExists.password;
+
+    return doesUserExists;
   }
 }
