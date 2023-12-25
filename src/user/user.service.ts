@@ -94,4 +94,38 @@ export class UserService {
 
     return doesUserExists;
   }
+
+  async forgotUserPassword(
+    userEmail: string,
+    newPassword: string,
+  ): Promise<IUser> {
+    if (!userEmail) {
+      throw new BadRequestException("Invalid user email.");
+    }
+
+    if (!newPassword) {
+      throw new BadRequestException("Invalid new password.");
+    }
+
+    if (newPassword.length < 6) {
+      throw new BadRequestException(
+        "New password must have at least 6 characters.",
+      );
+    }
+
+    const getUser = await this.userInterface.findByEmail(userEmail);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const hashNewPassword = await hash(newPassword, 8);
+
+    const updateUserPassword = await this.userInterface.updatePassword(
+      userEmail,
+      hashNewPassword,
+    );
+
+    return updateUserPassword;
+  }
 }

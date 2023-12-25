@@ -42,4 +42,17 @@ export class PrismaUserModel implements UserInterface {
 
     return findUserById;
   }
+
+  async updatePassword(userEmail: string, newPassword: string): Promise<IUser> {
+    const update = await this.prismaService.user.update({
+      where: {
+        email: userEmail,
+      },
+      data: {
+        password: newPassword,
+      },
+    });
+
+    return update;
+  }
 }

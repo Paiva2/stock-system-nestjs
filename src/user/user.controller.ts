@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Patch,
   Post,
   Req,
   Res,
@@ -11,8 +12,13 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { Request, Response } from "express";
+import { IJwtSchema } from "../@types/types";
 import { UserService } from "./user.service";
-import { AuthUserDto, RegisterUserDto } from "./dto/user.dto";
+import {
+  AuthUserDto,
+  ForgotUserPasswordDto,
+  RegisterUserDto,
+} from "./dto/user.dto";
 import { AuthService } from "../infra/http/auth/auth.service";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 
@@ -53,10 +59,25 @@ export class UserController {
   @HttpCode(HttpStatus.OK)
   @Get("/profile")
   async getUserProfileController(@Res() res: Response, @Req() req: Request) {
-    const tokenParsed: { sub: string; iat: number; exp: number } = req["user"];
+    const tokenParsed: IJwtSchema = req["user"];
 
     const getUser = await this.userService.getUserProfile(tokenParsed.sub);
 
     return res.status(HttpStatus.OK).send(getUser);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Patch("/forgot-password")
+  async forgotUserPasswordController(
+    @Body(ValidationPipe) forgotUserPasswordDto: ForgotUserPasswordDto,
+    @Res() res: Response,
+  ) {
+    const { email, newPassword } = forgotUserPasswordDto;
+
+    await this.userService.forgotUserPassword(email, newPassword);
+
+    return res
+      .status(HttpStatus.OK)
+      .send({ message: "Password updated successfully." });
   }
 }

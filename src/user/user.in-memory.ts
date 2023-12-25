@@ -38,4 +38,22 @@ export class InMemoryUser implements UserInterface {
 
     return findUser;
   }
+
+  async updatePassword(userEmail: string, newPassword: string): Promise<IUser> {
+    let userUpdated = {} as IUser;
+
+    const updatedUsers = this.users.map((user) => {
+      if (user.email === userEmail) {
+        user.password = newPassword;
+
+        userUpdated = user;
+      }
+
+      return user;
+    });
+
+    this.users = updatedUsers;
+
+    return userUpdated;
+  }
 }

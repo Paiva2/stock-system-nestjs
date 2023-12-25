@@ -13,3 +13,9 @@ export interface IUserCreation {
   password: string;
   fullName: string;
 }
+
+export interface IJwtSchema {
+  sub: string;
+  iat: number;
+  exp: number;
+}

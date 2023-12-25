@@ -22,4 +22,13 @@ class AuthUserDto {
   password: string;
 }
 
-export { RegisterUserDto, AuthUserDto };
+class ForgotUserPasswordDto {
+  @IsEmail({}, { message: "email must be an valid e-mail." })
+  email: string;
+
+  @IsString({ message: "newPassword must be an string type." })
+  @MinLength(6, { message: "newPassword must have at least 6 characters." })
+  newPassword: string;
+}
+
+export { RegisterUserDto, AuthUserDto, ForgotUserPasswordDto };
