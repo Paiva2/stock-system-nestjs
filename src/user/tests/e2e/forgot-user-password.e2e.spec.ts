@@ -39,6 +39,7 @@ describe("Forgot user password controller", () => {
       .send({
         email: "johndoe@email.com",
         newPassword: "newpass",
+        secretAnswer: "The Beatles",
       });
 
     expect(updatePassword.statusCode).toBe(200);

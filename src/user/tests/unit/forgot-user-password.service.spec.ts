@@ -39,6 +39,7 @@ describe("Forgot user password service", () => {
     const updateUser = await sut.forgotUserPassword(
       "johndoe@email.com",
       "changepass",
+      "The Beatles",
     );
 
     const matchPasswords = await compare("changepass", updateUser.password);
@@ -59,15 +60,15 @@ describe("Forgot user password service", () => {
 
   it("should not update an user password if requests not provided correctly", async () => {
     await expect(() => {
-      return sut.forgotUserPassword("", "changepass");
+      return sut.forgotUserPassword("", "changepass", "The Beatles");
     }).rejects.toEqual(new BadRequestException("Invalid user email."));
 
     await expect(() => {
-      return sut.forgotUserPassword(user.id, "");
+      return sut.forgotUserPassword(user.id, "", "The Beatles");
     }).rejects.toEqual(new BadRequestException("Invalid new password."));
 
     await expect(() => {
-      return sut.forgotUserPassword(user.id, "12345");
+      return sut.forgotUserPassword(user.id, "12345", "The Beatles");
     }).rejects.toEqual(
       new BadRequestException("New password must have at least 6 characters."),
     );
@@ -75,7 +76,21 @@ describe("Forgot user password service", () => {
 
   it("should not update an user password if user doesn't exists", async () => {
     await expect(() => {
-      return sut.forgotUserPassword("inexistent user email", "changepass");
+      return sut.forgotUserPassword(
+        "inexistent user email",
+        "changepass",
+        "The Beatles",
+      );
     }).rejects.toEqual(new NotFoundException("User not found."));
+  });
+
+  it("should not update an user password if secret answer doesn't match", async () => {
+    await expect(() => {
+      return sut.forgotUserPassword(
+        "johndoe@email.com",
+        "changepass",
+        "The Rolling Stones",
+      );
+    }).rejects.toEqual(new NotFoundException("Secret answer doesn't match."));
   });
 });

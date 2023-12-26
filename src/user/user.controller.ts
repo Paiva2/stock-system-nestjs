@@ -72,9 +72,9 @@ export class UserController {
     @Body(ValidationPipe) forgotUserPasswordDto: ForgotUserPasswordDto,
     @Res() res: Response,
   ) {
-    const { email, newPassword } = forgotUserPasswordDto;
+    const { email, newPassword, secretAnswer } = forgotUserPasswordDto;
 
-    await this.userService.forgotUserPassword(email, newPassword);
+    await this.userService.forgotUserPassword(email, newPassword, secretAnswer);
 
     return res
       .status(HttpStatus.OK)

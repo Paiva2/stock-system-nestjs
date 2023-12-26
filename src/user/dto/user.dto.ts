@@ -37,6 +37,10 @@ class ForgotUserPasswordDto {
   @IsString({ message: "newPassword must be an string type." })
   @MinLength(6, { message: "newPassword must have at least 6 characters." })
   newPassword: string;
+
+  @IsString()
+  @MinLength(5, { message: "secretAnswer must have at least 6 characters." })
+  secretAnswer: string;
 }
 
 export { RegisterUserDto, AuthUserDto, ForgotUserPasswordDto };

@@ -104,6 +104,7 @@ export class UserService {
   async forgotUserPassword(
     userEmail: string,
     newPassword: string,
+    secretAnswer: string,
   ): Promise<IUser> {
     if (!userEmail) {
       throw new BadRequestException("Invalid user email.");
@@ -123,6 +124,12 @@ export class UserService {
 
     if (!getUser) {
       throw new NotFoundException("User not found.");
+    }
+
+    const isSecretAnswerRight = getUser.secretAnswer === secretAnswer;
+
+    if (!isSecretAnswerRight) {
+      throw new ForbiddenException("Secret answer doesn't match.");
     }
 
     const hashNewPassword = await hash(newPassword, 8);
