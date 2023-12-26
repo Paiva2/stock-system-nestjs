@@ -6,12 +6,16 @@ export interface IUser {
   createdAt: Date;
   updatedAt: Date;
   role: string;
+  secretQuestion: string;
+  secretAnswer: string;
 }
 
 export interface IUserCreation {
   email: string;
   password: string;
   fullName: string;
+  secretQuestion: string;
+  secretAnswer: string;
 }
 
 export interface IJwtSchema {

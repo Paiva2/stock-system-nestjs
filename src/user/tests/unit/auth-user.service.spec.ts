@@ -22,6 +22,8 @@ describe("Auth user service", () => {
       email: "johndoe@email.com",
       fullName: "John Doe",
       password: "123456",
+      secretQuestion: "Favourite Band",
+      secretAnswer: "The Beatles",
     });
   });
 
@@ -42,6 +44,8 @@ describe("Auth user service", () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       role: "default",
+      secretQuestion: "Favourite Band",
+      secretAnswer: "The Beatles",
     });
   });
 

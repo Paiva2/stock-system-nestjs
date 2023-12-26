@@ -7,7 +7,13 @@ import { UserInterface } from "./user.interface";
 export class InMemoryUser implements UserInterface {
   private users = [] as IUser[];
 
-  async create({ email, fullName, password }: IUserCreation): Promise<IUser> {
+  async create({
+    email,
+    fullName,
+    password,
+    secretAnswer,
+    secretQuestion,
+  }: IUserCreation): Promise<IUser> {
     const newUser = {
       id: randomUUID(),
       createdAt: new Date(),
@@ -16,6 +22,8 @@ export class InMemoryUser implements UserInterface {
       fullName,
       email,
       password,
+      secretAnswer,
+      secretQuestion,
     };
 
     this.users.push(newUser);

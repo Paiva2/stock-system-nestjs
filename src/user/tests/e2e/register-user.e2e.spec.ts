@@ -23,6 +23,8 @@ describe("Register user controller", () => {
         email: "johndoe@email.com",
         fullName: "John Doe",
         password: "123456",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       });
 
     expect(postRegister.statusCode).toBe(201);

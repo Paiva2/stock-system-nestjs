@@ -29,6 +29,8 @@ describe("Forgot user password controller", () => {
         email: "johndoe@email.com",
         fullName: "John Doe",
         password: hashPassword,
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       },
     });
 

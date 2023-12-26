@@ -22,6 +22,12 @@ export class UserService {
       throw new BadRequestException("E-mail must be provided.");
     }
 
+    if (!user.secretAnswer || !user.secretQuestion) {
+      throw new BadRequestException(
+        "Security question and answer must be provided.",
+      );
+    }
+
     if (user.password.length < 6) {
       throw new BadRequestException(
         "Password must have at least 6 characters.",

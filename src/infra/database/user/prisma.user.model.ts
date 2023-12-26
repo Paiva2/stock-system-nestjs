@@ -7,12 +7,20 @@ import { PrismaService } from "../prisma.service";
 export class PrismaUserModel implements UserInterface {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async create({ email, fullName, password }: IUserCreation): Promise<IUser> {
+  async create({
+    email,
+    fullName,
+    password,
+    secretAnswer,
+    secretQuestion,
+  }: IUserCreation): Promise<IUser> {
     const createUser = await this.prismaService.user.create({
       data: {
         email,
         fullName,
         password,
+        secretAnswer,
+        secretQuestion,
       },
     });
 

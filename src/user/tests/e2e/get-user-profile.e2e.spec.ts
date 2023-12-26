@@ -29,6 +29,8 @@ describe("Get user profile controller", () => {
         email: "johndoe@email.com",
         fullName: "John Doe",
         password: hashPassword,
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       },
     });
 
@@ -51,6 +53,8 @@ describe("Get user profile controller", () => {
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
       role: "default",
+      secretQuestion: "Favourite Band",
+      secretAnswer: "The Beatles",
     });
   });
 });

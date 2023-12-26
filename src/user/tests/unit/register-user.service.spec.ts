@@ -29,6 +29,8 @@ describe("Register user service", () => {
       email: "johndoe@email.com",
       fullName: "John Doe",
       password: "123456",
+      secretQuestion: "Favourite Band",
+      secretAnswer: "The Beatles",
     });
 
     const matchPasswords = await compare("123456", userCreation.password);
@@ -42,6 +44,8 @@ describe("Register user service", () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       role: "default",
+      secretQuestion: "Favourite Band",
+      secretAnswer: "The Beatles",
     });
   });
 
@@ -50,6 +54,8 @@ describe("Register user service", () => {
       email: "johndoe@email.com",
       fullName: "John Doe",
       password: "123456",
+      secretQuestion: "Favourite Band",
+      secretAnswer: "The Beatles",
     });
 
     await expect(() => {
@@ -57,6 +63,8 @@ describe("Register user service", () => {
         email: "johndoe@email.com",
         fullName: "John Doe",
         password: "123456",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(new ConflictException("User is already registered."));
   });
@@ -67,6 +75,8 @@ describe("Register user service", () => {
         email: "johndoe@email.com",
         fullName: "",
         password: "123456",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(new BadRequestException("Full name must be provided."));
 
@@ -75,6 +85,8 @@ describe("Register user service", () => {
         email: "",
         fullName: "John Doe",
         password: "123456",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(new ConflictException("E-mail must be provided."));
 
@@ -83,6 +95,8 @@ describe("Register user service", () => {
         email: "johndoe@email.com",
         fullName: "John Doe",
         password: "",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(
       new ConflictException("Password must have at least 6 characters."),
@@ -95,9 +109,37 @@ describe("Register user service", () => {
         email: "johndoe@email.com",
         fullName: "John Doe",
         password: "12345",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(
       new ConflictException("Password must have at least 6 characters."),
+    );
+  });
+
+  it("should not create a new user if secret question and answer are not provided.", async () => {
+    await expect(() => {
+      return sut.registerUserService({
+        email: "johndoe@email.com",
+        fullName: "John Doe",
+        password: "12345",
+        secretQuestion: "",
+        secretAnswer: "The Beatles",
+      });
+    }).rejects.toEqual(
+      new ConflictException("Security question and answer must be provided."),
+    );
+
+    await expect(() => {
+      return sut.registerUserService({
+        email: "johndoe@email.com",
+        fullName: "John Doe",
+        password: "12345",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "",
+      });
+    }).rejects.toEqual(
+      new ConflictException("Security question and answer must be provided."),
     );
   });
 });
