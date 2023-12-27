@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { IUserCreation, IUser } from "src/@types/types";
+import { IUserCreation, IUser, IUserUpdate } from "src/@types/types";
 import { UserInterface } from "../../../user/user.interface";
 import { PrismaService } from "../prisma.service";
 
@@ -62,5 +62,16 @@ export class PrismaUserModel implements UserInterface {
     });
 
     return update;
+  }
+
+  async update(userId: string, update: IUserUpdate): Promise<IUser> {
+    const updateUser = await this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: update,
+    });
+
+    return updateUser;
   }
 }

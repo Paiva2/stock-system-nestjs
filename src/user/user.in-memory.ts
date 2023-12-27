@@ -1,4 +1,4 @@
-import { IUserCreation, IUser } from "src/@types/types";
+import { IUserCreation, IUser, IUserUpdate } from "src/@types/types";
 import { Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { UserInterface } from "./user.interface";
@@ -61,6 +61,28 @@ export class InMemoryUser implements UserInterface {
     });
 
     this.users = updatedUsers;
+
+    return userUpdated;
+  }
+
+  async update(userId: string, update: IUserUpdate): Promise<IUser> {
+    let userUpdated = {} as IUser;
+
+    const updateList = this.users.map((user) => {
+      if (user.id === userId) {
+        user = {
+          ...user,
+          ...update,
+          updatedAt: new Date(),
+        };
+
+        userUpdated = user;
+      }
+
+      return user;
+    });
+
+    this.users = updateList;
 
     return userUpdated;
   }

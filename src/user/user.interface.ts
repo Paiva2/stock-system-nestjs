@@ -1,4 +1,4 @@
-import { IUser, IUserCreation } from "src/@types/types";
+import { IUser, IUserCreation, IUserUpdate } from "src/@types/types";
 export abstract class UserInterface {
   abstract create({ email, fullName, password }: IUserCreation): Promise<IUser>;
 
@@ -10,4 +10,6 @@ export abstract class UserInterface {
     userEmail: string,
     newPassword: string,
   ): Promise<IUser>;
+
+  abstract update(userId: string, update: IUserUpdate): Promise<IUser>;
 }

@@ -5,7 +5,7 @@ import {
   NotFoundException,
   ForbiddenException,
 } from "@nestjs/common";
-import { IUser, IUserCreation } from "src/@types/types";
+import { IUser, IUserCreation, IUserUpdate } from "src/@types/types";
 import { UserInterface } from "./user.interface";
 import { compare, hash } from "bcrypt";
 
@@ -140,5 +140,38 @@ export class UserService {
     );
 
     return updateUserPassword;
+  }
+
+  async updateUserProfile(
+    userId: string,
+    userUpdate: IUserUpdate,
+  ): Promise<IUser> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    if (userUpdate.password) {
+      userUpdate.password = await hash(userUpdate.password, 8);
+    }
+
+    if (userUpdate.email && userUpdate.email !== getUser.email) {
+      const doesEmailAlreadyExists = await this.userInterface.findByEmail(
+        userUpdate.email,
+      );
+
+      if (doesEmailAlreadyExists) {
+        throw new ConflictException("E-mail already exists.");
+      }
+    }
+
+    const updateUser = await this.userInterface.update(userId, userUpdate);
+
+    return updateUser;
   }
 }

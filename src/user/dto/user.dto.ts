@@ -1,4 +1,4 @@
-import { IsEmail, IsString, MinLength } from "class-validator";
+import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
 
 class RegisterUserDto {
   @IsString()
@@ -43,4 +43,25 @@ class ForgotUserPasswordDto {
   secretAnswer: string;
 }
 
-export { RegisterUserDto, AuthUserDto, ForgotUserPasswordDto };
+class UpdateUserProfileDto {
+  @IsOptional()
+  @IsString()
+  @MinLength(6, { message: "fullName must have at least 6 characters." })
+  fullName: string;
+
+  @IsOptional()
+  @IsEmail({}, { message: "email must be an valid e-mail." })
+  email: string;
+
+  @IsOptional()
+  @IsString({ message: "password must be an string type." })
+  @MinLength(6, { message: "password must have at least 6 characters." })
+  password: string;
+}
+
+export {
+  RegisterUserDto,
+  AuthUserDto,
+  ForgotUserPasswordDto,
+  UpdateUserProfileDto,
+};

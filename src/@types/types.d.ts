@@ -10,6 +10,13 @@ export interface IUser {
   secretAnswer: string;
 }
 
+export interface IUserUpdate {
+  fullName?: string;
+  email?: string;
+  password?: string;
+  updatedAt?: Date;
+}
+
 export interface IUserCreation {
   email: string;
   password: string;

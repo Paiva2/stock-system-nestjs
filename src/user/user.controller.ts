@@ -18,6 +18,7 @@ import {
   AuthUserDto,
   ForgotUserPasswordDto,
   RegisterUserDto,
+  UpdateUserProfileDto,
 } from "./dto/user.dto";
 import { AuthService } from "../infra/http/auth/auth.service";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
@@ -79,5 +80,24 @@ export class UserController {
     return res
       .status(HttpStatus.OK)
       .send({ message: "Password updated successfully." });
+  }
+
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @Patch("/profile")
+  async updateUserProfileController(
+    @Body(ValidationPipe) updateUserProfileDto: UpdateUserProfileDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    const updateFields = updateUserProfileDto;
+
+    const tokenParsed: IJwtSchema = req["user"];
+
+    await this.userService.updateUserProfile(tokenParsed.sub, updateFields);
+
+    return res
+      .status(HttpStatus.OK)
+      .send({ message: "Profile updated successfully." });
   }
 }
