@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Get,
+  HttpCode,
   HttpStatus,
   Post,
   Req,
@@ -27,14 +29,19 @@ export class StockController {
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
-    try {
-      await this.stockService.createStock(tokenParsed.sub, createStockDto);
+    await this.stockService.createStock(tokenParsed.sub, createStockDto);
 
-      return res
-        .status(HttpStatus.CREATED)
-        .send({ message: "Stock successfully created." });
-    } catch (e) {
-      console.log(e);
-    }
+    return res
+      .status(HttpStatus.CREATED)
+      .send({ message: "Stock successfully created." });
+  }
+
+  @Get("/stock")
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async getAllAccountStocks(@Req() req: Request, @Res() res: Response) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    return res.status(HttpStatus.OK).send();
   }
 }

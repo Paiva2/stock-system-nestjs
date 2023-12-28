@@ -8,7 +8,7 @@ import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
 
-describe("Create stock service", () => {
+describe("Get all account stocks service", () => {
   let sut: StockService;
   let module: TestingModule;
   let userService: UserService;
@@ -40,33 +40,48 @@ describe("Create stock service", () => {
     expect(sut).toBeDefined();
   });
 
-  it("should create a new stock", async () => {
-    const newStock = await sut.createStock(user.id, {
+  it("should list all account stocks", async () => {
+    await sut.createStock(user.id, {
       stockName: "Apple Stock",
     });
 
-    expect(newStock).toEqual({
-      id: newStock.id,
-      stockName: "Apple Stock",
-      stockOwner: user.id,
-      createdAt: newStock.createdAt,
-      updatedAt: newStock.updatedAt,
+    await sut.createStock(user.id, {
+      stockName: "Orange Stock",
+    });
+
+    const stocksList = await sut.getAllAccountStocks(user.id, 1);
+
+    expect(stocksList).toEqual({
+      page: 1,
+      totalStocks: 2,
+      stocks: expect.arrayContaining([
+        {
+          id: expect.any(String),
+          stockName: "Apple Stock",
+          stockOwner: user.id,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        },
+        {
+          id: expect.any(String),
+          stockName: "Orange Stock",
+          stockOwner: user.id,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        },
+      ]),
     });
   });
 
-  it("should not create a new stock without an user id", async () => {
-    await expect(() => {
-      return sut.createStock("", {
-        stockName: "Apple Stock",
-      });
+  it("should not list all account stocks without an user id", async () => {
+    expect(() => {
+      return sut.getAllAccountStocks("", 1);
     }).rejects.toEqual(new BadRequestException("Invalid user id."));
   });
 
-  it("should not create a new stock if user doesn't exits", async () => {
-    await expect(() => {
-      return sut.createStock("Inexistent user id", {
-        stockName: "Apple Stock",
-      });
+  it("should not list all account stocks if user doesn't exists", async () => {
+    expect(() => {
+      return sut.getAllAccountStocks("Inexistent user id.", 1);
     }).rejects.toEqual(new NotFoundException("User not found."));
   });
 });

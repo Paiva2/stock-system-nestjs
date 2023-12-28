@@ -18,4 +18,26 @@ export class InMemoryStock implements StockInterface {
 
     return newStock;
   }
+
+  async getAll(
+    userId: string,
+    page: number,
+  ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
+    const getAllStocks = this.stocks.filter(
+      (stock) => stock.stockOwner === userId,
+    );
+
+    const perPage = 10;
+
+    const paginatedStocks = getAllStocks.splice(
+      (page - 1) * perPage,
+      page * perPage,
+    );
+
+    return {
+      page,
+      stocks: paginatedStocks,
+      totalStocks: paginatedStocks.length,
+    };
+  }
 }
