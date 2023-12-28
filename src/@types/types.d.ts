@@ -8,6 +8,7 @@ export interface IUser {
   role: string;
   secretQuestion: string;
   secretAnswer: string;
+  stocks?: [];
 }
 
 export interface IUserUpdate {
@@ -23,6 +24,18 @@ export interface IUserCreation {
   fullName: string;
   secretQuestion: string;
   secretAnswer: string;
+}
+
+export interface IStock {
+  id: string;
+  stockName: string;
+  stockOwner: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IStockCreate {
+  stockName: string;
 }
 
 export interface IJwtSchema {

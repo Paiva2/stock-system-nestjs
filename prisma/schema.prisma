@@ -25,6 +25,19 @@ model User {
   secretQuestion String   @db.VarChar(200)
   secretAnswer   String   @db.VarChar(100)
   role           Role     @default(default)
+  stocks         Stock[]
 
   @@map("users")
+}
+
+model Stock {
+  id         String   @id @default(uuid())
+  stockName  String   @db.VarChar(100)
+  stockOwner String   @db.VarChar(100)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  user User? @relation(fields: [stockOwner], references: [id])
+
+  @@map("stock")
 }
