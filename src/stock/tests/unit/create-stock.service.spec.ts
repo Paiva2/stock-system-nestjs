@@ -1,5 +1,9 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import {
+  BadRequestException,
+  ConflictException,
+  NotFoundException,
+} from "@nestjs/common";
 import { IUser } from "../../../@types/types";
 import { StockInterface } from "../../stock.interface";
 import { UserInterface } from "../../../user/user.interface";
@@ -68,5 +72,21 @@ describe("Create stock service", () => {
         stockName: "Apple Stock",
       });
     }).rejects.toEqual(new NotFoundException("User not found."));
+  });
+
+  it("should not create a new stock if an stock with this name already exists on this account.", async () => {
+    await sut.createStock(user.id, {
+      stockName: "Apple Stock",
+    });
+
+    await expect(() => {
+      return sut.createStock(user.id, {
+        stockName: "Apple Stock",
+      });
+    }).rejects.toEqual(
+      new ConflictException(
+        "An stock this name is already created on this account.",
+      ),
+    );
   });
 });

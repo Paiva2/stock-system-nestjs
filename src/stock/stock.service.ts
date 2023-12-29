@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -23,6 +24,17 @@ export class StockService {
 
     if (!getUser) {
       throw new NotFoundException("User not found.");
+    }
+
+    const hasStoreWithThisName = await this.stockInterface.getByStockName(
+      stock.stockName,
+      userId,
+    );
+
+    if (hasStoreWithThisName) {
+      throw new ConflictException(
+        "An stock this name is already created on this account.",
+      );
     }
 
     const stockCreation = await this.stockInterface.create(userId, stock);

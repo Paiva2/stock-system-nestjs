@@ -40,4 +40,20 @@ export class PrismaStockModel implements StockInterface {
 
     return createStock;
   }
+
+  async getByStockName(
+    stockName: string,
+    userId: string,
+  ): Promise<IStock | null> {
+    const findByUsername = await this.prismaService.stock.findFirst({
+      where: {
+        stockName,
+        stockOwner: userId,
+      },
+    });
+
+    if (!findByUsername) return null;
+
+    return findByUsername;
+  }
 }

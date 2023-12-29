@@ -40,4 +40,14 @@ export class InMemoryStock implements StockInterface {
       totalStocks: paginatedStocks.length,
     };
   }
+
+  async getByStockName(stockName: string, userId: string): Promise<IStock> {
+    const findByName = this.stocks.find(
+      (stock) => stock.stockName === stockName && stock.stockOwner === userId,
+    );
+
+    if (!findByName) return null;
+
+    return findByName;
+  }
 }

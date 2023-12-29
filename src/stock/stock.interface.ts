@@ -11,4 +11,9 @@ export abstract class StockInterface {
     totalStocks: number;
     stocks: IStock[];
   }>;
+
+  abstract getByStockName(
+    stockName: string,
+    userId: string,
+  ): Promise<IStock | null>;
 }
