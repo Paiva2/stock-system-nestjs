@@ -4,7 +4,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  InternalServerErrorException,
   Param,
   Patch,
   Post,
@@ -39,19 +38,11 @@ export class UserController {
     registerUserDto: RegisterUserDto,
     @Res() res: Response,
   ) {
-    try {
-      await this.userService.registerUserService(registerUserDto);
+    await this.userService.registerUserService(registerUserDto);
 
-      return res
-        .status(HttpStatus.CREATED)
-        .send({ message: "User registered successfully!" });
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res
+      .status(HttpStatus.CREATED)
+      .send({ message: "User registered successfully!" });
   }
 
   @HttpCode(HttpStatus.OK)
@@ -60,19 +51,11 @@ export class UserController {
     @Body(ValidationPipe) authUserDto: AuthUserDto,
     @Res() res: Response,
   ) {
-    try {
-      const getUser = await this.userService.authUserService(authUserDto);
+    const getUser = await this.userService.authUserService(authUserDto);
 
-      const authToken = await this.authService.generateToken(getUser.id);
+    const authToken = await this.authService.generateToken(getUser.id);
 
-      return res.status(HttpStatus.OK).send(authToken);
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res.status(HttpStatus.OK).send(authToken);
   }
 
   @UseGuards(AuthGuard)
@@ -81,17 +64,9 @@ export class UserController {
   async getUserProfileController(@Res() res: Response, @Req() req: Request) {
     const tokenParsed: IJwtSchema = req["user"];
 
-    try {
-      const getUser = await this.userService.getUserProfile(tokenParsed.sub);
+    const getUser = await this.userService.getUserProfile(tokenParsed.sub);
 
-      return res.status(HttpStatus.OK).send(getUser);
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res.status(HttpStatus.OK).send(getUser);
   }
 
   @HttpCode(HttpStatus.OK)
@@ -102,23 +77,11 @@ export class UserController {
   ) {
     const { email, newPassword, secretAnswer } = forgotUserPasswordDto;
 
-    try {
-      await this.userService.forgotUserPassword(
-        email,
-        newPassword,
-        secretAnswer,
-      );
+    await this.userService.forgotUserPassword(email, newPassword, secretAnswer);
 
-      return res
-        .status(HttpStatus.OK)
-        .send({ message: "Password updated successfully." });
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res
+      .status(HttpStatus.OK)
+      .send({ message: "Password updated successfully." });
   }
 
   @UseGuards(AuthGuard)
@@ -133,19 +96,11 @@ export class UserController {
 
     const tokenParsed: IJwtSchema = req["user"];
 
-    try {
-      await this.userService.updateUserProfile(tokenParsed.sub, updateFields);
+    await this.userService.updateUserProfile(tokenParsed.sub, updateFields);
 
-      return res
-        .status(HttpStatus.OK)
-        .send({ message: "Profile updated successfully." });
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res
+      .status(HttpStatus.OK)
+      .send({ message: "Profile updated successfully." });
   }
 
   @HttpCode(HttpStatus.OK)
@@ -154,16 +109,8 @@ export class UserController {
     @Res() res: Response,
     @Param(ValidationPipe) params: GetUserByIdDto,
   ) {
-    try {
-      const getUser = await this.userService.getUserById(params.userId);
+    const getUser = await this.userService.getUserById(params.userId);
 
-      return res.status(HttpStatus.OK).send(getUser);
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res.status(HttpStatus.OK).send(getUser);
   }
 }

@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  InternalServerErrorException,
   Param,
   Post,
   Query,
@@ -37,19 +36,11 @@ export class StockController {
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
-    try {
-      await this.stockService.createStock(tokenParsed.sub, createStockDto);
+    await this.stockService.createStock(tokenParsed.sub, createStockDto);
 
-      return res
-        .status(HttpStatus.CREATED)
-        .send({ message: "Stock successfully created." });
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res
+      .status(HttpStatus.CREATED)
+      .send({ message: "Stock successfully created." });
   }
 
   @Get("/stocks")
@@ -63,20 +54,12 @@ export class StockController {
     const tokenParsed: IJwtSchema = req["user"];
     const { page } = query;
 
-    try {
-      const allStocks = await this.stockService.getAllAccountStocks(
-        tokenParsed.sub,
-        +page,
-      );
+    const allStocks = await this.stockService.getAllAccountStocks(
+      tokenParsed.sub,
+      +page,
+    );
 
-      return res.status(HttpStatus.OK).send(allStocks);
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res.status(HttpStatus.OK).send(allStocks);
   }
 
   @Delete("/stock/delete/:stockId")
@@ -90,18 +73,10 @@ export class StockController {
     const tokenParsed: IJwtSchema = req["user"];
     const { stockId } = param;
 
-    try {
-      await this.stockService.deleteAccountStock(tokenParsed.sub, stockId);
+    await this.stockService.deleteAccountStock(tokenParsed.sub, stockId);
 
-      return res
-        .status(HttpStatus.OK)
-        .send({ message: "Stock deleted successfully." });
-    } catch (e) {
-      console.log(e);
-
-      throw new InternalServerErrorException(
-        "There was an internal server error. Try again later.",
-      );
-    }
+    return res
+      .status(HttpStatus.OK)
+      .send({ message: "Stock deleted successfully." });
   }
 }

@@ -56,4 +56,18 @@ export class PrismaStockModel implements StockInterface {
 
     return findByUsername;
   }
+
+  async delete(stockId: string): Promise<IStock | null> {
+    try {
+      const deleteStock = await this.prismaService.stock.delete({
+        where: {
+          id: stockId,
+        },
+      });
+
+      return deleteStock;
+    } catch (e) {
+      if (e.code === "P2025") return null;
+    }
+  }
 }
