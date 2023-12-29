@@ -174,4 +174,22 @@ export class UserService {
 
     return updateUser;
   }
+
+  async getUserById(userId: string): Promise<IUser> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    delete getUser.password;
+    delete getUser.secretAnswer;
+    delete getUser.secretQuestion;
+
+    return getUser;
+  }
 }

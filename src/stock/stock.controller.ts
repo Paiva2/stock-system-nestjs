@@ -12,10 +12,10 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
+import { IJwtSchema } from "../@types/types";
 import { StockService } from "./stock.service";
 import { Request, Response } from "express";
 import { CreateStockDto, GetAllAccountStocksDto } from "./dto/stock.dto";
-import { IJwtSchema } from "../@types/types";
 
 @Controller()
 export class StockController {
@@ -23,7 +23,7 @@ export class StockController {
 
   @Post("/stock")
   @UseGuards(AuthGuard)
-  async createStock(
+  async createStockController(
     @Body(ValidationPipe) createStockDto: CreateStockDto,
     @Req() req: Request,
     @Res() res: Response,
@@ -40,7 +40,7 @@ export class StockController {
   @Get("/stocks")
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  async getAllAccountStocks(
+  async getAllAccountStocksController(
     @Req() req: Request,
     @Res() res: Response,
     @Query(ValidationPipe) query: GetAllAccountStocksDto,

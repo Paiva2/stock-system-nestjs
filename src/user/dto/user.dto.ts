@@ -1,4 +1,10 @@
-import { IsEmail, IsOptional, IsString, MinLength } from "class-validator";
+import {
+  IsEmail,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+} from "class-validator";
 
 class RegisterUserDto {
   @IsString()
@@ -59,7 +65,14 @@ class UpdateUserProfileDto {
   password: string;
 }
 
+class GetUserByIdDto {
+  @IsOptional()
+  @IsUUID()
+  userId: string;
+}
+
 export {
+  GetUserByIdDto,
   RegisterUserDto,
   AuthUserDto,
   ForgotUserPasswordDto,

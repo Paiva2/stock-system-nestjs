@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Patch,
   Post,
   Req,
@@ -13,13 +14,14 @@ import {
 } from "@nestjs/common";
 import { Request, Response } from "express";
 import { IJwtSchema } from "../@types/types";
-import { UserService } from "./user.service";
 import {
   AuthUserDto,
   ForgotUserPasswordDto,
+  GetUserByIdDto,
   RegisterUserDto,
   UpdateUserProfileDto,
 } from "./dto/user.dto";
+import { UserService } from "./user.service";
 import { AuthService } from "../infra/http/auth/auth.service";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 
@@ -99,5 +101,16 @@ export class UserController {
     return res
       .status(HttpStatus.OK)
       .send({ message: "Profile updated successfully." });
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get("/profile/:userId")
+  async getUserByIdController(
+    @Res() res: Response,
+    @Param(ValidationPipe) params: GetUserByIdDto,
+  ) {
+    const getUser = await this.userService.getUserById(params.userId);
+
+    return res.status(HttpStatus.OK).send(getUser);
   }
 }
