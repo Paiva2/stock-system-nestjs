@@ -4,6 +4,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  InternalServerErrorException,
   Param,
   Patch,
   Post,
@@ -38,11 +39,19 @@ export class UserController {
     registerUserDto: RegisterUserDto,
     @Res() res: Response,
   ) {
-    await this.userService.registerUserService(registerUserDto);
+    try {
+      await this.userService.registerUserService(registerUserDto);
 
-    return res
-      .status(HttpStatus.CREATED)
-      .send({ message: "User registered successfully!" });
+      return res
+        .status(HttpStatus.CREATED)
+        .send({ message: "User registered successfully!" });
+    } catch (e) {
+      console.log(e);
+
+      throw new InternalServerErrorException(
+        "There was an internal server error. Try again later.",
+      );
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -51,11 +60,19 @@ export class UserController {
     @Body(ValidationPipe) authUserDto: AuthUserDto,
     @Res() res: Response,
   ) {
-    const getUser = await this.userService.authUserService(authUserDto);
+    try {
+      const getUser = await this.userService.authUserService(authUserDto);
 
-    const authToken = await this.authService.generateToken(getUser.id);
+      const authToken = await this.authService.generateToken(getUser.id);
 
-    return res.status(HttpStatus.OK).send(authToken);
+      return res.status(HttpStatus.OK).send(authToken);
+    } catch (e) {
+      console.log(e);
+
+      throw new InternalServerErrorException(
+        "There was an internal server error. Try again later.",
+      );
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -64,9 +81,17 @@ export class UserController {
   async getUserProfileController(@Res() res: Response, @Req() req: Request) {
     const tokenParsed: IJwtSchema = req["user"];
 
-    const getUser = await this.userService.getUserProfile(tokenParsed.sub);
+    try {
+      const getUser = await this.userService.getUserProfile(tokenParsed.sub);
 
-    return res.status(HttpStatus.OK).send(getUser);
+      return res.status(HttpStatus.OK).send(getUser);
+    } catch (e) {
+      console.log(e);
+
+      throw new InternalServerErrorException(
+        "There was an internal server error. Try again later.",
+      );
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -77,11 +102,23 @@ export class UserController {
   ) {
     const { email, newPassword, secretAnswer } = forgotUserPasswordDto;
 
-    await this.userService.forgotUserPassword(email, newPassword, secretAnswer);
+    try {
+      await this.userService.forgotUserPassword(
+        email,
+        newPassword,
+        secretAnswer,
+      );
 
-    return res
-      .status(HttpStatus.OK)
-      .send({ message: "Password updated successfully." });
+      return res
+        .status(HttpStatus.OK)
+        .send({ message: "Password updated successfully." });
+    } catch (e) {
+      console.log(e);
+
+      throw new InternalServerErrorException(
+        "There was an internal server error. Try again later.",
+      );
+    }
   }
 
   @UseGuards(AuthGuard)
@@ -96,11 +133,19 @@ export class UserController {
 
     const tokenParsed: IJwtSchema = req["user"];
 
-    await this.userService.updateUserProfile(tokenParsed.sub, updateFields);
+    try {
+      await this.userService.updateUserProfile(tokenParsed.sub, updateFields);
 
-    return res
-      .status(HttpStatus.OK)
-      .send({ message: "Profile updated successfully." });
+      return res
+        .status(HttpStatus.OK)
+        .send({ message: "Profile updated successfully." });
+    } catch (e) {
+      console.log(e);
+
+      throw new InternalServerErrorException(
+        "There was an internal server error. Try again later.",
+      );
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -109,8 +154,16 @@ export class UserController {
     @Res() res: Response,
     @Param(ValidationPipe) params: GetUserByIdDto,
   ) {
-    const getUser = await this.userService.getUserById(params.userId);
+    try {
+      const getUser = await this.userService.getUserById(params.userId);
 
-    return res.status(HttpStatus.OK).send(getUser);
+      return res.status(HttpStatus.OK).send(getUser);
+    } catch (e) {
+      console.log(e);
+
+      throw new InternalServerErrorException(
+        "There was an internal server error. Try again later.",
+      );
+    }
   }
 }

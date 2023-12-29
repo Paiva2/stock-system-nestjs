@@ -1,5 +1,5 @@
 import { Type } from "class-transformer";
-import { IsInt, IsString, Min, MinLength } from "class-validator";
+import { IsInt, IsString, IsUUID, Min, MinLength } from "class-validator";
 
 export class CreateStockDto {
   @IsString({ message: "stockName must be an string type" })
@@ -12,4 +12,9 @@ export class GetAllAccountStocksDto {
   @IsInt()
   @Min(1, { message: "Page must be at least 1." })
   page: number;
+}
+
+export class DeleteAccountStockDto {
+  @IsUUID()
+  stockId: string;
 }
