@@ -3,8 +3,7 @@ import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { hash } from "bcrypt";
 import { PrismaService } from "../../../infra/database/prisma.service";
-import { StockModule } from "../../stock.module";
-import { UserModule } from "../../../user/user.module";
+import { AppModule } from "../../../app.module";
 
 describe("Get all account stocks", () => {
   let app: INestApplication;
@@ -12,7 +11,7 @@ describe("Get all account stocks", () => {
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [UserModule, StockModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleRef.createNestApplication();

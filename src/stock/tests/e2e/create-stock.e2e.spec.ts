@@ -3,16 +3,15 @@ import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { hash } from "bcrypt";
 import { PrismaService } from "../../../infra/database/prisma.service";
-import { StockModule } from "../../stock.module";
-import { UserModule } from "../../../user/user.module";
+import { AppModule } from "../../../app.module";
 
-describe("Get user profile controller", () => {
+describe("Create stock controller", () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [UserModule, StockModule],
+      imports: [AppModule],
     }).compile();
 
     app = moduleRef.createNestApplication();

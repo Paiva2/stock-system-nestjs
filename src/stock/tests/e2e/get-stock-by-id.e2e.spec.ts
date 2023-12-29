@@ -3,15 +3,16 @@ import { Test } from "@nestjs/testing";
 import request from "supertest";
 import { hash } from "bcrypt";
 import { PrismaService } from "../../../infra/database/prisma.service";
-import { AppModule } from "../../../app.module";
+import { StockModule } from "../../stock.module";
+import { UserModule } from "../../../user/user.module";
 
-describe("Delete account stock", () => {
+describe("Get stock by id", () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
-      imports: [AppModule],
+      imports: [UserModule, StockModule],
     }).compile();
 
     app = moduleRef.createNestApplication();
@@ -21,7 +22,7 @@ describe("Delete account stock", () => {
     await app.init();
   });
 
-  it("[DELETE]/stock/delete/:stockId", async () => {
+  it("[GET]/stock/:stockId", async () => {
     const hashPassword = await hash("123456", 8);
 
     const user = await prisma.user.create({
@@ -41,26 +42,27 @@ describe("Delete account stock", () => {
 
     const jwtToken = signIn.body.access_token;
 
-    const stock = await prisma.stock.create({
+    const stockCreation = await prisma.stock.create({
       data: {
         stockName: "Orange Stock",
         stockOwner: user.id,
       },
     });
 
-    const stockDelete = await request(app.getHttpServer())
-      .delete(`/stock/delete/${stock.id}`)
-      .set("Authorization", `Bearer ${jwtToken}`)
-      .send();
+    const getStock = await request(app.getHttpServer())
+      .get(`/stock/${stockCreation.id}`)
+      .send()
+      .set("Authorization", `Bearer ${jwtToken}`);
 
-    const stocksList = await prisma.stock.findFirst({
-      where: {
-        id: stock.id,
-      },
-    });
-
-    expect(stocksList).toEqual(null);
-    expect(stockDelete.statusCode).toEqual(200);
-    expect(stockDelete.body.message).toEqual("Stock deleted successfully.");
+    expect(getStock.statusCode).toEqual(200);
+    expect(getStock.body).toEqual(
+      expect.objectContaining({
+        id: stockCreation.id,
+        stockName: "Orange Stock",
+        stockOwner: user.id,
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+      }),
+    );
   });
 });

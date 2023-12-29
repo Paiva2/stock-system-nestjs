@@ -18,3 +18,8 @@ export class DeleteAccountStockDto {
   @IsUUID()
   stockId: string;
 }
+
+export class GetStockByIdDto {
+  @IsUUID()
+  stockId: string;
+}

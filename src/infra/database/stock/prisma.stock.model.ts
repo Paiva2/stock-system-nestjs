@@ -73,4 +73,16 @@ export class PrismaStockModel implements StockInterface {
       if (e.code === "P2025") return null;
     }
   }
+
+  async getById(stockId: string): Promise<IStock | null> {
+    const getStock = await this.prismaService.stock.findUnique({
+      where: {
+        id: stockId,
+      },
+    });
+
+    if (!getStock) return null;
+
+    return getStock;
+  }
 }

@@ -21,6 +21,7 @@ import {
   CreateStockDto,
   DeleteAccountStockDto,
   GetAllAccountStocksDto,
+  GetStockByIdDto,
 } from "./dto/stock.dto";
 
 @Controller()
@@ -60,6 +61,25 @@ export class StockController {
     );
 
     return res.status(HttpStatus.OK).send(allStocks);
+  }
+
+  @Get("/stock/:stockId")
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async getStockByIdController(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param(ValidationPipe) param: GetStockByIdDto,
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+    const { stockId } = param;
+
+    const filteredStock = await this.stockService.getStockById(
+      tokenParsed.sub,
+      stockId,
+    );
+
+    return res.status(HttpStatus.OK).send(filteredStock);
   }
 
   @Delete("/stock/delete/:stockId")
