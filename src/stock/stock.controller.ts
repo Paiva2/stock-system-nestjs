@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -13,7 +14,7 @@ import {
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { StockService } from "./stock.service";
 import { Request, Response } from "express";
-import { CreateStockDto } from "./dto/stock.dto";
+import { CreateStockDto, GetAllAccountStocksDto } from "./dto/stock.dto";
 import { IJwtSchema } from "../@types/types";
 
 @Controller()
@@ -36,12 +37,22 @@ export class StockController {
       .send({ message: "Stock successfully created." });
   }
 
-  @Get("/stock")
+  @Get("/stocks")
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  async getAllAccountStocks(@Req() req: Request, @Res() res: Response) {
+  async getAllAccountStocks(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query(ValidationPipe) query: GetAllAccountStocksDto,
+  ) {
     const tokenParsed: IJwtSchema = req["user"];
+    const { page } = query;
 
-    return res.status(HttpStatus.OK).send();
+    const allStocks = await this.stockService.getAllAccountStocks(
+      tokenParsed.sub,
+      +page,
+    );
+
+    return res.status(HttpStatus.OK).send(allStocks);
   }
 }
