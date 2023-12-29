@@ -16,4 +16,6 @@ export abstract class StockInterface {
     stockName: string,
     userId: string,
   ): Promise<IStock | null>;
+
+  abstract delete(stockId: string): Promise<IStock | null>;
 }

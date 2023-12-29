@@ -4,9 +4,9 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
+import { IStock, IStockCreate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
 import { UserInterface } from "../user/user.interface";
-import { IStock, IStockCreate } from "../@types/types";
 
 @Injectable()
 export class StockService {
@@ -67,5 +67,29 @@ export class StockService {
     const getAllStocks = await this.stockInterface.getAll(userId, page);
 
     return getAllStocks;
+  }
+
+  async deleteAccountStock(userId: string, stockId: string): Promise<IStock> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!stockId) {
+      throw new BadRequestException("Invalid stock id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const deletedStock = await this.stockInterface.delete(stockId);
+
+    if (!deletedStock) {
+      throw new NotFoundException("Stock not found.");
+    }
+
+    return deletedStock;
   }
 }

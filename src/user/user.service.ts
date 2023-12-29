@@ -80,7 +80,7 @@ export class UserService {
       throw new ForbiddenException("Invalid credentials.");
     }
 
-    delete getUser.password;
+    this.deletePrivateKey(getUser, ["password"]);
 
     return getUser;
   }
@@ -96,7 +96,7 @@ export class UserService {
       throw new NotFoundException("User not found.");
     }
 
-    delete doesUserExists.password;
+    this.deletePrivateKey(doesUserExists, ["password"]);
 
     return doesUserExists;
   }
@@ -186,10 +186,22 @@ export class UserService {
       throw new NotFoundException("User not found.");
     }
 
-    delete getUser.password;
-    delete getUser.secretAnswer;
-    delete getUser.secretQuestion;
+    this.deletePrivateKey(getUser, [
+      "password",
+      "secretAnswer",
+      "secretQuestion",
+    ]);
 
     return getUser;
+  }
+
+  private deletePrivateKey(object: object, keys: string[]) {
+    const objectToFormat = object;
+
+    for (const key of keys) {
+      delete objectToFormat[key];
+    }
+
+    return objectToFormat;
   }
 }

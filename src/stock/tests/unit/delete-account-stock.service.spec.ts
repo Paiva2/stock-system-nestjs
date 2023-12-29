@@ -8,7 +8,7 @@ import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
 
-describe("Get all account stocks service", () => {
+describe("Delete account stock service", () => {
   let sut: StockService;
   let module: TestingModule;
   let userService: UserService;
@@ -40,8 +40,8 @@ describe("Get all account stocks service", () => {
     expect(sut).toBeDefined();
   });
 
-  it("should list all account stocks", async () => {
-    await sut.createStock(user.id, {
+  it("should delete an account stock by id parameter", async () => {
+    const stockToDelete = await sut.createStock(user.id, {
       stockName: "Apple Stock",
     });
 
@@ -49,19 +49,26 @@ describe("Get all account stocks service", () => {
       stockName: "Orange Stock",
     });
 
+    const stockDeleted = await sut.deleteAccountStock(
+      user.id,
+      stockToDelete.id,
+    );
+
     const stocksList = await sut.getAllAccountStocks(user.id, 1);
 
+    expect(stockDeleted).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        stockName: "Apple Stock",
+        stockOwner: user.id,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+      }),
+    );
     expect(stocksList).toEqual({
       page: 1,
-      totalStocks: 2,
+      totalStocks: 1,
       stocks: expect.arrayContaining([
-        {
-          id: expect.any(String),
-          stockName: "Apple Stock",
-          stockOwner: user.id,
-          createdAt: expect.any(Date),
-          updatedAt: expect.any(Date),
-        },
         {
           id: expect.any(String),
           stockName: "Orange Stock",
@@ -73,15 +80,25 @@ describe("Get all account stocks service", () => {
     });
   });
 
-  it("should not list all account stocks without an user id", async () => {
+  it("should not list all account stocks without correctly provided parameters", async () => {
     await expect(() => {
-      return sut.getAllAccountStocks("", 1);
+      return sut.deleteAccountStock("", "any stock id");
     }).rejects.toEqual(new BadRequestException("Invalid user id."));
+
+    await expect(() => {
+      return sut.deleteAccountStock(user.id, "");
+    }).rejects.toEqual(new BadRequestException("Invalid stock id."));
   });
 
   it("should not list all account stocks if user doesn't exists", async () => {
     await expect(() => {
-      return sut.getAllAccountStocks("Inexistent user id.", 1);
+      return sut.deleteAccountStock("Inexistent user id.", "any stock id");
     }).rejects.toEqual(new NotFoundException("User not found."));
+  });
+
+  it("should not list all account stocks if stock doesn't exists", async () => {
+    await expect(() => {
+      return sut.deleteAccountStock(user.id, "inexistent stock id");
+    }).rejects.toEqual(new NotFoundException("Stock not found."));
   });
 });
