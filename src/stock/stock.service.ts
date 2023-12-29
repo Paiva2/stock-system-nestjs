@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
@@ -84,12 +85,40 @@ export class StockService {
       throw new NotFoundException("User not found.");
     }
 
-    const deletedStock = await this.stockInterface.delete(stockId);
+    const deletedStock = await this.stockInterface.delete(stockId, userId);
 
     if (!deletedStock) {
       throw new NotFoundException("Stock not found.");
     }
 
     return deletedStock;
+  }
+
+  async getStockById(userId: string, stockId: string): Promise<IStock> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!stockId) {
+      throw new BadRequestException("Invalid stock id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getStockById = await this.stockInterface.getById(stockId);
+
+    if (!getStockById) {
+      throw new NotFoundException("Stock not found.");
+    }
+
+    if (getStockById.stockOwner !== userId) {
+      throw new ForbiddenException("Invalid permissions.");
+    }
+
+    return getStockById;
   }
 }

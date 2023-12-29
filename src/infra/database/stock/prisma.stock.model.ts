@@ -57,11 +57,14 @@ export class PrismaStockModel implements StockInterface {
     return findByUsername;
   }
 
-  async delete(stockId: string): Promise<IStock | null> {
+  async delete(stockId: string, userId: string): Promise<IStock | null> {
     try {
       const deleteStock = await this.prismaService.stock.delete({
         where: {
           id: stockId,
+          AND: {
+            stockOwner: userId,
+          },
         },
       });
 

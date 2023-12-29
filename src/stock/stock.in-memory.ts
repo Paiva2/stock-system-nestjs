@@ -51,8 +51,10 @@ export class InMemoryStock implements StockInterface {
     return findByName;
   }
 
-  async delete(stockId: string): Promise<IStock | null> {
-    const stockToDelete = this.stocks.find((stock) => stock.id === stockId);
+  async delete(stockId: string, userId: string): Promise<IStock | null> {
+    const stockToDelete = this.stocks.find(
+      (stock) => stock.id === stockId && stock.stockOwner === userId,
+    );
 
     if (!stockToDelete) return null;
 
@@ -61,5 +63,13 @@ export class InMemoryStock implements StockInterface {
     this.stocks.splice(getStockToDeleteIdx, 1);
 
     return stockToDelete;
+  }
+
+  async getById(stockId: string): Promise<IStock> {
+    const getStockById = this.stocks.find((stock) => stock.id === stockId);
+
+    if (!getStockById) return null;
+
+    return getStockById;
   }
 }
