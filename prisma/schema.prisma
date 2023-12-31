@@ -34,6 +34,7 @@ model Stock {
   id         String   @id @default(uuid())
   stockName  String   @db.VarChar(100)
   stockOwner String   @db.VarChar(100)
+  active     Boolean  @default(true)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
 

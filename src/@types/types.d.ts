@@ -32,6 +32,13 @@ export interface IStock {
   stockOwner: string;
   createdAt: Date;
   updatedAt: Date;
+  active: boolean;
+}
+
+export interface IStockUpdate {
+  id: string;
+  stockName?: string;
+  active?: boolean;
 }
 
 export interface IStockCreate {

@@ -55,6 +55,7 @@ describe("Create stock service", () => {
       stockOwner: user.id,
       createdAt: newStock.createdAt,
       updatedAt: newStock.updatedAt,
+      active: true,
     });
   });
 

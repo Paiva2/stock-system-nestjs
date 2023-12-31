@@ -63,6 +63,7 @@ describe("Delete account stock service", () => {
         stockOwner: user.id,
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
+        active: true,
       }),
     );
     expect(stocksList).toEqual({
@@ -75,6 +76,7 @@ describe("Delete account stock service", () => {
           stockOwner: user.id,
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
+          active: true,
         },
       ]),
     });

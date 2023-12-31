@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { IStock, IStockCreate } from "../@types/types";
+import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
 import { UserInterface } from "../user/user.interface";
 
@@ -120,5 +120,29 @@ export class StockService {
     }
 
     return getStockById;
+  }
+
+  async updateStock(userId: string, stock: IStockUpdate): Promise<IStock> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!stock.id) {
+      throw new BadRequestException("Invalid stock id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const updateStock = await this.stockInterface.update(userId, stock);
+
+    if (!updateStock) {
+      throw new NotFoundException("Stock not found.");
+    }
+
+    return updateStock;
   }
 }

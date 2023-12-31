@@ -1,9 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  BadRequestException,
-  ForbiddenException,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { IUser } from "../../../@types/types";
 import { StockInterface } from "../../stock.interface";
 import { UserInterface } from "../../../user/user.interface";
@@ -12,7 +8,7 @@ import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
 
-describe("Get stock by id service", () => {
+describe("Update stock service", () => {
   let sut: StockService;
   let module: TestingModule;
   let userService: UserService;
@@ -23,6 +19,7 @@ describe("Get stock by id service", () => {
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
+        InMemoryStock,
         StockService,
         UserService,
       ],
@@ -44,60 +41,94 @@ describe("Get stock by id service", () => {
     expect(sut).toBeDefined();
   });
 
-  it("should get an stock by its id", async () => {
+  it("should update an stock by its id", async () => {
     const stock = await sut.createStock(user.id, {
       stockName: "Apple Stock",
     });
 
-    const stockFiltered = await sut.getStockById(user.id, stock.id);
-
-    expect(stockFiltered).toEqual({
-      id: expect.any(String),
-      stockName: "Apple Stock",
-      stockOwner: user.id,
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      active: true,
-    });
-  });
-
-  it("should not get an stock by its id without correctly provided parameters", async () => {
-    await expect(() => {
-      return sut.getStockById("", "any stock id");
-    }).rejects.toEqual(new BadRequestException("Invalid user id."));
-
-    await expect(() => {
-      return sut.getStockById(user.id, "");
-    }).rejects.toEqual(new BadRequestException("Invalid stock id."));
-  });
-
-  it("should not get stock by its id if user doesn't exists", async () => {
-    await expect(() => {
-      return sut.getStockById("inexistent user id", "any stock id");
-    }).rejects.toEqual(new NotFoundException("User not found."));
-  });
-
-  it("should not get stock by its id if stock doesn't exists", async () => {
-    await expect(() => {
-      return sut.getStockById(user.id, "inexistent stock id");
-    }).rejects.toEqual(new NotFoundException("Stock not found."));
-  });
-
-  it("should get stock by its id if stock doesn't belong to requested user id", async () => {
-    const stock = await sut.createStock(user.id, {
+    const stockUpdated = await sut.updateStock(user.id, {
+      id: stock.id,
+      active: false,
       stockName: "Orange Stock",
     });
 
-    const userTwo = await userService.registerUserService({
-      email: "johndoe2@email.com",
-      fullName: "John Doe2",
-      password: "123456",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
+    expect(stockUpdated).toEqual({
+      id: stock.id,
+      stockName: "Orange Stock",
+      stockOwner: user.id,
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+      active: false,
+    });
+  });
+
+  it("should not update stock by its id without an user id provided", async () => {
+    const stock = await sut.createStock(user.id, {
+      stockName: "Apple Stock",
     });
 
     await expect(() => {
-      return sut.getStockById(userTwo.id, stock.id);
-    }).rejects.toEqual(new ForbiddenException("Invalid permissions."));
+      return sut.updateStock("", {
+        id: stock.id,
+        active: false,
+        stockName: "Orange Stock",
+      });
+    }).rejects.toEqual(new BadRequestException("Invalid user id."));
+  });
+
+  it("should not update stock by its id without an stock id provided", async () => {
+    await expect(() => {
+      return sut.updateStock(user.id, {
+        id: "",
+        active: false,
+        stockName: "Orange Stock",
+      });
+    }).rejects.toEqual(new BadRequestException("Invalid stock id."));
+  });
+
+  it("should not update stock by its id if user doesn't exists", async () => {
+    const stock = await sut.createStock(user.id, {
+      stockName: "Apple Stock",
+    });
+
+    await expect(() => {
+      return sut.updateStock("Inexistent user id", {
+        id: stock.id,
+        active: false,
+        stockName: "Orange Stock",
+      });
+    }).rejects.toEqual(new NotFoundException("User not found."));
+  });
+
+  it("should not update stock by its id if stock doesn't exists", async () => {
+    await expect(() => {
+      return sut.updateStock(user.id, {
+        id: "Inexistent stock id",
+        active: false,
+        stockName: "Orange Stock",
+      });
+    }).rejects.toEqual(new NotFoundException("Stock not found."));
+  });
+
+  it("should not update stock by its id if stock doesn't belong to provided user id", async () => {
+    const userTwo = await userService.registerUserService({
+      email: "johndoe2@email.com",
+      fullName: "John Doe 2",
+      password: "123456",
+      secretQuestion: "Favourite Band",
+      secretAnswer: "The Strokes",
+    });
+
+    const stock = await sut.createStock(userTwo.id, {
+      stockName: "Apple Stock",
+    });
+
+    await expect(() => {
+      return sut.updateStock(user.id, {
+        id: stock.id,
+        active: false,
+        stockName: "Orange Stock",
+      });
+    }).rejects.toEqual(new NotFoundException("Stock not found."));
   });
 });

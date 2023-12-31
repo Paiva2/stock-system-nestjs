@@ -61,6 +61,7 @@ describe("Get all account stocks service", () => {
           stockOwner: user.id,
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
+          active: true,
         },
         {
           id: expect.any(String),
@@ -68,6 +69,7 @@ describe("Get all account stocks service", () => {
           stockOwner: user.id,
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
+          active: true,
         },
       ]),
     });

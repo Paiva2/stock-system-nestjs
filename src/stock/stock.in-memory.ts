@@ -1,5 +1,5 @@
 import { randomUUID } from "crypto";
-import { IStock, IStockCreate } from "../@types/types";
+import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
 
 export class InMemoryStock implements StockInterface {
@@ -12,6 +12,7 @@ export class InMemoryStock implements StockInterface {
       stockOwner: userId,
       createdAt: new Date(),
       updatedAt: new Date(),
+      active: true,
     };
 
     this.stocks.push(newStock);
@@ -71,5 +72,29 @@ export class InMemoryStock implements StockInterface {
     if (!getStockById) return null;
 
     return getStockById;
+  }
+
+  async update(userId: string, stock: IStockUpdate): Promise<IStock | null> {
+    let updatedStock: IStock | null = null;
+
+    const updateStocksList = this.stocks.map((stockToUpdate) => {
+      if (
+        stockToUpdate.stockOwner === userId &&
+        stockToUpdate.id === stock.id
+      ) {
+        stockToUpdate = {
+          ...stockToUpdate,
+          ...stock,
+        };
+
+        updatedStock = stockToUpdate;
+      }
+
+      return stockToUpdate;
+    });
+
+    this.stocks = updateStocksList;
+
+    return updatedStock;
   }
 }
