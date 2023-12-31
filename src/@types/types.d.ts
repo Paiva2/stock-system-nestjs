@@ -24,6 +24,7 @@ export interface IUserCreation {
   fullName: string;
   secretQuestion: string;
   secretAnswer: string;
+  role?: string;
 }
 
 export interface IStock {
@@ -43,6 +44,17 @@ export interface IStockUpdate {
 
 export interface IStockCreate {
   stockName: string;
+}
+
+export interface ICategory {
+  id: string;
+  name: string;
+  createdAt: Date;
+  stockItem?: [];
+}
+
+export interface ICategoryCreation {
+  name: string;
 }
 
 export interface IJwtSchema {

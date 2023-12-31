@@ -13,12 +13,13 @@ export class InMemoryUser implements UserInterface {
     password,
     secretAnswer,
     secretQuestion,
+    role = "default",
   }: IUserCreation): Promise<IUser> {
     const newUser = {
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
-      role: "default",
+      role,
       fullName,
       email,
       password,
