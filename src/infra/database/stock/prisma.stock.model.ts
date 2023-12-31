@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { IStockCreate, IStock } from "../../../@types/types";
+import { IStockCreate, IStock, IStockUpdate } from "../../../@types/types";
 import { StockInterface } from "../../../stock/stock.interface";
 import { PrismaService } from "../prisma.service";
 
@@ -84,5 +84,23 @@ export class PrismaStockModel implements StockInterface {
     if (!getStock) return null;
 
     return getStock;
+  }
+
+  async update(userId: string, stock: IStockUpdate): Promise<IStock> {
+    try {
+      const updateStock = await this.prismaService.stock.update({
+        where: {
+          id: stock.id,
+          AND: {
+            stockOwner: userId,
+          },
+        },
+        data: stock,
+      });
+
+      return updateStock;
+    } catch (e) {
+      if (e.code === "P2025") return null;
+    }
   }
 }

@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -22,6 +23,8 @@ import {
   DeleteAccountStockDto,
   GetAllAccountStocksDto,
   GetStockByIdDto,
+  UpdateStockDto,
+  UpdateStockParamDto,
 } from "./dto/stock.dto";
 
 @Controller()
@@ -98,5 +101,27 @@ export class StockController {
     return res
       .status(HttpStatus.OK)
       .send({ message: "Stock deleted successfully." });
+  }
+
+  @Patch("/stock/:stockId")
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async updateStockController(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param(ValidationPipe) param: UpdateStockParamDto,
+    @Body() updateStockDto: UpdateStockDto,
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+    const { stockId } = param;
+
+    await this.stockService.updateStock(tokenParsed.sub, {
+      id: stockId,
+      ...updateStockDto,
+    });
+
+    return res
+      .status(HttpStatus.OK)
+      .send({ message: "Stock updated successfully." });
   }
 }
