@@ -31,14 +31,38 @@ model User {
 }
 
 model Stock {
-  id         String   @id @default(uuid())
-  stockName  String   @db.VarChar(100)
-  stockOwner String   @db.VarChar(100)
-  active     Boolean  @default(true)
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  id         String      @id @default(uuid())
+  stockName  String      @db.VarChar(100)
+  stockOwner String      @db.VarChar(100)
+  active     Boolean     @default(true)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+  items      StockItem[]
 
-  user User? @relation(fields: [stockOwner], references: [id])
+  user User? @relation(fields: [stockOwner], references: [id], onDelete: Cascade)
 
   @@map("stock")
+}
+
+model StockItem {
+  id          String   @id @default(uuid())
+  itemName    String   @db.VarChar(100)
+  quantity    Int      @db.Integer()
+  stockId     String   @db.VarChar(100)
+  description String?  @db.VarChar(300)
+  categoryId  String   @db.VarChar(100)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  stock    Stock    @relation(fields: [stockId], references: [id], onDelete: Cascade)
+  category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@map("stockItem")
+}
+
+model Category {
+  id        String      @id @default(uuid())
+  name      String      @db.VarChar(100)
+  createdAt DateTime    @default(now())
+  StockItem StockItem[]
 }
