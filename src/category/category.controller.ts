@@ -2,17 +2,19 @@ import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   Post,
+  Query,
   Req,
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
 import { Request } from "express";
 import { IJwtSchema } from "../@types/types";
+import {
+  CreateCategoryDto,
+  GetAllCategoriesQueryDto,
+} from "./dto/category.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
-import { CreateCategoryDto } from "./dto/category.dto";
 import { CategoryService } from "./category.service";
 
 @Controller()
@@ -37,8 +39,19 @@ export class CategoryController {
 
   @Get("/categories")
   @UseGuards(AuthGuard)
-  @HttpCode(HttpStatus.OK)
-  async getAllCategoriesController(@Req() req: Request) {
+  async getAllCategoriesController(
+    @Query() query: GetAllCategoriesQueryDto,
+    @Req() req: Request,
+  ) {
     const tokenParsed: IJwtSchema = req["user"];
+
+    const page = query.page ? +query.page : 1;
+
+    const getCategories = await this.categoryService.getAllCategories(
+      tokenParsed.sub,
+      page,
+    );
+
+    return getCategories;
   }
 }

@@ -28,4 +28,27 @@ export class PrismaCategoryModel implements CategoryInterface {
 
     return findCategory;
   }
+
+  async getAll(page: number): Promise<{
+    page: number;
+    totalCategories: number;
+    categories: ICategory[];
+  }> {
+    const perPage = 10;
+
+    const categories = await this.prismaService.category.findMany({});
+
+    const categoriesCount = categories.length;
+
+    const paginatedCategories = categories.splice(
+      (page - 1) * perPage,
+      page * perPage,
+    );
+
+    return {
+      page,
+      totalCategories: categoriesCount,
+      categories: paginatedCategories,
+    };
+  }
 }

@@ -64,10 +64,6 @@ export class CategoryService {
       throw new NotFoundException("User not found.");
     }
 
-    if (getUser.role !== "admin") {
-      throw new ForbiddenException("Invalid permissions.");
-    }
-
     const categories = await this.categoryInterface.getAll(page);
 
     return categories;

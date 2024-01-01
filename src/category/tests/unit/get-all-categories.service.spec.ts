@@ -1,8 +1,4 @@
-import {
-  BadGatewayException,
-  ForbiddenException,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadGatewayException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { IUser } from "../../../@types/types";
 import { UserInterface } from "../../../user/user.interface";
@@ -79,20 +75,5 @@ describe("Get categories service", () => {
     await expect(() => {
       return sut.getAllCategories("Inexistent user id", 1);
     }).rejects.toEqual(new NotFoundException("User not found."));
-  });
-
-  it("should not list categories if user isn't an admin", async () => {
-    const nonAdminUser = await inMemoryUser.create({
-      email: "johndoe2@email.com",
-      fullName: "John Doe 2",
-      password: "123456",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-      role: "default",
-    });
-
-    await expect(() => {
-      return sut.getAllCategories(nonAdminUser.id, 1);
-    }).rejects.toEqual(new ForbiddenException("Invalid permissions."));
   });
 });
