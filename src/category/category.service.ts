@@ -72,4 +72,14 @@ export class CategoryService {
 
     return categories;
   }
+
+  /* async deleteCategory(userId: string, categoryId: string): Promise<ICategory> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!categoryId) {
+      throw new BadRequestException("Invalid category id.");
+    }
+  } */
 }

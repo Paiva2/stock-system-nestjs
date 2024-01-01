@@ -10,14 +10,13 @@ import {
   Post,
   Query,
   Req,
-  Res,
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { IJwtSchema } from "../@types/types";
 import { StockService } from "./stock.service";
-import { Request, Response } from "express";
+import { Request } from "express";
 import {
   CreateStockDto,
   DeleteAccountStockDto,
@@ -36,23 +35,18 @@ export class StockController {
   async createStockController(
     @Body(ValidationPipe) createStockDto: CreateStockDto,
     @Req() req: Request,
-    @Res() res: Response,
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
     await this.stockService.createStock(tokenParsed.sub, createStockDto);
 
-    return res
-      .status(HttpStatus.CREATED)
-      .send({ message: "Stock successfully created." });
+    return { message: "Stock successfully created." };
   }
 
   @Get("/stocks")
-  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async getAllAccountStocksController(
     @Req() req: Request,
-    @Res() res: Response,
     @Query(ValidationPipe) query: GetAllAccountStocksDto,
   ) {
     const tokenParsed: IJwtSchema = req["user"];
@@ -63,15 +57,13 @@ export class StockController {
       +page,
     );
 
-    return res.status(HttpStatus.OK).send(allStocks);
+    return allStocks;
   }
 
   @Get("/stock/:stockId")
-  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
   async getStockByIdController(
     @Req() req: Request,
-    @Res() res: Response,
     @Param(ValidationPipe) param: GetStockByIdDto,
   ) {
     const tokenParsed: IJwtSchema = req["user"];
@@ -82,7 +74,7 @@ export class StockController {
       stockId,
     );
 
-    return res.status(HttpStatus.OK).send(filteredStock);
+    return filteredStock;
   }
 
   @Delete("/stock/delete/:stockId")
@@ -90,7 +82,6 @@ export class StockController {
   @UseGuards(AuthGuard)
   async deleteAccountStockController(
     @Req() req: Request,
-    @Res() res: Response,
     @Param(ValidationPipe) param: DeleteAccountStockDto,
   ) {
     const tokenParsed: IJwtSchema = req["user"];
@@ -98,9 +89,7 @@ export class StockController {
 
     await this.stockService.deleteAccountStock(tokenParsed.sub, stockId);
 
-    return res
-      .status(HttpStatus.OK)
-      .send({ message: "Stock deleted successfully." });
+    return { message: "Stock deleted successfully." };
   }
 
   @Patch("/stock/:stockId")
@@ -108,7 +97,6 @@ export class StockController {
   @UseGuards(AuthGuard)
   async updateStockController(
     @Req() req: Request,
-    @Res() res: Response,
     @Param(ValidationPipe) param: UpdateStockParamDto,
     @Body() updateStockDto: UpdateStockDto,
   ) {
@@ -120,8 +108,6 @@ export class StockController {
       ...updateStockDto,
     });
 
-    return res
-      .status(HttpStatus.OK)
-      .send({ message: "Stock updated successfully." });
+    return { message: "Stock updated successfully." };
   }
 }

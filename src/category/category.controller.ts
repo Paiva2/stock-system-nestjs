@@ -1,6 +1,9 @@
 import {
   Body,
   Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
   Post,
   Req,
   UseGuards,
@@ -30,5 +33,12 @@ export class CategoryController {
     );
 
     return { message: "Category successfully created." };
+  }
+
+  @Get("/categories")
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async getAllCategoriesController(@Req() req: Request) {
+    const tokenParsed: IJwtSchema = req["user"];
   }
 }
