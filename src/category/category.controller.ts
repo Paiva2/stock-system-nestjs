@@ -1,7 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
   Post,
   Query,
   Req,
@@ -12,6 +16,7 @@ import { Request } from "express";
 import { IJwtSchema } from "../@types/types";
 import {
   CreateCategoryDto,
+  DeleteCategoryParamDto,
   GetAllCategoriesQueryDto,
 } from "./dto/category.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
@@ -53,5 +58,22 @@ export class CategoryController {
     );
 
     return getCategories;
+  }
+
+  @Delete("/categories/delete/:categoryId")
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async deleteCategoryController(
+    @Param() params: DeleteCategoryParamDto,
+    @Req() req: Request,
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    await this.categoryService.deleteCategory(
+      tokenParsed.sub,
+      params.categoryId,
+    );
+
+    return { message: "Category successfully deleted." };
   }
 }

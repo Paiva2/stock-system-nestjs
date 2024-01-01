@@ -51,4 +51,18 @@ export class PrismaCategoryModel implements CategoryInterface {
       categories: paginatedCategories,
     };
   }
+
+  async delete(categoryId: string): Promise<ICategory> {
+    try {
+      const deleteCategory = await this.prismaService.category.delete({
+        where: {
+          id: categoryId,
+        },
+      });
+
+      return deleteCategory;
+    } catch (e) {
+      if (e.code === "P2025") return null;
+    }
+  }
 }
