@@ -26,4 +26,19 @@ export class InMemoryCategory implements CategoryInterface {
 
     return findCategory;
   }
+
+  async getAll(page: number): Promise<{
+    page: number;
+    totalCategories: number;
+    categories: ICategory[];
+  }> {
+    const totalCategories = this.categories.length;
+    const perPage = 10;
+
+    return {
+      page,
+      totalCategories,
+      categories: this.categories.splice((page - 1) * perPage, page * perPage),
+    };
+  }
 }

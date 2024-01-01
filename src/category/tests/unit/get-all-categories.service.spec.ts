@@ -1,6 +1,5 @@
 import {
   BadGatewayException,
-  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from "@nestjs/common";
@@ -13,7 +12,7 @@ import { CategoryService } from "../../category.service";
 import { CategoryInterface } from "../../category.interface";
 import { InMemoryCategory } from "../../category.in-memory";
 
-describe("Create category service", () => {
+describe("Get categories service", () => {
   let sut: CategoryService;
   let module: TestingModule;
   let inMemoryUser: UserInterface;
@@ -46,39 +45,43 @@ describe("Create category service", () => {
     expect(sut).toBeDefined();
   });
 
-  it("should create a new category", async () => {
-    const newCategory = await sut.create(user.id, "Fruits");
+  it("should get all categories", async () => {
+    await sut.create(user.id, "Fruits");
+    await sut.create(user.id, "Shirts");
 
-    expect(newCategory).toEqual({
-      id: expect.any(String),
-      name: "Fruits",
-      createdAt: expect.any(Date),
+    const getCategories = await sut.getAllCategories(user.id, 1);
+
+    expect(getCategories).toEqual({
+      page: 1,
+      totalCategories: 2,
+      categories: [
+        expect.objectContaining({
+          id: expect.any(String),
+          name: "Fruits",
+          createdAt: expect.any(Date),
+        }),
+        expect.objectContaining({
+          id: expect.any(String),
+          name: "Shirts",
+          createdAt: expect.any(Date),
+        }),
+      ],
     });
   });
 
-  it("should not create a new category without correctly provided parameters", async () => {
+  it("should not list categories without correctly provided parameters", async () => {
     await expect(() => {
-      return sut.create("", "Fruits");
+      return sut.getAllCategories("", 1);
     }).rejects.toEqual(new BadGatewayException("Invalid user id."));
   });
 
-  it("should not create a new category if an category with this name already exists", async () => {
-    await sut.create(user.id, "Fruits");
-
+  it("should not list categories if user doesn't exists", async () => {
     await expect(() => {
-      return sut.create(user.id, "Fruits");
-    }).rejects.toEqual(
-      new ConflictException("An category with this name already exists."),
-    );
-  });
-
-  it("should not create a new category if user doesn't exists", async () => {
-    await expect(() => {
-      return sut.create("Inexistent user id", "Fruits");
+      return sut.getAllCategories("Inexistent user id", 1);
     }).rejects.toEqual(new NotFoundException("User not found."));
   });
 
-  it("should not create a new category if user isn't an admin", async () => {
+  it("should not list categories if user isn't an admin", async () => {
     const nonAdminUser = await inMemoryUser.create({
       email: "johndoe2@email.com",
       fullName: "John Doe 2",
@@ -89,7 +92,7 @@ describe("Create category service", () => {
     });
 
     await expect(() => {
-      return sut.create(nonAdminUser.id, "Fruits");
+      return sut.getAllCategories(nonAdminUser.id, 1);
     }).rejects.toEqual(new ForbiddenException("Invalid permissions."));
   });
 });

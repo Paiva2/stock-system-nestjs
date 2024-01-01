@@ -1,5 +1,6 @@
 import {
   BadGatewayException,
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -41,5 +42,34 @@ export class CategoryService {
     const createCategory = await this.categoryInterface.create(categoryName);
 
     return createCategory;
+  }
+
+  async getAllCategories(
+    userId: string,
+    page = 1,
+  ): Promise<{
+    page: number;
+    totalCategories: number;
+    categories: ICategory[];
+  }> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (page < 1) page = 1;
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    if (getUser.role !== "admin") {
+      throw new ForbiddenException("Invalid permissions.");
+    }
+
+    const categories = await this.categoryInterface.getAll(page);
+
+    return categories;
   }
 }

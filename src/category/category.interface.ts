@@ -4,4 +4,10 @@ export abstract class CategoryInterface {
   abstract create(categoryName: string): Promise<ICategory>;
 
   abstract findByName(categoryName: string): Promise<ICategory | null>;
+
+  abstract getAll(page: number): Promise<{
+    page: number;
+    totalCategories: number;
+    categories: ICategory[];
+  }>;
 }
