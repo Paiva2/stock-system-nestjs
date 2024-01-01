@@ -1,4 +1,4 @@
-import { BadGatewayException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { IUser } from "../../../@types/types";
 import { UserInterface } from "../../../user/user.interface";
@@ -68,7 +68,7 @@ describe("Get categories service", () => {
   it("should not list categories without correctly provided parameters", async () => {
     await expect(() => {
       return sut.getAllCategories("", 1);
-    }).rejects.toEqual(new BadGatewayException("Invalid user id."));
+    }).rejects.toEqual(new BadRequestException("Invalid user id."));
   });
 
   it("should not list categories if user doesn't exists", async () => {

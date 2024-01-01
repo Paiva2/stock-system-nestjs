@@ -10,4 +10,6 @@ export abstract class CategoryInterface {
     totalCategories: number;
     categories: ICategory[];
   }>;
+
+  abstract delete(categoryId: string): Promise<ICategory | null>;
 }

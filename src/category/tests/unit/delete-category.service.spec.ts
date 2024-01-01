@@ -1,6 +1,5 @@
 import {
   BadRequestException,
-  ConflictException,
   ForbiddenException,
   NotFoundException,
 } from "@nestjs/common";
@@ -13,7 +12,7 @@ import { CategoryService } from "../../category.service";
 import { CategoryInterface } from "../../category.interface";
 import { InMemoryCategory } from "../../category.in-memory";
 
-describe("Create category service", () => {
+describe("Delete category service", () => {
   let sut: CategoryService;
   let module: TestingModule;
   let inMemoryUser: UserInterface;
@@ -46,39 +45,41 @@ describe("Create category service", () => {
     expect(sut).toBeDefined();
   });
 
-  it("should create a new category", async () => {
+  it("should delete an category", async () => {
     const newCategory = await sut.create(user.id, "Fruits");
 
-    expect(newCategory).toEqual({
-      id: expect.any(String),
+    const categoryDeleted = await sut.deleteCategory(user.id, newCategory.id);
+
+    expect(categoryDeleted).toEqual({
+      id: newCategory.id,
       name: "Fruits",
-      createdAt: expect.any(Date),
+      createdAt: newCategory.createdAt,
     });
   });
 
-  it("should not create a new category without correctly provided parameters", async () => {
+  it("should not delete category without correctly provided parameters", async () => {
     await expect(() => {
-      return sut.create("", "Fruits");
+      return sut.deleteCategory("", "Any category id");
     }).rejects.toEqual(new BadRequestException("Invalid user id."));
-  });
-
-  it("should not create a new category if an category with this name already exists", async () => {
-    await sut.create(user.id, "Fruits");
 
     await expect(() => {
-      return sut.create(user.id, "Fruits");
-    }).rejects.toEqual(
-      new ConflictException("An category with this name already exists."),
-    );
+      return sut.deleteCategory(user.id, "");
+    }).rejects.toEqual(new BadRequestException("Invalid category id."));
   });
 
-  it("should not create a new category if user doesn't exists", async () => {
+  it("should not delete category if user doesn't exists", async () => {
     await expect(() => {
-      return sut.create("Inexistent user id", "Fruits");
+      return sut.deleteCategory("Inexistent user id", "Any category id");
     }).rejects.toEqual(new NotFoundException("User not found."));
   });
 
-  it("should not create a new category if user isn't an admin", async () => {
+  it("should not delete category if category doesn't exists", async () => {
+    await expect(() => {
+      return sut.deleteCategory(user.id, "Inexistent category id");
+    }).rejects.toEqual(new NotFoundException("Category not found."));
+  });
+
+  it("should not delete category if user isn't an admin", async () => {
     const nonAdminUser = await inMemoryUser.create({
       email: "johndoe2@email.com",
       fullName: "John Doe 2",
@@ -89,7 +90,7 @@ describe("Create category service", () => {
     });
 
     await expect(() => {
-      return sut.create(nonAdminUser.id, "Fruits");
+      return sut.deleteCategory(nonAdminUser.id, "Any category id");
     }).rejects.toEqual(new ForbiddenException("Invalid permissions."));
   });
 });

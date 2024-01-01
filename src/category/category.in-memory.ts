@@ -41,4 +41,18 @@ export class InMemoryCategory implements CategoryInterface {
       categories: this.categories.splice((page - 1) * perPage, page * perPage),
     };
   }
+
+  async delete(categoryId: string): Promise<ICategory | null> {
+    const categoryToRemove = this.categories.find(
+      (category) => category.id === categoryId,
+    );
+
+    if (!categoryToRemove) return null;
+
+    const indexToDelete = this.categories.indexOf(categoryToRemove);
+
+    this.categories.splice(indexToDelete, 1);
+
+    return categoryToRemove;
+  }
 }

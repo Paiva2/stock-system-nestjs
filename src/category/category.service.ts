@@ -1,5 +1,4 @@
 import {
-  BadGatewayException,
   BadRequestException,
   ConflictException,
   ForbiddenException,
@@ -19,7 +18,7 @@ export class CategoryService {
 
   async create(userId: string, categoryName: string): Promise<ICategory> {
     if (!userId) {
-      throw new BadGatewayException("Invalid user id.");
+      throw new BadRequestException("Invalid user id.");
     }
 
     const hasCategoryCreated =
@@ -69,7 +68,7 @@ export class CategoryService {
     return categories;
   }
 
-  /* async deleteCategory(userId: string, categoryId: string): Promise<ICategory> {
+  async deleteCategory(userId: string, categoryId: string): Promise<ICategory> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
     }
@@ -77,5 +76,23 @@ export class CategoryService {
     if (!categoryId) {
       throw new BadRequestException("Invalid category id.");
     }
-  } */
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    if (getUser.role !== "admin") {
+      throw new ForbiddenException("Invalid permissions.");
+    }
+
+    const deleteCategory = await this.categoryInterface.delete(categoryId);
+
+    if (!deleteCategory) {
+      throw new NotFoundException("Category not found.");
+    }
+
+    return deleteCategory;
+  }
 }
