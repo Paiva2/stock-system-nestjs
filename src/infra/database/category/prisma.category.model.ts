@@ -8,10 +8,24 @@ export class PrismaCategoryModel implements CategoryInterface {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(categoryName: string): Promise<ICategory> {
-    throw new Error("Method not implemented.");
+    const createCategory = await this.prismaService.category.create({
+      data: {
+        name: categoryName,
+      },
+    });
+
+    return createCategory;
   }
 
   async findByName(categoryName: string): Promise<ICategory> {
-    throw new Error("Method not implemented.");
+    const findCategory = await this.prismaService.category.findFirst({
+      where: {
+        name: categoryName,
+      },
+    });
+
+    if (!findCategory) return null;
+
+    return findCategory;
   }
 }
