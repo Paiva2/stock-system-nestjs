@@ -95,4 +95,44 @@ export class CategoryService {
 
     return deleteCategory;
   }
+
+  async updateCategory(
+    userId: string,
+    categoryUpdate: { id: string; name: string },
+  ): Promise<ICategory> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!categoryUpdate.id) {
+      throw new BadRequestException("Invalid category id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    if (getUser.role !== "admin") {
+      throw new ForbiddenException("Invalid permissions.");
+    }
+
+    const hasACategoryWithThisName = await this.categoryInterface.findByName(
+      categoryUpdate.name,
+    );
+
+    if (hasACategoryWithThisName) {
+      throw new ConflictException("An category with this name already exists.");
+    }
+
+    const updateCategoryName =
+      await this.categoryInterface.update(categoryUpdate);
+
+    if (!updateCategoryName) {
+      throw new NotFoundException("Category not found.");
+    }
+
+    return updateCategoryName;
+  }
 }

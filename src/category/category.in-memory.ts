@@ -55,4 +55,24 @@ export class InMemoryCategory implements CategoryInterface {
 
     return categoryToRemove;
   }
+
+  async update(category: { id: string; name: string }): Promise<ICategory> {
+    const findCategoryToUpdate = this.categories.find(
+      (categoryUpdating) => categoryUpdating.id === category.id,
+    );
+
+    if (!findCategoryToUpdate) return null;
+
+    const getCategoryToUpdateIdx =
+      this.categories.indexOf(findCategoryToUpdate);
+
+    const categoryUpdated = {
+      ...findCategoryToUpdate,
+      ...category,
+    };
+
+    this.categories.splice(getCategoryToUpdateIdx, 1, categoryUpdated);
+
+    return categoryUpdated;
+  }
 }
