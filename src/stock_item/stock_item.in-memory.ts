@@ -21,4 +21,14 @@ export class InMemoryStockItem implements StockItemInterface {
 
     return newStockItem;
   }
+
+  async remove(stockId: string, stockItemId: string): Promise<IStockItem> {
+    const getItemToRemove = this.stockItems.find(
+      (item) => item.id === stockItemId && item.stockId === stockId,
+    );
+
+    if (!getItemToRemove) return null;
+
+    return getItemToRemove;
+  }
 }

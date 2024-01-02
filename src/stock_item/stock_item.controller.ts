@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Delete, Post, Req, UseGuards } from "@nestjs/common";
 import { Request } from "express";
 import { IJwtSchema } from "../@types/types";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
@@ -26,4 +26,8 @@ export class StockItemController {
 
     return { message: "Stock Item successfully added." };
   }
+
+  @Delete("/stock-item/remove/:stockItemId")
+  @UseGuards(AuthGuard)
+  async removeStockItemController() {}
 }

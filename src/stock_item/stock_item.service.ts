@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { IStockItemCreate } from "../@types/types";
+import { IStockItem, IStockItemCreate } from "../@types/types";
 import { UserInterface } from "../user/user.interface";
 import { StockInterface } from "../stock/stock.interface";
 import { CategoryInterface } from "../category/category.interface";
@@ -73,5 +73,46 @@ export class StockItemService {
     });
 
     return insertStockItem;
+  }
+
+  async removeStockItem(
+    userId: string,
+    stockItemId: string,
+    stockId: string,
+  ): Promise<IStockItem> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!stockId) {
+      throw new BadRequestException("Invalid stock id.");
+    }
+
+    if (!stockItemId) {
+      throw new BadRequestException("Invalid stock item id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getStock = await this.stockInterface.getById(stockId);
+
+    if (!getStock) {
+      throw new NotFoundException("Stock not found.");
+    }
+
+    const removeItemFromStock = await this.stockItemInterface.remove(
+      getStock.id,
+      stockItemId,
+    );
+
+    if (!removeItemFromStock) {
+      throw new NotFoundException("Stock item not found.");
+    }
+
+    return removeItemFromStock;
   }
 }
