@@ -145,4 +145,48 @@ export class StockService {
 
     return updateStock;
   }
+
+  async filterStocks(
+    userId: string,
+    active: boolean,
+    page: number,
+  ): Promise<{
+    page: number;
+    totalStocks: number;
+    stocks: IStock[];
+    active: boolean;
+  }> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (active === undefined || active === null) {
+      throw new BadRequestException("Active must be true or false.");
+    }
+
+    if (page < 1) page = 1;
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    let stocksMetadata: {
+      page: number;
+      totalStocks: number;
+      stocks: IStock[];
+    };
+
+    if (active) {
+      stocksMetadata = await this.stockInterface.getActives(page);
+    } else {
+      stocksMetadata = await this.stockInterface.getInactives(page);
+    }
+
+    return {
+      active,
+      ...stocksMetadata,
+    };
+  }
 }

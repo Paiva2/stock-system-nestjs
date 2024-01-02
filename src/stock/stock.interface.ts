@@ -22,4 +22,16 @@ export abstract class StockInterface {
   abstract getById(stockId: string): Promise<IStock | null>;
 
   abstract update(userId: string, stock: IStockUpdate): Promise<IStock | null>;
+
+  abstract getActives(page: number): Promise<{
+    page: number;
+    totalStocks: number;
+    stocks: IStock[];
+  }>;
+
+  abstract getInactives(page: number): Promise<{
+    page: number;
+    totalStocks: number;
+    stocks: IStock[];
+  }>;
 }

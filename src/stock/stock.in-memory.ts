@@ -97,4 +97,34 @@ export class InMemoryStock implements StockInterface {
 
     return updatedStock;
   }
+
+  async getActives(
+    page: number,
+  ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
+    const findStocks = this.stocks.filter((stock) => stock.active);
+
+    const perPage = 10;
+    const totalStocks = findStocks.length;
+
+    return {
+      page,
+      totalStocks,
+      stocks: findStocks.splice((page - 1) * perPage, perPage * page),
+    };
+  }
+
+  async getInactives(
+    page: number,
+  ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
+    const findStocks = this.stocks.filter((stock) => stock.active === false);
+
+    const perPage = 10;
+    const totalStocks = findStocks.length;
+
+    return {
+      page,
+      totalStocks,
+      stocks: findStocks.splice((page - 1) * perPage, perPage * page),
+    };
+  }
 }
