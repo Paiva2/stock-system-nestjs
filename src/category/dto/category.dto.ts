@@ -1,7 +1,7 @@
 import { IsOptional, IsString, IsUUID, Min, MinLength } from "class-validator";
 
 export class CreateCategoryDto {
-  @MinLength(1, { message: "categoryName can't be empty." })
+  @MinLength(3, { message: "categoryName must have at least 3 characters." })
   @IsString()
   categoryName: string;
 }
@@ -16,4 +16,13 @@ export class GetAllCategoriesQueryDto {
 export class DeleteCategoryParamDto {
   @IsUUID()
   categoryId: string;
+}
+
+export class UpdateCategoryDto {
+  @IsUUID()
+  id: string;
+
+  @IsString()
+  @MinLength(3, { message: "name must have at least 3 characters" })
+  name: string;
 }

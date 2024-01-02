@@ -1,3 +1,9 @@
+import {
+  BadRequestException,
+  ConflictException,
+  ForbiddenException,
+  NotFoundException,
+} from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ICategory, IUser } from "../../../@types/types";
 import { UserInterface } from "../../../user/user.interface";
@@ -6,12 +12,6 @@ import { UserService } from "../../../user/user.service";
 import { CategoryService } from "../../category.service";
 import { CategoryInterface } from "../../category.interface";
 import { InMemoryCategory } from "../../category.in-memory";
-import {
-  BadRequestException,
-  ConflictException,
-  ForbiddenException,
-  NotFoundException,
-} from "@nestjs/common";
 
 describe("Update category service", () => {
   let sut: CategoryService;

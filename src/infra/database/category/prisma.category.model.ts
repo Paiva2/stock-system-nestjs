@@ -65,4 +65,19 @@ export class PrismaCategoryModel implements CategoryInterface {
       if (e.code === "P2025") return null;
     }
   }
+
+  async update(category: { id: string; name: string }): Promise<ICategory> {
+    try {
+      const updateCategory = await this.prismaService.category.update({
+        where: {
+          id: category.id,
+        },
+        data: category,
+      });
+
+      return updateCategory;
+    } catch (e) {
+      if (e.code === "P2025") return null;
+    }
+  }
 }

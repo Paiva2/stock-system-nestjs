@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -18,6 +19,7 @@ import {
   CreateCategoryDto,
   DeleteCategoryParamDto,
   GetAllCategoriesQueryDto,
+  UpdateCategoryDto,
 } from "./dto/category.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { CategoryService } from "./category.service";
@@ -75,5 +77,22 @@ export class CategoryController {
     );
 
     return { message: "Category successfully deleted." };
+  }
+
+  @Patch("/category")
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async updateCategoryController(
+    @Body(ValidationPipe) updateCategoryControllerDto: UpdateCategoryDto,
+    @Req() req: Request,
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    await this.categoryService.updateCategory(
+      tokenParsed.sub,
+      updateCategoryControllerDto,
+    );
+
+    return { message: "Category successfully updated." };
   }
 }
