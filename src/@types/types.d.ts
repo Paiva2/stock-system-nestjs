@@ -57,6 +57,25 @@ export interface ICategoryCreation {
   name: string;
 }
 
+export interface IStockItem {
+  id: string;
+  itemName: string;
+  quantity: number;
+  stockId: string;
+  description?: string;
+  categoryId: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface IStockItemCreate {
+  itemName: string;
+  quantity: number;
+  stockId: string;
+  description?: string;
+  categoryId: string;
+}
+
 export interface IJwtSchema {
   sub: string;
   iat: number;

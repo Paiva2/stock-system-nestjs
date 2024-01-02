@@ -13,10 +13,6 @@ import {
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
-import { AuthGuard } from "../infra/http/auth/auth.guard";
-import { IJwtSchema } from "../@types/types";
-import { StockService } from "./stock.service";
-import { Request } from "express";
 import {
   CreateStockDto,
   DeleteAccountStockDto,
@@ -25,6 +21,10 @@ import {
   UpdateStockDto,
   UpdateStockParamDto,
 } from "./dto/stock.dto";
+import { Request } from "express";
+import { IJwtSchema } from "../@types/types";
+import { AuthGuard } from "../infra/http/auth/auth.guard";
+import { StockService } from "./stock.service";
 
 @Controller()
 export class StockController {

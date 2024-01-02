@@ -75,4 +75,14 @@ export class InMemoryCategory implements CategoryInterface {
 
     return categoryUpdated;
   }
+
+  async findById(categoryId: string): Promise<ICategory | null> {
+    const findCategory = this.categories.find(
+      (category) => category.id === categoryId,
+    );
+
+    if (!findCategory) return null;
+
+    return findCategory;
+  }
 }
