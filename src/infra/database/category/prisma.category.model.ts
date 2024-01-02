@@ -80,4 +80,16 @@ export class PrismaCategoryModel implements CategoryInterface {
       if (e.code === "P2025") return null;
     }
   }
+
+  async findById(categoryId: string): Promise<ICategory> {
+    const findCategory = await this.prismaService.category.findUnique({
+      where: {
+        id: categoryId,
+      },
+    });
+
+    if (!findCategory) return null;
+
+    return findCategory;
+  }
 }
