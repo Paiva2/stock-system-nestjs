@@ -21,7 +21,7 @@ describe("Update stock controller", () => {
     await app.init();
   });
 
-  it("[PATCH]/stock/:stockId", async () => {
+  test("[PATCH]/stock/:stockId", async () => {
     const hashPassword = await hash("123456", 8);
 
     const user = await prisma.user.create({

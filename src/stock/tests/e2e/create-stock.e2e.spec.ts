@@ -21,7 +21,7 @@ describe("Create stock controller", () => {
     await app.init();
   });
 
-  it("[post]/stock", async () => {
+  test("[post]/stock", async () => {
     const hashPassword = await hash("123456", 8);
 
     const user = await prisma.user.create({

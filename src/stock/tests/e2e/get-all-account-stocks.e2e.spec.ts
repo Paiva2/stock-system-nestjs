@@ -4,10 +4,13 @@ import request from "supertest";
 import { hash } from "bcrypt";
 import { PrismaService } from "../../../infra/database/prisma.service";
 import { AppModule } from "../../../app.module";
+import { IUser } from "../../../@types/types";
 
 describe("Get all account stocks", () => {
   let app: INestApplication;
   let prisma: PrismaService;
+
+  let user: IUser;
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -19,12 +22,10 @@ describe("Get all account stocks", () => {
     prisma = app.get<PrismaService>(PrismaService);
 
     await app.init();
-  });
 
-  it("[GET]/stocks", async () => {
     const hashPassword = await hash("123456", 8);
 
-    const user = await prisma.user.create({
+    user = await prisma.user.create({
       data: {
         email: "johndoe@email.com",
         fullName: "John Doe",
@@ -33,7 +34,9 @@ describe("Get all account stocks", () => {
         secretAnswer: "The Beatles",
       },
     });
+  });
 
+  test("[GET]/stocks?page=1", async () => {
     const signIn = await request(app.getHttpServer()).post("/sign-in").send({
       email: "johndoe@email.com",
       password: "123456",
@@ -41,7 +44,7 @@ describe("Get all account stocks", () => {
 
     const jwtToken = signIn.body.access_token;
 
-    await prisma.stock.create({
+    const stockMocked = await prisma.stock.create({
       data: {
         stockName: "Orange Stock",
         stockOwner: user.id,
@@ -63,6 +66,122 @@ describe("Get all account stocks", () => {
           stockOwner: user.id,
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+        }),
+      ],
+    });
+    expect(stocksList.statusCode).toEqual(200);
+
+    await prisma.stock.delete({
+      where: {
+        id: stockMocked.id,
+      },
+    });
+  });
+
+  test("[GET]/stocks?active=true&page=1", async () => {
+    const signIn = await request(app.getHttpServer()).post("/sign-in").send({
+      email: "johndoe@email.com",
+      password: "123456",
+    });
+
+    const jwtToken = signIn.body.access_token;
+
+    await prisma.stock.create({
+      data: {
+        stockName: "Orange Stock",
+        stockOwner: user.id,
+      },
+    });
+
+    await prisma.stock.create({
+      data: {
+        stockName: "Apple Stock",
+        stockOwner: user.id,
+      },
+    });
+
+    const stocksList = await request(app.getHttpServer())
+      .get("/stocks?active=true&page=1")
+      .set("Authorization", `Bearer ${jwtToken}`)
+      .send();
+
+    expect(stocksList.body).toEqual({
+      page: 1,
+      totalStocks: 2,
+      active: true,
+      stocks: [
+        expect.objectContaining({
+          id: expect.any(String),
+          stockName: "Orange Stock",
+          stockOwner: user.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          active: true,
+        }),
+
+        expect.objectContaining({
+          id: expect.any(String),
+          stockName: "Apple Stock",
+          stockOwner: user.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          active: true,
+        }),
+      ],
+    });
+    expect(stocksList.statusCode).toEqual(200);
+  });
+
+  test("[GET]/stocks?active=false&page=1", async () => {
+    const signIn = await request(app.getHttpServer()).post("/sign-in").send({
+      email: "johndoe@email.com",
+      password: "123456",
+    });
+
+    const jwtToken = signIn.body.access_token;
+
+    await prisma.stock.create({
+      data: {
+        stockName: "Orange Stock",
+        stockOwner: user.id,
+        active: false,
+      },
+    });
+
+    await prisma.stock.create({
+      data: {
+        stockName: "Apple Stock",
+        stockOwner: user.id,
+        active: false,
+      },
+    });
+
+    const stocksList = await request(app.getHttpServer())
+      .get("/stocks?active=false&page=1")
+      .set("Authorization", `Bearer ${jwtToken}`)
+      .send();
+
+    expect(stocksList.body).toEqual({
+      page: 1,
+      totalStocks: 2,
+      active: false,
+      stocks: [
+        expect.objectContaining({
+          id: expect.any(String),
+          stockName: "Orange Stock",
+          stockOwner: user.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          active: false,
+        }),
+
+        expect.objectContaining({
+          id: expect.any(String),
+          stockName: "Apple Stock",
+          stockOwner: user.id,
+          createdAt: expect.any(String),
+          updatedAt: expect.any(String),
+          active: false,
         }),
       ],
     });

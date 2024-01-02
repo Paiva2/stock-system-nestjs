@@ -22,7 +22,7 @@ describe("Get stock by id", () => {
     await app.init();
   });
 
-  it("[GET]/stock/:stockId", async () => {
+  test("[GET]/stock/:stockId", async () => {
     const hashPassword = await hash("123456", 8);
 
     const user = await prisma.user.create({

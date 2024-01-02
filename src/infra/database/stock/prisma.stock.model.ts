@@ -103,4 +103,47 @@ export class PrismaStockModel implements StockInterface {
       if (e.code === "P2025") return null;
     }
   }
+
+  async getActives(
+    userId: string,
+    page: number,
+  ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
+    const perPage = 10;
+
+    const getStocksByFilter = await this.prismaService.stock.findMany({
+      where: {
+        active: true,
+        AND: {
+          stockOwner: userId,
+        },
+      },
+    });
+
+    return {
+      page,
+      totalStocks: getStocksByFilter.length,
+      stocks: getStocksByFilter.splice((page - 1) * perPage, perPage * page),
+    };
+  }
+  async getInactives(
+    userId: string,
+    page: number,
+  ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
+    const perPage = 10;
+
+    const getStocksByFilter = await this.prismaService.stock.findMany({
+      where: {
+        active: false,
+        AND: {
+          stockOwner: userId,
+        },
+      },
+    });
+
+    return {
+      page,
+      totalStocks: getStocksByFilter.length,
+      stocks: getStocksByFilter.splice((page - 1) * perPage, perPage * page),
+    };
+  }
 }

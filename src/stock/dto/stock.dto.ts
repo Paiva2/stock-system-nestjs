@@ -1,6 +1,7 @@
 import { Type } from "class-transformer";
 import {
   IsBoolean,
+  IsEnum,
   IsInt,
   IsOptional,
   IsString,
@@ -16,9 +17,14 @@ export class CreateStockDto {
 }
 
 export class GetAllAccountStocksDto {
+  @IsOptional()
+  @IsString()
+  @IsEnum(["true", "false"], { message: "active must be true or false" })
+  active: string;
+
   @Type(() => Number)
   @IsInt()
-  @Min(1, { message: "Page must be at least 1." })
+  @Min(1, { message: "page must be at least 1." })
   page: number;
 }
 

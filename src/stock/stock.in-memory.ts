@@ -99,9 +99,12 @@ export class InMemoryStock implements StockInterface {
   }
 
   async getActives(
+    userId: string,
     page: number,
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
-    const findStocks = this.stocks.filter((stock) => stock.active);
+    const findStocks = this.stocks.filter(
+      (stock) => stock.active && stock.stockOwner === userId,
+    );
 
     const perPage = 10;
     const totalStocks = findStocks.length;
@@ -114,9 +117,12 @@ export class InMemoryStock implements StockInterface {
   }
 
   async getInactives(
+    userId: string,
     page: number,
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
-    const findStocks = this.stocks.filter((stock) => stock.active === false);
+    const findStocks = this.stocks.filter(
+      (stock) => stock.active === false && stock.stockOwner === userId,
+    );
 
     const perPage = 10;
     const totalStocks = findStocks.length;

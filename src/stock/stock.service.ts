@@ -179,9 +179,9 @@ export class StockService {
     };
 
     if (active) {
-      stocksMetadata = await this.stockInterface.getActives(page);
+      stocksMetadata = await this.stockInterface.getActives(userId, page);
     } else {
-      stocksMetadata = await this.stockInterface.getInactives(page);
+      stocksMetadata = await this.stockInterface.getInactives(userId, page);
     }
 
     return {

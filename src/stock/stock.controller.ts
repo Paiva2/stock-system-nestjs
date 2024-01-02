@@ -43,14 +43,26 @@ export class StockController {
     return { message: "Stock successfully created." };
   }
 
-  @Get("/stocks")
+  @Get("/stocks") // ?active=true or ?active=false
   @UseGuards(AuthGuard)
   async getAllAccountStocksController(
     @Req() req: Request,
     @Query(ValidationPipe) query: GetAllAccountStocksDto,
   ) {
     const tokenParsed: IJwtSchema = req["user"];
-    const { page } = query;
+    const { active, page } = query;
+
+    if (active) {
+      const filterActives = active === "true";
+
+      const getStocksFiltered = await this.stockService.filterStocks(
+        tokenParsed.sub,
+        filterActives,
+        +page,
+      );
+
+      return getStocksFiltered;
+    }
 
     const allStocks = await this.stockService.getAllAccountStocks(
       tokenParsed.sub,

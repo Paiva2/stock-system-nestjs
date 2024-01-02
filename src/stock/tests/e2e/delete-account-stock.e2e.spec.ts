@@ -21,7 +21,7 @@ describe("Delete account stock", () => {
     await app.init();
   });
 
-  it("[DELETE]/stock/delete/:stockId", async () => {
+  test("[DELETE]/stock/delete/:stockId", async () => {
     const hashPassword = await hash("123456", 8);
 
     const user = await prisma.user.create({
