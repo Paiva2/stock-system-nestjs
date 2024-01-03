@@ -14,4 +14,21 @@ export class PrismaStockItemModel implements StockItemInterface {
 
     return newStockItem;
   }
+
+  async remove(stockId: string, stockItemId: string): Promise<IStockItem | null> {
+    try {
+      const removedStockItem = await this.prismaService.stockItem.delete({
+        where: {
+          id: stockItemId,
+          AND: {
+            stockId,
+          },
+        },
+      });
+
+      return removedStockItem;
+    } catch (e) {
+      if (e.code === "P2025") return null;
+    }
+  }
 }

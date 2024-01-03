@@ -44,3 +44,13 @@ export class InsertStockItemDto {
   @Type(() => StockItemDto)
   stockItem: StockItemDto;
 }
+
+export class RemoveStockItemBodyDto {
+  @IsUUID()
+  stockId: string;
+}
+
+export class RemoveStockItemParamDto {
+  @IsUUID()
+  stockItemId: string;
+}

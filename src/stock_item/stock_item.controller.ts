@@ -1,9 +1,24 @@
-import { Body, Controller, Delete, Post, Req, UseGuards } from "@nestjs/common";
+import {
+  Body,
+  Controller,
+  Delete,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  Req,
+  UseGuards,
+  ValidationPipe,
+} from "@nestjs/common";
 import { Request } from "express";
+import {
+  InsertStockItemDto,
+  RemoveStockItemBodyDto,
+  RemoveStockItemParamDto,
+} from "./dto/stock-item.dto";
 import { IJwtSchema } from "../@types/types";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { StockItemService } from "./stock_item.service";
-import { InsertStockItemDto } from "./dto/stock-item.dto";
 
 @Controller()
 export class StockItemController {
@@ -13,7 +28,7 @@ export class StockItemController {
   @UseGuards(AuthGuard)
   async insertStockItemController(
     @Body() insertStockItemDto: InsertStockItemDto,
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
@@ -28,6 +43,21 @@ export class StockItemController {
   }
 
   @Delete("/stock-item/remove/:stockItemId")
+  @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
-  async removeStockItemController() {}
+  async removeStockItemController(
+    @Body(ValidationPipe) removeStockItemBodyDto: RemoveStockItemBodyDto,
+    @Param(ValidationPipe) removeStockItemParamDto: RemoveStockItemParamDto,
+    @Req() req: Request
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    await this.stockItemService.removeStockItem(
+      tokenParsed.sub,
+      removeStockItemParamDto.stockItemId,
+      removeStockItemBodyDto.stockId
+    );
+
+    return { message: "Stock Item successfully removed." };
+  }
 }
