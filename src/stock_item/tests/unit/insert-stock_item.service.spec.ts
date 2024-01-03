@@ -5,7 +5,6 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { IUser } from "../../../@types/types";
-import { StockService } from "../../../stock/stock.service";
 import { UserService } from "../../../user/user.service";
 import { InMemoryUser } from "../../../user/user.in-memory";
 import { UserInterface } from "../../../user/user.interface";
@@ -16,7 +15,6 @@ import { InMemoryCategory } from "../../../category/category.in-memory";
 import { StockItemInterface } from "../../stock_item.interface";
 import { InMemoryStockItem } from "../../stock_item.in-memory";
 import { StockItemService } from "../../stock_item.service";
-import { CategoryService } from "../../../category/category.service";
 
 describe("Insert stock item service", () => {
   let sut: StockItemService;
@@ -35,8 +33,6 @@ describe("Insert stock item service", () => {
         { provide: CategoryInterface, useClass: InMemoryCategory },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
         UserService,
-        StockService,
-        CategoryService,
         StockItemService,
       ],
     }).compile();
@@ -122,9 +118,7 @@ describe("Insert stock item service", () => {
         description: "Simple green apple",
       });
     }).rejects.toEqual(
-      new BadRequestException(
-        "You must provide an valid stock id and category id.",
-      ),
+      new BadRequestException("You must provide an valid stock id and category id.")
     );
 
     await expect(() => {
@@ -136,9 +130,7 @@ describe("Insert stock item service", () => {
         description: "Simple green apple",
       });
     }).rejects.toEqual(
-      new BadRequestException(
-        "You must provide an valid stock id and category id.",
-      ),
+      new BadRequestException("You must provide an valid stock id and category id.")
     );
   });
 
@@ -202,9 +194,7 @@ describe("Insert stock item service", () => {
         description: "Simple green apple",
       });
     }).rejects.toEqual(
-      new ForbiddenException(
-        "You must be the stock owner to insert item on it.",
-      ),
+      new ForbiddenException("You must be the stock owner to insert item on it.")
     );
   });
 

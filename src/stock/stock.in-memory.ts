@@ -1,7 +1,9 @@
 import { randomUUID } from "crypto";
 import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class InMemoryStock implements StockInterface {
   private stocks = [] as IStock[];
 
@@ -13,6 +15,8 @@ export class InMemoryStock implements StockInterface {
       createdAt: new Date(),
       updatedAt: new Date(),
       active: true,
+      totalItems: 0,
+      totalItemsQuantity: 0,
     };
 
     this.stocks.push(newStock);
@@ -22,17 +26,15 @@ export class InMemoryStock implements StockInterface {
 
   async getAll(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
-    const getAllStocks = this.stocks.filter(
-      (stock) => stock.stockOwner === userId,
-    );
+    const getAllStocks = this.stocks.filter((stock) => stock.stockOwner === userId);
 
     const perPage = 10;
 
     const paginatedStocks = getAllStocks.splice(
       (page - 1) * perPage,
-      page * perPage,
+      page * perPage
     );
 
     return {
@@ -44,7 +46,7 @@ export class InMemoryStock implements StockInterface {
 
   async getByStockName(stockName: string, userId: string): Promise<IStock> {
     const findByName = this.stocks.find(
-      (stock) => stock.stockName === stockName && stock.stockOwner === userId,
+      (stock) => stock.stockName === stockName && stock.stockOwner === userId
     );
 
     if (!findByName) return null;
@@ -54,7 +56,7 @@ export class InMemoryStock implements StockInterface {
 
   async delete(stockId: string, userId: string): Promise<IStock | null> {
     const stockToDelete = this.stocks.find(
-      (stock) => stock.id === stockId && stock.stockOwner === userId,
+      (stock) => stock.id === stockId && stock.stockOwner === userId
     );
 
     if (!stockToDelete) return null;
@@ -78,10 +80,7 @@ export class InMemoryStock implements StockInterface {
     let updatedStock: IStock | null = null;
 
     const updateStocksList = this.stocks.map((stockToUpdate) => {
-      if (
-        stockToUpdate.stockOwner === userId &&
-        stockToUpdate.id === stock.id
-      ) {
+      if (stockToUpdate.stockOwner === userId && stockToUpdate.id === stock.id) {
         stockToUpdate = {
           ...stockToUpdate,
           ...stock,
@@ -100,10 +99,10 @@ export class InMemoryStock implements StockInterface {
 
   async getActives(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
     const findStocks = this.stocks.filter(
-      (stock) => stock.active && stock.stockOwner === userId,
+      (stock) => stock.active && stock.stockOwner === userId
     );
 
     const perPage = 10;
@@ -118,10 +117,10 @@ export class InMemoryStock implements StockInterface {
 
   async getInactives(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
     const findStocks = this.stocks.filter(
-      (stock) => stock.active === false && stock.stockOwner === userId,
+      (stock) => stock.active === false && stock.stockOwner === userId
     );
 
     const perPage = 10;

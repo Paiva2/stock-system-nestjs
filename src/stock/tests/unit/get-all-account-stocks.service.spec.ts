@@ -7,18 +7,23 @@ import { InMemoryUser } from "../../../user/user.in-memory";
 import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
+import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
+import { randomUUID } from "crypto";
 
 describe("Get all account stocks service", () => {
   let sut: StockService;
   let module: TestingModule;
   let userService: UserService;
   let user: IUser;
+  let inMemoryStockItem: StockItemInterface;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
+        { provide: StockItemInterface, useClass: InMemoryStockItem },
         StockService,
         UserService,
       ],
@@ -26,6 +31,7 @@ describe("Get all account stocks service", () => {
 
     sut = module.get<StockService>(StockService);
     userService = module.get<UserService>(UserService);
+    inMemoryStockItem = module.get<StockItemInterface>(StockItemInterface);
 
     user = await userService.registerUserService({
       email: "johndoe@email.com",
@@ -41,12 +47,44 @@ describe("Get all account stocks service", () => {
   });
 
   it("should list all account stocks", async () => {
-    await sut.createStock(user.id, {
+    const appleStock = await sut.createStock(user.id, {
       stockName: "Apple Stock",
     });
 
-    await sut.createStock(user.id, {
+    const orangeStock = await sut.createStock(user.id, {
       stockName: "Orange Stock",
+    });
+
+    await inMemoryStockItem.insert({
+      categoryId: randomUUID(),
+      itemName: "Green Apple",
+      quantity: 2,
+      stockId: appleStock.id,
+      description: "A Big Green Apple",
+    });
+
+    await inMemoryStockItem.insert({
+      categoryId: randomUUID(),
+      itemName: "Red Apple",
+      quantity: 5,
+      stockId: appleStock.id,
+      description: "A Big Red Apple",
+    });
+
+    await inMemoryStockItem.insert({
+      categoryId: randomUUID(),
+      itemName: "Orange",
+      quantity: 2,
+      stockId: orangeStock.id,
+      description: "A Big Orange",
+    });
+
+    await inMemoryStockItem.insert({
+      categoryId: randomUUID(),
+      itemName: "Tiny Orange",
+      quantity: 8,
+      stockId: orangeStock.id,
+      description: "A Tiny Orange",
     });
 
     const stocksList = await sut.getAllAccountStocks(user.id, 1);
@@ -62,6 +100,8 @@ describe("Get all account stocks service", () => {
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
           active: true,
+          totalItems: 2,
+          totalItemsQuantity: 7,
         },
         {
           id: expect.any(String),
@@ -70,6 +110,8 @@ describe("Get all account stocks service", () => {
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
           active: true,
+          totalItems: 2,
+          totalItemsQuantity: 10,
         },
       ]),
     });

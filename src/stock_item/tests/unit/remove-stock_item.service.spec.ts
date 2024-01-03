@@ -1,7 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { IUser } from "../../../@types/types";
-import { StockService } from "../../../stock/stock.service";
 import { UserService } from "../../../user/user.service";
 import { InMemoryUser } from "../../../user/user.in-memory";
 import { UserInterface } from "../../../user/user.interface";
@@ -12,7 +11,6 @@ import { InMemoryCategory } from "../../../category/category.in-memory";
 import { StockItemInterface } from "../../stock_item.interface";
 import { InMemoryStockItem } from "../../stock_item.in-memory";
 import { StockItemService } from "../../stock_item.service";
-import { CategoryService } from "../../../category/category.service";
 
 describe("Remove stock item service", () => {
   let sut: StockItemService;
@@ -31,8 +29,6 @@ describe("Remove stock item service", () => {
         { provide: CategoryInterface, useClass: InMemoryCategory },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
         UserService,
-        StockService,
-        CategoryService,
         StockItemService,
       ],
     }).compile();
@@ -73,7 +69,7 @@ describe("Remove stock item service", () => {
     const removedItem = await sut.removeStockItem(
       user.id,
       stockItem.id,
-      newStock.id,
+      newStock.id
     );
 
     expect(removedItem).toEqual({
@@ -107,7 +103,7 @@ describe("Remove stock item service", () => {
       return sut.removeStockItem(
         "Inexistent user id",
         "any stock item id",
-        "any stock id",
+        "any stock id"
       );
     }).rejects.toEqual(new NotFoundException("User not found."));
   });
@@ -117,7 +113,7 @@ describe("Remove stock item service", () => {
       return sut.removeStockItem(
         user.id,
         "any stock item id",
-        "Inexistent stock id",
+        "Inexistent stock id"
       );
     }).rejects.toEqual(new NotFoundException("Stock not found."));
   });
@@ -128,11 +124,7 @@ describe("Remove stock item service", () => {
     });
 
     await expect(() => {
-      return sut.removeStockItem(
-        user.id,
-        "inexistent stock item id",
-        newStock.id,
-      );
+      return sut.removeStockItem(user.id, "inexistent stock item id", newStock.id);
     }).rejects.toEqual(new NotFoundException("Stock item not found."));
   });
 });

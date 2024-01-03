@@ -1,7 +1,9 @@
 import { randomUUID } from "crypto";
 import { ICategory } from "../@types/types";
 import { CategoryInterface } from "./category.interface";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class InMemoryCategory implements CategoryInterface {
   private categories = [] as ICategory[];
 
@@ -19,7 +21,7 @@ export class InMemoryCategory implements CategoryInterface {
 
   async findByName(categoryName: string): Promise<ICategory> {
     const findCategory = this.categories.find(
-      (category) => category.name === categoryName,
+      (category) => category.name === categoryName
     );
 
     if (!findCategory) return null;
@@ -44,7 +46,7 @@ export class InMemoryCategory implements CategoryInterface {
 
   async delete(categoryId: string): Promise<ICategory | null> {
     const categoryToRemove = this.categories.find(
-      (category) => category.id === categoryId,
+      (category) => category.id === categoryId
     );
 
     if (!categoryToRemove) return null;
@@ -58,13 +60,12 @@ export class InMemoryCategory implements CategoryInterface {
 
   async update(category: { id: string; name: string }): Promise<ICategory> {
     const findCategoryToUpdate = this.categories.find(
-      (categoryUpdating) => categoryUpdating.id === category.id,
+      (categoryUpdating) => categoryUpdating.id === category.id
     );
 
     if (!findCategoryToUpdate) return null;
 
-    const getCategoryToUpdateIdx =
-      this.categories.indexOf(findCategoryToUpdate);
+    const getCategoryToUpdateIdx = this.categories.indexOf(findCategoryToUpdate);
 
     const categoryUpdated = {
       ...findCategoryToUpdate,
@@ -78,7 +79,7 @@ export class InMemoryCategory implements CategoryInterface {
 
   async findById(categoryId: string): Promise<ICategory | null> {
     const findCategory = this.categories.find(
-      (category) => category.id === categoryId,
+      (category) => category.id === categoryId
     );
 
     if (!findCategory) return null;

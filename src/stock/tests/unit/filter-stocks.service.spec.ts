@@ -7,6 +7,8 @@ import { InMemoryUser } from "../../../user/user.in-memory";
 import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
+import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 
 describe("Filter stocks service", () => {
   let sut: StockService;
@@ -21,6 +23,7 @@ describe("Filter stocks service", () => {
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
+        { provide: StockItemInterface, useClass: InMemoryStockItem },
         StockService,
         UserService,
       ],
@@ -66,6 +69,8 @@ describe("Filter stocks service", () => {
           createdAt: firstStock.createdAt,
           updatedAt: firstStock.updatedAt,
           active: true,
+          totalItems: 0,
+          totalItemsQuantity: 0,
         },
         {
           id: secondStock.id,
@@ -74,6 +79,8 @@ describe("Filter stocks service", () => {
           createdAt: secondStock.createdAt,
           updatedAt: secondStock.updatedAt,
           active: true,
+          totalItems: 0,
+          totalItemsQuantity: 0,
         },
       ]),
     });
@@ -112,6 +119,8 @@ describe("Filter stocks service", () => {
           createdAt: firstStock.createdAt,
           updatedAt: firstStock.updatedAt,
           active: false,
+          totalItems: 0,
+          totalItemsQuantity: 0,
         },
         {
           id: secondStock.id,
@@ -120,6 +129,8 @@ describe("Filter stocks service", () => {
           createdAt: secondStock.createdAt,
           updatedAt: secondStock.updatedAt,
           active: false,
+          totalItems: 0,
+          totalItemsQuantity: 0,
         },
       ]),
     });
@@ -132,9 +143,7 @@ describe("Filter stocks service", () => {
 
     await expect(() => {
       return sut.filterStocks(user.id, undefined, 1);
-    }).rejects.toEqual(
-      new BadRequestException("Active must be true or false."),
-    );
+    }).rejects.toEqual(new BadRequestException("Active must be true or false."));
   });
 
   it("should not get all inactive stocks without an valid user", async () => {

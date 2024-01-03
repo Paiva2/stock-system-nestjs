@@ -7,6 +7,8 @@ import { InMemoryUser } from "../../../user/user.in-memory";
 import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
+import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 
 describe("Delete account stock service", () => {
   let sut: StockService;
@@ -19,6 +21,7 @@ describe("Delete account stock service", () => {
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
+        { provide: StockItemInterface, useClass: InMemoryStockItem },
         StockService,
         UserService,
       ],
@@ -49,10 +52,7 @@ describe("Delete account stock service", () => {
       stockName: "Orange Stock",
     });
 
-    const stockDeleted = await sut.deleteAccountStock(
-      user.id,
-      stockToDelete.id,
-    );
+    const stockDeleted = await sut.deleteAccountStock(user.id, stockToDelete.id);
 
     const stocksList = await sut.getAllAccountStocks(user.id, 1);
 
@@ -64,7 +64,9 @@ describe("Delete account stock service", () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
         active: true,
-      }),
+        totalItems: 0,
+        totalItemsQuantity: 0,
+      })
     );
     expect(stocksList).toEqual({
       page: 1,
@@ -77,6 +79,8 @@ describe("Delete account stock service", () => {
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
           active: true,
+          totalItems: 0,
+          totalItemsQuantity: 0,
         },
       ]),
     });

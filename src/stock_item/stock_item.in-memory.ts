@@ -1,7 +1,9 @@
 import { randomUUID } from "crypto";
 import { IStockItemCreate, IStockItem } from "../@types/types";
 import { StockItemInterface } from "./stock_item.interface";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export class InMemoryStockItem implements StockItemInterface {
   private stockItems = [] as IStockItem[];
 
@@ -24,11 +26,15 @@ export class InMemoryStockItem implements StockItemInterface {
 
   async remove(stockId: string, stockItemId: string): Promise<IStockItem> {
     const getItemToRemove = this.stockItems.find(
-      (item) => item.id === stockItemId && item.stockId === stockId,
+      (item) => item.id === stockItemId && item.stockId === stockId
     );
 
     if (!getItemToRemove) return null;
 
     return getItemToRemove;
+  }
+
+  async getAll(): Promise<IStockItem[]> {
+    return this.stockItems;
   }
 }

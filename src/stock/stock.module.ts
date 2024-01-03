@@ -7,6 +7,8 @@ import { UserInterface } from "../user/user.interface";
 import { PrismaUserModel } from "../infra/database/user/prisma.user.model";
 import { StockInterface } from "./stock.interface";
 import { PrismaStockModel } from "../infra/database/stock/prisma.stock.model";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
+import { PrismaStockItemModel } from "src/infra/database/stock_item/prisma.stock-item.model";
 
 @Module({
   imports: [PrismaModule, AuthModule],
@@ -19,6 +21,10 @@ import { PrismaStockModel } from "../infra/database/stock/prisma.stock.model";
     {
       provide: StockInterface,
       useClass: PrismaStockModel,
+    },
+    {
+      provide: StockItemInterface,
+      useClass: PrismaStockItemModel,
     },
     StockService,
   ],

@@ -8,12 +8,14 @@ import {
 import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
 import { UserInterface } from "../user/user.interface";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
 
 @Injectable()
 export class StockService {
   constructor(
     private readonly userInterface: UserInterface,
     private readonly stockInterface: StockInterface,
+    private readonly stockItemInterface: StockItemInterface
   ) {}
 
   async createStock(userId: string, stock: IStockCreate): Promise<IStock> {
@@ -29,12 +31,12 @@ export class StockService {
 
     const hasStoreWithThisName = await this.stockInterface.getByStockName(
       stock.stockName,
-      userId,
+      userId
     );
 
     if (hasStoreWithThisName) {
       throw new ConflictException(
-        "An stock this name is already created on this account.",
+        "An stock this name is already created on this account."
       );
     }
 
@@ -45,7 +47,7 @@ export class StockService {
 
   async getAllAccountStocks(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{
     page: number;
     totalStocks: number;
@@ -66,6 +68,19 @@ export class StockService {
     }
 
     const getAllStocks = await this.stockInterface.getAll(userId, page);
+
+    const getAllStockItems = await this.stockItemInterface.getAll();
+
+    getAllStockItems.forEach((item) => {
+      const getItemStock = getAllStocks.stocks.find(
+        (stock) => stock.id === item.stockId
+      );
+
+      if (getItemStock) {
+        getItemStock.totalItems++;
+        getItemStock.totalItemsQuantity += item.quantity;
+      }
+    });
 
     return getAllStocks;
   }
@@ -94,6 +109,7 @@ export class StockService {
     return deletedStock;
   }
 
+  //TODO: ADD STOCK ITEMS
   async getStockById(userId: string, stockId: string): Promise<IStock> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
@@ -146,10 +162,11 @@ export class StockService {
     return updateStock;
   }
 
+  //TODO: ADD ITENS QUANTITY TOTAL FOR EACH STOCK
   async filterStocks(
     userId: string,
     active: boolean,
-    page: number,
+    page: number
   ): Promise<{
     page: number;
     totalStocks: number;

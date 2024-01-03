@@ -11,6 +11,8 @@ import { InMemoryUser } from "../../../user/user.in-memory";
 import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
+import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
 
 describe("Create stock service", () => {
   let sut: StockService;
@@ -23,6 +25,7 @@ describe("Create stock service", () => {
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
+        { provide: StockItemInterface, useClass: InMemoryStockItem },
         StockService,
         UserService,
       ],
@@ -56,6 +59,8 @@ describe("Create stock service", () => {
       createdAt: newStock.createdAt,
       updatedAt: newStock.updatedAt,
       active: true,
+      totalItems: 0,
+      totalItemsQuantity: 0,
     });
   });
 
@@ -85,9 +90,7 @@ describe("Create stock service", () => {
         stockName: "Apple Stock",
       });
     }).rejects.toEqual(
-      new ConflictException(
-        "An stock this name is already created on this account.",
-      ),
+      new ConflictException("An stock this name is already created on this account.")
     );
   });
 });

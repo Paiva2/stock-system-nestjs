@@ -7,6 +7,8 @@ import { InMemoryUser } from "../../../user/user.in-memory";
 import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
+import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 
 describe("Update stock service", () => {
   let sut: StockService;
@@ -19,6 +21,7 @@ describe("Update stock service", () => {
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
+        { provide: StockItemInterface, useClass: InMemoryStockItem },
         InMemoryStock,
         StockService,
         UserService,
@@ -59,6 +62,8 @@ describe("Update stock service", () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       active: false,
+      totalItems: 0,
+      totalItemsQuantity: 0,
     });
   });
 
