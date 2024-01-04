@@ -1,4 +1,4 @@
-import { IStockItem, IStockItemCreate } from "../@types/types";
+import { IStockItem, IStockItemCreate, IStockItemUpdate } from "../@types/types";
 
 export abstract class StockItemInterface {
   abstract insert(stockItem: IStockItemCreate): Promise<IStockItem>;
@@ -8,4 +8,6 @@ export abstract class StockItemInterface {
   abstract getAll(): Promise<IStockItem[]>;
 
   abstract getByStockId(stockId: string): Promise<IStockItem[]>;
+
+  abstract updateById(stockItemId: IStockItemUpdate): Promise<IStockItem | null>;
 }

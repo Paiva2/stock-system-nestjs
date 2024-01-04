@@ -4,7 +4,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { IStockItem, IStockItemCreate } from "../@types/types";
+import { IStockItem, IStockItemCreate, IStockItemUpdate } from "../@types/types";
 import { UserInterface } from "../user/user.interface";
 import { StockInterface } from "../stock/stock.interface";
 import { CategoryInterface } from "../category/category.interface";
@@ -16,13 +16,13 @@ export class StockItemService {
     private readonly userInterface: UserInterface,
     private readonly stockInterface: StockInterface,
     private readonly categoryInterface: CategoryInterface,
-    private readonly stockItemInterface: StockItemInterface,
+    private readonly stockItemInterface: StockItemInterface
   ) {}
 
   async insertStockItem(
     userId: string,
     stockId: string,
-    stockItem: IStockItemCreate,
+    stockItem: IStockItemCreate
   ) {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
@@ -34,7 +34,7 @@ export class StockItemService {
 
     if (!stockItem.stockId || !stockItem.categoryId) {
       throw new BadRequestException(
-        "You must provide an valid stock id and category id.",
+        "You must provide an valid stock id and category id."
       );
     }
 
@@ -52,13 +52,11 @@ export class StockItemService {
 
     if (getStock.stockOwner !== userId) {
       throw new ForbiddenException(
-        "You must be the stock owner to insert item on it.",
+        "You must be the stock owner to insert item on it."
       );
     }
 
-    const getCategory = await this.categoryInterface.findById(
-      stockItem.categoryId,
-    );
+    const getCategory = await this.categoryInterface.findById(stockItem.categoryId);
 
     if (!getCategory) {
       throw new NotFoundException("Category not found.");
@@ -78,7 +76,7 @@ export class StockItemService {
   async removeStockItem(
     userId: string,
     stockItemId: string,
-    stockId: string,
+    stockId: string
   ): Promise<IStockItem> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
@@ -106,7 +104,7 @@ export class StockItemService {
 
     const removeItemFromStock = await this.stockItemInterface.remove(
       getStock.id,
-      stockItemId,
+      stockItemId
     );
 
     if (!removeItemFromStock) {
@@ -114,5 +112,45 @@ export class StockItemService {
     }
 
     return removeItemFromStock;
+  }
+
+  async editStockItem(
+    userId: string,
+    stockId: string,
+    stockItem: IStockItemUpdate
+  ): Promise<IStockItem> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!stockId) {
+      throw new BadRequestException("Invalid stock id.");
+    }
+
+    if (!stockItem.id) {
+      throw new BadRequestException("Invalid stock item id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getStock = await this.stockInterface.getById(stockId);
+
+    if (!getStock) {
+      throw new NotFoundException("Stock not found.");
+    }
+
+    if (stockItem.quantity) Number(stockItem.quantity);
+
+    const getStockItem = await this.stockItemInterface.updateById(stockItem);
+
+    if (!getStockItem) {
+      throw new NotFoundException("Stock item not found.");
+    }
+
+    return getStockItem;
   }
 }

@@ -78,6 +78,13 @@ export interface IStockItemCreate {
   categoryId: string;
 }
 
+export interface IStockItemUpdate {
+  id: string;
+  itemName?: string;
+  quantity?: number;
+  description?: string;
+}
+
 export interface IJwtSchema {
   sub: string;
   iat: number;
