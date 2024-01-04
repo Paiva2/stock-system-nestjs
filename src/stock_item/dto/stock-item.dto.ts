@@ -62,21 +62,21 @@ class StockItemUpdateDto {
   @IsOptional()
   @IsString()
   @Min(1, { message: "itemName can't be empty." })
-  itemName: string;
+  itemName?: string;
 
   @IsOptional()
   @IsNumberString()
   @Min(1, { message: "quantity must be at least 1." })
-  quantity: number;
+  quantity?: number;
 
   @IsOptional()
   @IsString()
   @Max(500, { message: "description can't have more than 500 characters." })
-  description: string;
+  description?: string;
 
   @IsOptional()
   @IsUUID()
-  categoryId: string;
+  categoryId?: string;
 }
 
 export class EditStockItemDto {
@@ -86,7 +86,6 @@ export class EditStockItemDto {
   @IsDefined()
   @IsNotEmptyObject()
   @IsObject()
-  @ValidateNested()
   @Type(() => StockItemUpdateDto)
   stockItem: StockItemUpdateDto;
 }
