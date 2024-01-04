@@ -68,6 +68,7 @@ export interface IStockItem {
   categoryId: string;
   createdAt: Date;
   updatedAt: Date;
+  categoryName?: string;
 }
 
 export interface IStockItemCreate {

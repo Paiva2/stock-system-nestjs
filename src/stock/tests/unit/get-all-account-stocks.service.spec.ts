@@ -10,6 +10,8 @@ import { UserService } from "../../../user/user.service";
 import { StockItemInterface } from "src/stock_item/stock_item.interface";
 import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 import { randomUUID } from "crypto";
+import { CategoryInterface } from "src/category/category.interface";
+import { InMemoryCategory } from "src/category/category.in-memory";
 
 describe("Get all account stocks service", () => {
   let sut: StockService;
@@ -24,6 +26,7 @@ describe("Get all account stocks service", () => {
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
+        { provide: CategoryInterface, useClass: InMemoryCategory },
         StockService,
         UserService,
       ],

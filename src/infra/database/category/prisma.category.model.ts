@@ -42,7 +42,7 @@ export class PrismaCategoryModel implements CategoryInterface {
 
     const paginatedCategories = categories.splice(
       (page - 1) * perPage,
-      page * perPage,
+      page * perPage
     );
 
     return {
@@ -91,5 +91,15 @@ export class PrismaCategoryModel implements CategoryInterface {
     if (!findCategory) return null;
 
     return findCategory;
+  }
+
+  async findManyById(categoriesId: string[]): Promise<ICategory[]> {
+    const findCategories = await this.prismaService.category.findMany({
+      where: {
+        id: { in: categoriesId },
+      },
+    });
+
+    return findCategories;
   }
 }

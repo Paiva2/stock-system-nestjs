@@ -5,17 +5,19 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { IStock, IStockCreate, IStockItem, IStockUpdate } from "../@types/types";
+import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
 import { UserInterface } from "../user/user.interface";
 import { StockItemInterface } from "src/stock_item/stock_item.interface";
+import { CategoryInterface } from "src/category/category.interface";
 
 @Injectable()
 export class StockService {
   constructor(
     private readonly userInterface: UserInterface,
     private readonly stockInterface: StockInterface,
-    private readonly stockItemInterface: StockItemInterface
+    private readonly stockItemInterface: StockItemInterface,
+    private readonly categoryInterface: CategoryInterface
   ) {}
 
   async createStock(userId: string, stock: IStockCreate): Promise<IStock> {
@@ -147,14 +149,45 @@ export class StockService {
       getStockById.id
     );
 
+    let stockItemsCategories: string[] = [];
+
+    getStockItems.forEach((item) => {
+      const isCategoryAlreadyAdded = stockItemsCategories.find(
+        (category) => category === item.categoryId
+      );
+
+      if (!isCategoryAlreadyAdded) {
+        stockItemsCategories.push(item.categoryId);
+      }
+    });
+
+    const getCategories =
+      await this.categoryInterface.findManyById(stockItemsCategories);
+
+    const formatStockItemsInformations = getStockItems.map((item) => {
+      const findItemCategory = getCategories.find(
+        (category) => category.id === item.categoryId
+      );
+
+      if (findItemCategory) {
+        item.categoryName = findItemCategory.name;
+      }
+
+      return item;
+    });
+
+    const totalItems = formatStockItemsInformations.length;
+
+    const totalItemsQuantity = formatStockItemsInformations.reduce(
+      (acc, item) => (acc += item.quantity),
+      0
+    );
+
     return {
       ...getStockById,
-      totalItems: getStockItems.length,
-      totalItemsQuantity: getStockItems.reduce(
-        (acc, item) => (acc += item.quantity),
-        0
-      ),
-      stockItems: getStockItems,
+      totalItems,
+      totalItemsQuantity,
+      stockItems: formatStockItemsInformations,
     };
   }
 

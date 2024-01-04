@@ -86,4 +86,12 @@ export class InMemoryCategory implements CategoryInterface {
 
     return findCategory;
   }
+
+  async findManyById(categoriesId: string[]): Promise<ICategory[]> {
+    const findCategoriesWithIds = this.categories.filter((category) =>
+      categoriesId.includes(category.id)
+    );
+
+    return findCategoriesWithIds;
+  }
 }

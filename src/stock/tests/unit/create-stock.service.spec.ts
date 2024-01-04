@@ -13,6 +13,8 @@ import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
 import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 import { StockItemInterface } from "src/stock_item/stock_item.interface";
+import { CategoryInterface } from "src/category/category.interface";
+import { InMemoryCategory } from "src/category/category.in-memory";
 
 describe("Create stock service", () => {
   let sut: StockService;
@@ -26,6 +28,7 @@ describe("Create stock service", () => {
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
+        { provide: CategoryInterface, useClass: InMemoryCategory },
         StockService,
         UserService,
       ],

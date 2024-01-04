@@ -100,6 +100,7 @@ describe("Get stock by id", () => {
           stockId: stockCreation.id,
           description: "Big Orange",
           categoryId: firstStockItem.categoryId,
+          categoryName: category.name,
         }),
         expect.objectContaining({
           id: secondStockItem.id,
@@ -108,6 +109,7 @@ describe("Get stock by id", () => {
           stockId: stockCreation.id,
           description: "Little Orange",
           categoryId: secondStockItem.categoryId,
+          categoryName: category.name,
         }),
       ],
     });

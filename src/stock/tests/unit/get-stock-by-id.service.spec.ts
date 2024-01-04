@@ -7,13 +7,14 @@ import {
 import { IUser } from "../../../@types/types";
 import { StockInterface } from "../../stock.interface";
 import { UserInterface } from "../../../user/user.interface";
+import { CategoryInterface } from "src/category/category.interface";
+import { StockItemInterface } from "src/stock_item/stock_item.interface";
 import { InMemoryUser } from "../../../user/user.in-memory";
+import { InMemoryCategory } from "src/category/category.in-memory";
+import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
-import { StockItemInterface } from "src/stock_item/stock_item.interface";
-import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
-import { randomUUID } from "crypto";
 
 describe("Get stock by id service", () => {
   let sut: StockService;
@@ -21,6 +22,7 @@ describe("Get stock by id service", () => {
   let userService: UserService;
   let user: IUser;
   let inMemoryStockItem: StockItemInterface;
+  let inMemoryCategory: CategoryInterface;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -28,14 +30,19 @@ describe("Get stock by id service", () => {
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: StockInterface, useClass: InMemoryStock },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
+        { provide: CategoryInterface, useClass: InMemoryCategory },
         StockService,
         UserService,
       ],
     }).compile();
 
     sut = module.get<StockService>(StockService);
+
     userService = module.get<UserService>(UserService);
+
     inMemoryStockItem = module.get<StockItemInterface>(StockItemInterface);
+
+    inMemoryCategory = module.get<CategoryInterface>(CategoryInterface);
 
     user = await userService.registerUserService({
       email: "johndoe@email.com",
@@ -55,8 +62,10 @@ describe("Get stock by id service", () => {
       stockName: "Apple Stock",
     });
 
+    const category = await inMemoryCategory.create("Fruits");
+
     const stockItem = await inMemoryStockItem.insert({
-      categoryId: randomUUID(),
+      categoryId: category.id,
       itemName: "Apple",
       quantity: 10,
       stockId: stock.id,
@@ -81,7 +90,8 @@ describe("Get stock by id service", () => {
           quantity: 10,
           stockId: stock.id,
           description: "A Big Apple",
-          categoryId: stockItem.categoryId,
+          categoryId: category.id,
+          categoryName: category.name,
           createdAt: stockItem.createdAt,
           updatedAt: stockItem.updatedAt,
         }),
