@@ -1,5 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { IStockItemCreate, IStockItem } from "../../../@types/types";
+import {
+  IStockItemCreate,
+  IStockItem,
+  IStockItemUpdate,
+} from "../../../@types/types";
 import { StockItemInterface } from "../../../stock_item/stock_item.interface";
 import { PrismaService } from "../prisma.service";
 
@@ -44,5 +48,20 @@ export class PrismaStockItemModel implements StockItemInterface {
     });
 
     return findStockItems;
+  }
+
+  async updateById(stockItem: IStockItemUpdate): Promise<IStockItem> {
+    try {
+      const editedStockItem = await this.prismaService.stockItem.update({
+        where: {
+          id: stockItem.id,
+        },
+        data: stockItem,
+      });
+
+      return editedStockItem;
+    } catch (e) {
+      if (e.code === "P2025") return null;
+    }
   }
 }

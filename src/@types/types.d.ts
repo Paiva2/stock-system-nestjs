@@ -83,6 +83,7 @@ export interface IStockItemUpdate {
   itemName?: string;
   quantity?: number;
   description?: string;
+  categoryId?: string;
 }
 
 export interface IJwtSchema {

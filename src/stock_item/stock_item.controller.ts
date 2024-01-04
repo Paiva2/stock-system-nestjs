@@ -5,17 +5,19 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
-import { Request } from "express";
 import {
+  EditStockItemDto,
   InsertStockItemDto,
   RemoveStockItemBodyDto,
   RemoveStockItemParamDto,
 } from "./dto/stock-item.dto";
+import { Request } from "express";
 import { IJwtSchema } from "../@types/types";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { StockItemService } from "./stock_item.service";
@@ -59,5 +61,21 @@ export class StockItemController {
     );
 
     return { message: "Stock Item successfully removed." };
+  }
+
+  @Patch("/stock-item")
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(AuthGuard)
+  async editStockItemController(
+    @Body(ValidationPipe) editStockItemDto: EditStockItemDto,
+    @Req() req: Request
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const { stockItem, stockId } = editStockItemDto;
+
+    await this.stockItemService.editStockItem(tokenParsed.sub, stockId, stockItem);
+
+    return { message: "Stock Item successfully updated." };
   }
 }

@@ -49,14 +49,14 @@ export class InMemoryStockItem implements StockItemInterface {
     return getStockItems;
   }
 
-  async updateById(stockItemId: IStockItemUpdate): Promise<IStockItem> {
+  async updateById(stockItem: IStockItemUpdate): Promise<IStockItem> {
     let findItem: IStockItem;
 
     const updateStockItemsList = this.stockItems.map((item) => {
-      if (item.id === stockItemId.id) {
+      if (item.id === stockItem.id) {
         item = {
           ...item,
-          ...stockItemId,
+          ...stockItem,
         };
 
         findItem = item;

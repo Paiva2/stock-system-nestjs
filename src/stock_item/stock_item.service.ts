@@ -145,6 +145,16 @@ export class StockItemService {
 
     if (stockItem.quantity) Number(stockItem.quantity);
 
+    if (stockItem.categoryId) {
+      const isCategoryValid = await this.categoryInterface.findById(
+        stockItem.categoryId
+      );
+
+      if (!isCategoryValid) {
+        throw new NotFoundException("Category not found.");
+      }
+    }
+
     const getStockItem = await this.stockItemInterface.updateById(stockItem);
 
     if (!getStockItem) {

@@ -1,14 +1,15 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { IUser } from "../../../@types/types";
-import { UserService } from "../../../user/user.service";
-import { InMemoryUser } from "../../../user/user.in-memory";
 import { UserInterface } from "../../../user/user.interface";
 import { StockInterface } from "../../../stock/stock.interface";
-import { InMemoryStock } from "../../../stock/stock.in-memory";
-import { CategoryInterface } from "../../../category/category.interface";
-import { InMemoryCategory } from "../../../category/category.in-memory";
 import { StockItemInterface } from "../../stock_item.interface";
+import { CategoryInterface } from "../../../category/category.interface";
+import { InMemoryUser } from "../../../user/user.in-memory";
+import { InMemoryStock } from "../../../stock/stock.in-memory";
 import { InMemoryStockItem } from "../../stock_item.in-memory";
+import { InMemoryCategory } from "../../../category/category.in-memory";
+import { UserService } from "../../../user/user.service";
 import { StockItemService } from "../../stock_item.service";
 
 describe("Edit stock item service", () => {
@@ -57,6 +58,8 @@ describe("Edit stock item service", () => {
 
     const category = await inMemoryCategory.create("Apples");
 
+    const diffCategory = await inMemoryCategory.create("Fruits");
+
     const insertItem = await sut.insertStockItem(user.id, newStock.id, {
       categoryId: category.id,
       itemName: "Green Apple",
@@ -70,6 +73,7 @@ describe("Edit stock item service", () => {
       description: "Change description",
       itemName: "Red Apple",
       quantity: 20,
+      categoryId: diffCategory.id,
     });
 
     expect(editItem).toEqual({
@@ -78,9 +82,94 @@ describe("Edit stock item service", () => {
       quantity: 20,
       stockId: newStock.id,
       description: "Change description",
-      categoryId: category.id,
+      categoryId: diffCategory.id,
       createdAt: insertItem.createdAt,
       updatedAt: insertItem.updatedAt,
     });
+  });
+
+  it("should not edit an stock item without correctly provided params", async () => {
+    await expect(() => {
+      return sut.editStockItem("", "valid stock id", {
+        id: "valid stock item id",
+        description: "Change description",
+        itemName: "Red Apple",
+        quantity: 20,
+      });
+    }).rejects.toEqual(new BadRequestException("Invalid user id."));
+
+    await expect(() => {
+      return sut.editStockItem(user.id, "", {
+        id: "valid stock item id",
+        description: "Change description",
+        itemName: "Red Apple",
+        quantity: 20,
+      });
+    }).rejects.toEqual(new BadRequestException("Invalid stock id."));
+
+    await expect(() => {
+      return sut.editStockItem(user.id, "valid stock id", {
+        id: "",
+        description: "Change description",
+        itemName: "Red Apple",
+        quantity: 20,
+      });
+    }).rejects.toEqual(new BadRequestException("Invalid stock item id."));
+  });
+
+  it("should not edit an stock item if user does't exists", async () => {
+    await expect(() => {
+      return sut.editStockItem("Inexistent user id", "valid stock id", {
+        id: "valid stock item id",
+        description: "Change description",
+        itemName: "Red Apple",
+        quantity: 20,
+      });
+    }).rejects.toEqual(new NotFoundException("User not found."));
+  });
+
+  it("should not edit an stock item if stock does't exists", async () => {
+    await expect(() => {
+      return sut.editStockItem(user.id, "Inexistent stock id", {
+        id: "valid stock item id",
+        description: "Change description",
+        itemName: "Red Apple",
+        quantity: 20,
+      });
+    }).rejects.toEqual(new NotFoundException("Stock not found."));
+  });
+
+  it("should not edit an stock item category if category id doesn't exists", async () => {
+    const newStock = await inMemoryStock.create(user.id, {
+      stockName: "Apple Stock",
+    });
+
+    await expect(() => {
+      return sut.editStockItem(user.id, newStock.id, {
+        id: "valid stock item id",
+        description: "Change description",
+        itemName: "Red Apple",
+        quantity: 20,
+        categoryId: "inexistent category id",
+      });
+    }).rejects.toEqual(new NotFoundException("Category not found."));
+  });
+
+  it("should not edit an stock item category if stock item doesn't exists", async () => {
+    const newStock = await inMemoryStock.create(user.id, {
+      stockName: "Apple Stock",
+    });
+
+    const category = await inMemoryCategory.create("Apples");
+
+    await expect(() => {
+      return sut.editStockItem(user.id, newStock.id, {
+        id: "inexistent stock item id",
+        description: "Change description",
+        itemName: "Red Apple",
+        quantity: 20,
+        categoryId: category.id,
+      });
+    }).rejects.toEqual(new NotFoundException("Stock item not found."));
   });
 });
