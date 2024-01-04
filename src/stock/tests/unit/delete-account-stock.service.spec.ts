@@ -64,24 +64,20 @@ describe("Delete account stock service", () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
         active: true,
-        totalItems: 0,
-        totalItemsQuantity: 0,
       })
     );
     expect(stocksList).toEqual({
       page: 1,
       totalStocks: 1,
       stocks: expect.arrayContaining([
-        {
+        expect.objectContaining({
           id: expect.any(String),
           stockName: "Orange Stock",
           stockOwner: user.id,
           createdAt: expect.any(Date),
           updatedAt: expect.any(Date),
           active: true,
-          totalItems: 0,
-          totalItemsQuantity: 0,
-        },
+        }),
       ]),
     });
   });

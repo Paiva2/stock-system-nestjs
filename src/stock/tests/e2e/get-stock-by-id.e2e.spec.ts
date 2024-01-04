@@ -5,6 +5,8 @@ import { hash } from "bcrypt";
 import { PrismaService } from "../../../infra/database/prisma.service";
 import { StockModule } from "../../stock.module";
 import { UserModule } from "../../../user/user.module";
+import { IStock } from "src/@types/types";
+import { randomUUID } from "crypto";
 
 describe("Get stock by id", () => {
   let app: INestApplication;
@@ -42,10 +44,36 @@ describe("Get stock by id", () => {
 
     const jwtToken = signIn.body.access_token;
 
-    const stockCreation = await prisma.stock.create({
+    const stockCreation: IStock = await prisma.stock.create({
       data: {
         stockName: "Orange Stock",
         stockOwner: user.id,
+      },
+    });
+
+    const category = await prisma.category.create({
+      data: {
+        name: "Fruits",
+      },
+    });
+
+    const firstStockItem = await prisma.stockItem.create({
+      data: {
+        itemName: "Orange",
+        quantity: 20,
+        categoryId: category.id,
+        description: "Big Orange",
+        stockId: stockCreation.id,
+      },
+    });
+
+    const secondStockItem = await prisma.stockItem.create({
+      data: {
+        itemName: "Little Orange",
+        quantity: 5,
+        categoryId: category.id,
+        description: "Little Orange",
+        stockId: stockCreation.id,
       },
     });
 
@@ -55,14 +83,33 @@ describe("Get stock by id", () => {
       .set("Authorization", `Bearer ${jwtToken}`);
 
     expect(getStock.statusCode).toEqual(200);
-    expect(getStock.body).toEqual(
-      expect.objectContaining({
-        id: stockCreation.id,
-        stockName: "Orange Stock",
-        stockOwner: user.id,
-        createdAt: expect.any(String),
-        updatedAt: expect.any(String),
-      }),
-    );
+    expect(getStock.body).toEqual({
+      id: stockCreation.id,
+      stockName: "Orange Stock",
+      stockOwner: user.id,
+      createdAt: expect.any(String),
+      updatedAt: expect.any(String),
+      totalItems: 2,
+      totalItemsQuantity: 25,
+      active: true,
+      stockItems: [
+        expect.objectContaining({
+          id: firstStockItem.id,
+          itemName: "Orange",
+          quantity: 20,
+          stockId: stockCreation.id,
+          description: "Big Orange",
+          categoryId: firstStockItem.categoryId,
+        }),
+        expect.objectContaining({
+          id: secondStockItem.id,
+          itemName: "Little Orange",
+          quantity: 5,
+          stockId: stockCreation.id,
+          description: "Little Orange",
+          categoryId: secondStockItem.categoryId,
+        }),
+      ],
+    });
   });
 });

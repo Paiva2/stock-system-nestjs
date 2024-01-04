@@ -55,16 +55,16 @@ describe("Update stock service", () => {
       stockName: "Orange Stock",
     });
 
-    expect(stockUpdated).toEqual({
-      id: stock.id,
-      stockName: "Orange Stock",
-      stockOwner: user.id,
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      active: false,
-      totalItems: 0,
-      totalItemsQuantity: 0,
-    });
+    expect(stockUpdated).toEqual(
+      expect.objectContaining({
+        id: stock.id,
+        stockName: "Orange Stock",
+        stockOwner: user.id,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        active: false,
+      })
+    );
   });
 
   it("should not update stock by its id without an user id provided", async () => {

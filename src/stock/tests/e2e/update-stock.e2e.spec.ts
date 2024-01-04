@@ -4,6 +4,7 @@ import request from "supertest";
 import { hash } from "bcrypt";
 import { PrismaService } from "../../../infra/database/prisma.service";
 import { AppModule } from "../../../app.module";
+import { IStock } from "src/@types/types";
 
 describe("Update stock controller", () => {
   let app: INestApplication;
@@ -41,7 +42,7 @@ describe("Update stock controller", () => {
 
     const jwtToken = signIn.body.access_token;
 
-    const stockCreation = await prisma.stock.create({
+    const stockCreation: IStock = await prisma.stock.create({
       data: {
         stockName: "Orange Stock",
         stockOwner: user.id,
@@ -59,7 +60,7 @@ describe("Update stock controller", () => {
     expect(updateStock.body.message).toEqual("Stock updated successfully.");
     expect(updateStock.statusCode).toEqual(200);
 
-    const getStock = await prisma.stock.findFirst({
+    const getStock: IStock = await prisma.stock.findFirst({
       where: {
         id: stockCreation.id,
       },
@@ -73,7 +74,7 @@ describe("Update stock controller", () => {
         createdAt: expect.any(Date),
         updatedAt: expect.any(Date),
         active: false,
-      }),
+      })
     );
   });
 });

@@ -5,7 +5,7 @@ import {
   Injectable,
   NotFoundException,
 } from "@nestjs/common";
-import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
+import { IStock, IStockCreate, IStockItem, IStockUpdate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
 import { UserInterface } from "../user/user.interface";
 import { StockItemInterface } from "src/stock_item/stock_item.interface";
@@ -71,16 +71,25 @@ export class StockService {
 
     const getAllStockItems = await this.stockItemInterface.getAll();
 
-    getAllStockItems.forEach((item) => {
-      const getItemStock = getAllStocks.stocks.find(
-        (stock) => stock.id === item.stockId
-      );
+    if (getAllStockItems.length) {
+      getAllStockItems.forEach((item) => {
+        const getItemStock = getAllStocks.stocks.find(
+          (stock) => stock.id === item.stockId
+        );
 
-      if (getItemStock) {
-        getItemStock.totalItems++;
-        getItemStock.totalItemsQuantity += item.quantity;
-      }
-    });
+        if (getItemStock) {
+          getItemStock.totalItems++;
+          getItemStock.totalItemsQuantity += item.quantity;
+        }
+      });
+    } else {
+      getAllStocks.stocks.map((stock) => {
+        stock.totalItems = 0;
+        stock.totalItemsQuantity = 0;
+
+        return stock;
+      });
+    }
 
     return getAllStocks;
   }
@@ -109,8 +118,7 @@ export class StockService {
     return deletedStock;
   }
 
-  //TODO: ADD STOCK ITEMS
-  async getStockById(userId: string, stockId: string): Promise<IStock> {
+  async getStockById(userId: string, stockId: string) {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
     }
@@ -135,7 +143,19 @@ export class StockService {
       throw new ForbiddenException("Invalid permissions.");
     }
 
-    return getStockById;
+    const getStockItems = await this.stockItemInterface.getByStockId(
+      getStockById.id
+    );
+
+    return {
+      ...getStockById,
+      totalItems: getStockItems.length,
+      totalItemsQuantity: getStockItems.reduce(
+        (acc, item) => (acc += item.quantity),
+        0
+      ),
+      stockItems: getStockItems,
+    };
   }
 
   async updateStock(userId: string, stock: IStockUpdate): Promise<IStock> {
@@ -162,7 +182,6 @@ export class StockService {
     return updateStock;
   }
 
-  //TODO: ADD ITENS QUANTITY TOTAL FOR EACH STOCK
   async filterStocks(
     userId: string,
     active: boolean,
@@ -199,6 +218,28 @@ export class StockService {
       stocksMetadata = await this.stockInterface.getActives(userId, page);
     } else {
       stocksMetadata = await this.stockInterface.getInactives(userId, page);
+    }
+
+    const getAllStockItems = await this.stockItemInterface.getAll();
+
+    if (getAllStockItems.length) {
+      getAllStockItems.forEach((item) => {
+        const getItemStock = stocksMetadata.stocks.find(
+          (stock) => stock.id === item.stockId
+        );
+
+        if (getItemStock) {
+          getItemStock.totalItems++;
+          getItemStock.totalItemsQuantity += item.quantity;
+        }
+      });
+    } else {
+      stocksMetadata.stocks.map((stock) => {
+        stock.totalItems = 0;
+        stock.totalItemsQuantity = 0;
+
+        return stock;
+      });
     }
 
     return {

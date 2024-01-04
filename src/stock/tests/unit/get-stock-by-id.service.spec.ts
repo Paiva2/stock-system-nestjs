@@ -13,12 +13,14 @@ import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
 import { StockItemInterface } from "src/stock_item/stock_item.interface";
 import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
+import { randomUUID } from "crypto";
 
 describe("Get stock by id service", () => {
   let sut: StockService;
   let module: TestingModule;
   let userService: UserService;
   let user: IUser;
+  let inMemoryStockItem: StockItemInterface;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -33,6 +35,7 @@ describe("Get stock by id service", () => {
 
     sut = module.get<StockService>(StockService);
     userService = module.get<UserService>(UserService);
+    inMemoryStockItem = module.get<StockItemInterface>(StockItemInterface);
 
     user = await userService.registerUserService({
       email: "johndoe@email.com",
@@ -52,6 +55,14 @@ describe("Get stock by id service", () => {
       stockName: "Apple Stock",
     });
 
+    const stockItem = await inMemoryStockItem.insert({
+      categoryId: randomUUID(),
+      itemName: "Apple",
+      quantity: 10,
+      stockId: stock.id,
+      description: "A Big Apple",
+    });
+
     const stockFiltered = await sut.getStockById(user.id, stock.id);
 
     expect(stockFiltered).toEqual({
@@ -61,8 +72,20 @@ describe("Get stock by id service", () => {
       createdAt: expect.any(Date),
       updatedAt: expect.any(Date),
       active: true,
-      totalItems: 0,
-      totalItemsQuantity: 0,
+      totalItems: 1,
+      totalItemsQuantity: 10,
+      stockItems: [
+        expect.objectContaining({
+          id: stockItem.id,
+          itemName: "Apple",
+          quantity: 10,
+          stockId: stock.id,
+          description: "A Big Apple",
+          categoryId: stockItem.categoryId,
+          createdAt: stockItem.createdAt,
+          updatedAt: stockItem.updatedAt,
+        }),
+      ],
     });
   });
 

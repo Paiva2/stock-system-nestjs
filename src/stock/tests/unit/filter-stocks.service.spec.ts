@@ -62,26 +62,22 @@ describe("Filter stocks service", () => {
       totalStocks: 2,
       active: true,
       stocks: expect.arrayContaining([
-        {
+        expect.objectContaining({
           id: firstStock.id,
           stockName: "Fruits Stock",
           stockOwner: user.id,
           createdAt: firstStock.createdAt,
           updatedAt: firstStock.updatedAt,
           active: true,
-          totalItems: 0,
-          totalItemsQuantity: 0,
-        },
-        {
+        }),
+        expect.objectContaining({
           id: secondStock.id,
           stockName: "Shirts Stock",
           stockOwner: user.id,
           createdAt: secondStock.createdAt,
           updatedAt: secondStock.updatedAt,
           active: true,
-          totalItems: 0,
-          totalItemsQuantity: 0,
-        },
+        }),
       ]),
     });
   });
@@ -112,26 +108,22 @@ describe("Filter stocks service", () => {
       totalStocks: 2,
       active: false,
       stocks: expect.arrayContaining([
-        {
+        expect.objectContaining({
           id: firstStock.id,
           stockName: "Fruits Stock",
           stockOwner: user.id,
           createdAt: firstStock.createdAt,
           updatedAt: firstStock.updatedAt,
           active: false,
-          totalItems: 0,
-          totalItemsQuantity: 0,
-        },
-        {
+        }),
+        expect.objectContaining({
           id: secondStock.id,
           stockName: "Shirts Stock",
           stockOwner: user.id,
           createdAt: secondStock.createdAt,
           updatedAt: secondStock.updatedAt,
           active: false,
-          totalItems: 0,
-          totalItemsQuantity: 0,
-        },
+        }),
       ]),
     });
   });

@@ -9,7 +9,7 @@ export class PrismaStockModel implements StockInterface {
 
   async getAll(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
     const perPage = 10;
 
@@ -31,20 +31,20 @@ export class PrismaStockModel implements StockInterface {
   }
 
   async create(userId: string, stock: IStockCreate): Promise<IStock> {
-    const createStock = await this.prismaService.stock.create({
+    const createStock: IStock = await this.prismaService.stock.create({
       data: {
         stockName: stock.stockName,
         stockOwner: userId,
       },
     });
 
+    createStock.totalItems = 0;
+    createStock.totalItemsQuantity = 0;
+
     return createStock;
   }
 
-  async getByStockName(
-    stockName: string,
-    userId: string,
-  ): Promise<IStock | null> {
+  async getByStockName(stockName: string, userId: string): Promise<IStock | null> {
     const findByUsername = await this.prismaService.stock.findFirst({
       where: {
         stockName,
@@ -106,7 +106,7 @@ export class PrismaStockModel implements StockInterface {
 
   async getActives(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
     const perPage = 10;
 
@@ -127,7 +127,7 @@ export class PrismaStockModel implements StockInterface {
   }
   async getInactives(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
     const perPage = 10;
 

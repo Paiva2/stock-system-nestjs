@@ -6,4 +6,6 @@ export abstract class StockItemInterface {
   abstract remove(stockId: string, stockItemId: string): Promise<IStockItem | null>;
 
   abstract getAll(): Promise<IStockItem[]>;
+
+  abstract getByStockId(stockId: string): Promise<IStockItem[]>;
 }

@@ -34,7 +34,7 @@ export class StockController {
   @UseGuards(AuthGuard)
   async createStockController(
     @Body(ValidationPipe) createStockDto: CreateStockDto,
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
@@ -47,7 +47,7 @@ export class StockController {
   @UseGuards(AuthGuard)
   async getAllAccountStocksController(
     @Req() req: Request,
-    @Query(ValidationPipe) query: GetAllAccountStocksDto,
+    @Query(ValidationPipe) query: GetAllAccountStocksDto
   ) {
     const tokenParsed: IJwtSchema = req["user"];
     const { active, page } = query;
@@ -58,7 +58,7 @@ export class StockController {
       const getStocksFiltered = await this.stockService.filterStocks(
         tokenParsed.sub,
         filterActives,
-        +page,
+        +page
       );
 
       return getStocksFiltered;
@@ -66,7 +66,7 @@ export class StockController {
 
     const allStocks = await this.stockService.getAllAccountStocks(
       tokenParsed.sub,
-      +page,
+      +page
     );
 
     return allStocks;
@@ -76,14 +76,14 @@ export class StockController {
   @UseGuards(AuthGuard)
   async getStockByIdController(
     @Req() req: Request,
-    @Param(ValidationPipe) param: GetStockByIdDto,
+    @Param(ValidationPipe) param: GetStockByIdDto
   ) {
     const tokenParsed: IJwtSchema = req["user"];
     const { stockId } = param;
 
     const filteredStock = await this.stockService.getStockById(
       tokenParsed.sub,
-      stockId,
+      stockId
     );
 
     return filteredStock;
@@ -94,7 +94,7 @@ export class StockController {
   @UseGuards(AuthGuard)
   async deleteAccountStockController(
     @Req() req: Request,
-    @Param(ValidationPipe) param: DeleteAccountStockDto,
+    @Param(ValidationPipe) param: DeleteAccountStockDto
   ) {
     const tokenParsed: IJwtSchema = req["user"];
     const { stockId } = param;
@@ -110,7 +110,7 @@ export class StockController {
   async updateStockController(
     @Req() req: Request,
     @Param(ValidationPipe) param: UpdateStockParamDto,
-    @Body() updateStockDto: UpdateStockDto,
+    @Body() updateStockDto: UpdateStockDto
   ) {
     const tokenParsed: IJwtSchema = req["user"];
     const { stockId } = param;

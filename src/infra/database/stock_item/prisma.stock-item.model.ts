@@ -31,4 +31,18 @@ export class PrismaStockItemModel implements StockItemInterface {
       if (e.code === "P2025") return null;
     }
   }
+
+  async getAll(): Promise<IStockItem[]> {
+    return this.prismaService.stockItem.findMany({});
+  }
+
+  async getByStockId(stockId: string): Promise<IStockItem[]> {
+    const findStockItems = await this.prismaService.stockItem.findMany({
+      where: {
+        stockId,
+      },
+    });
+
+    return findStockItems;
+  }
 }

@@ -37,4 +37,10 @@ export class InMemoryStockItem implements StockItemInterface {
   async getAll(): Promise<IStockItem[]> {
     return this.stockItems;
   }
+
+  async getByStockId(stockId: string): Promise<IStockItem[]> {
+    const getStockItems = this.stockItems.filter((item) => item.stockId === stockId);
+
+    return getStockItems;
+  }
 }

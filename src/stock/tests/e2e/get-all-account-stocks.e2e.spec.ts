@@ -4,7 +4,7 @@ import request from "supertest";
 import { hash } from "bcrypt";
 import { PrismaService } from "../../../infra/database/prisma.service";
 import { AppModule } from "../../../app.module";
-import { IUser } from "../../../@types/types";
+import { IStock, IUser } from "../../../@types/types";
 
 describe("Get all account stocks", () => {
   let app: INestApplication;
@@ -44,7 +44,7 @@ describe("Get all account stocks", () => {
 
     const jwtToken = signIn.body.access_token;
 
-    const stockMocked = await prisma.stock.create({
+    const stockMocked: IStock = await prisma.stock.create({
       data: {
         stockName: "Orange Stock",
         stockOwner: user.id,
@@ -66,6 +66,8 @@ describe("Get all account stocks", () => {
           stockOwner: user.id,
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
+          totalItemsQuantity: 0,
+          totalItems: 0,
         }),
       ],
     });
@@ -86,7 +88,7 @@ describe("Get all account stocks", () => {
 
     const jwtToken = signIn.body.access_token;
 
-    await prisma.stock.create({
+    const stock = await prisma.stock.create({
       data: {
         stockName: "Orange Stock",
         stockOwner: user.id,
@@ -129,7 +131,14 @@ describe("Get all account stocks", () => {
         }),
       ],
     });
+
     expect(stocksList.statusCode).toEqual(200);
+
+    await prisma.stock.delete({
+      where: {
+        id: stock.id,
+      },
+    });
   });
 
   test("[GET]/stocks?active=false&page=1", async () => {
