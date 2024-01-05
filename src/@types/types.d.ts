@@ -59,6 +59,17 @@ export interface ICategoryCreation {
   name: string;
 }
 
+export interface IITem {
+  id?: string;
+  userAttatchmentsId?: string;
+  itemName: string;
+  description?: string;
+  categoryId: string;
+  createdAt?: Date;
+  updatedAt?: Date;
+  categoryName?: string;
+}
+
 export interface IStockItem {
   id: string;
   itemName: string;
@@ -74,7 +85,7 @@ export interface IStockItem {
 export interface IStockItemCreate {
   itemName: string;
   quantity: number;
-  stockId: string;
+  stockId?: string;
   description?: string;
   categoryId: string;
 }

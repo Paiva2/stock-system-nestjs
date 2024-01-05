@@ -5,6 +5,7 @@ import { AuthModule } from "./infra/http/auth/auth.module";
 import { StockModule } from "./stock/stock.module";
 import { StockItemModule } from "./stock_item/stock_item.module";
 import { CategoryModule } from "./category/category.module";
+import { ItemModule } from './item/item.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { CategoryModule } from "./category/category.module";
     StockModule,
     StockItemModule,
     CategoryModule,
+    ItemModule,
   ],
 })
 export class AppModule {}

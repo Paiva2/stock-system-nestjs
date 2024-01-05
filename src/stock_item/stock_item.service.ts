@@ -163,4 +163,18 @@ export class StockItemService {
 
     return getStockItem;
   }
+
+  /*   async listCreatedStockItemsInAccount(userId: string, item: IStockItemCreate) {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getStockItemsFromAccount = await this.stockItemInterface.
+  } */
 }
