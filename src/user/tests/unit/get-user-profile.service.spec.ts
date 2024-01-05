@@ -4,6 +4,8 @@ import { UserInterface } from "../../user.interface";
 import { UserService } from "../../user.service";
 import { InMemoryUser } from "../../user.in-memory";
 import { IUser } from "../../../@types/types";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Get user profile service", () => {
   let sut: UserService;
@@ -15,6 +17,7 @@ describe("Get user profile service", () => {
     module = await Test.createTestingModule({
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         UserService,
       ],
     }).compile();
@@ -46,6 +49,14 @@ describe("Get user profile service", () => {
       role: "default",
       secretQuestion: "Favourite Band",
       secretAnswer: "The Beatles",
+      userAttatchments: [
+        expect.objectContaining({
+          id: expect.any(String),
+          userId: getProfile.id,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        }),
+      ],
     });
   });
 

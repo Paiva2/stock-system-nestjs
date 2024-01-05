@@ -5,6 +5,8 @@ import { UserService } from "../../user.service";
 import { InMemoryUser } from "../../user.in-memory";
 import { IUser } from "../../../@types/types";
 import { compare } from "bcrypt";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Update user profile service", () => {
   let sut: UserService;
@@ -15,6 +17,7 @@ describe("Update user profile service", () => {
     module = await Test.createTestingModule({
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         UserService,
       ],
     }).compile();
@@ -41,23 +44,22 @@ describe("Update user profile service", () => {
       email: "johndoechange@email.com",
     });
 
-    const matchNewPassword = await compare(
-      "My new password",
-      updatedUser.password,
-    );
+    const matchNewPassword = await compare("My new password", updatedUser.password);
 
     expect(matchNewPassword).toBeTruthy();
-    expect(updatedUser).toEqual({
-      id: expect.any(String),
-      fullName: "Change my fullName",
-      email: "johndoechange@email.com",
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      role: "default",
-      password: expect.any(String),
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-    });
+    expect(updatedUser).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        fullName: "Change my fullName",
+        email: "johndoechange@email.com",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        role: "default",
+        password: expect.any(String),
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
+      })
+    );
   });
 
   it("should not update an user profile without an user id provided", async () => {

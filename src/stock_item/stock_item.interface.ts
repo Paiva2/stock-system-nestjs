@@ -10,4 +10,6 @@ export abstract class StockItemInterface {
   abstract getByStockId(stockId: string): Promise<IStockItem[]>;
 
   abstract updateById(stockItem: IStockItemUpdate): Promise<IStockItem | null>;
+
+  abstract getManyById(stockIds: string[]): Promise<IStockItem[]>;
 }

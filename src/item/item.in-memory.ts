@@ -1,7 +1,7 @@
+import { Injectable } from "@nestjs/common";
+import { randomUUID } from "crypto";
 import { IITem } from "src/@types/types";
 import { ItemInterface } from "./item.interface";
-import { randomUUID } from "crypto";
-import { Injectable } from "@nestjs/common";
 
 @Injectable()
 export class InMemoryItem implements ItemInterface {
@@ -10,7 +10,7 @@ export class InMemoryItem implements ItemInterface {
   async create(userId: string, item: IITem): Promise<IITem> {
     const { itemName, description, categoryId } = item;
 
-    const newItem = {
+    const newItem: IITem = {
       id: randomUUID(),
       itemName,
       description,

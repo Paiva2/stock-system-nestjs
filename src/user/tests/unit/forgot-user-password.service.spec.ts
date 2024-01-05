@@ -5,6 +5,8 @@ import { compare } from "bcrypt";
 import { UserInterface } from "../../user.interface";
 import { UserService } from "../../user.service";
 import { InMemoryUser } from "../../user.in-memory";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Forgot user password service", () => {
   let sut: UserService;
@@ -16,6 +18,7 @@ describe("Forgot user password service", () => {
     module = await Test.createTestingModule({
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         UserService,
       ],
     }).compile();
@@ -39,23 +42,25 @@ describe("Forgot user password service", () => {
     const updateUser = await sut.forgotUserPassword(
       "johndoe@email.com",
       "changepass",
-      "The Beatles",
+      "The Beatles"
     );
 
     const matchPasswords = await compare("changepass", updateUser.password);
 
     expect(matchPasswords).toBeTruthy();
-    expect(updateUser).toEqual({
-      id: expect.any(String),
-      password: expect.any(String),
-      fullName: "John Doe",
-      email: "johndoe@email.com",
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      role: "default",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-    });
+    expect(updateUser).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        password: expect.any(String),
+        fullName: "John Doe",
+        email: "johndoe@email.com",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        role: "default",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
+      })
+    );
   });
 
   it("should not update an user password if requests not provided correctly", async () => {
@@ -70,7 +75,7 @@ describe("Forgot user password service", () => {
     await expect(() => {
       return sut.forgotUserPassword(user.id, "12345", "The Beatles");
     }).rejects.toEqual(
-      new BadRequestException("New password must have at least 6 characters."),
+      new BadRequestException("New password must have at least 6 characters.")
     );
   });
 
@@ -79,7 +84,7 @@ describe("Forgot user password service", () => {
       return sut.forgotUserPassword(
         "inexistent user email",
         "changepass",
-        "The Beatles",
+        "The Beatles"
       );
     }).rejects.toEqual(new NotFoundException("User not found."));
   });
@@ -89,7 +94,7 @@ describe("Forgot user password service", () => {
       return sut.forgotUserPassword(
         "johndoe@email.com",
         "changepass",
-        "The Rolling Stones",
+        "The Rolling Stones"
       );
     }).rejects.toEqual(new NotFoundException("Secret answer doesn't match."));
   });

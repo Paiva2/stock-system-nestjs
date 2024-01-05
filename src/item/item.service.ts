@@ -33,7 +33,10 @@ export class ItemService {
       throw new NotFoundException("Category not found.");
     }
 
-    const newItem = await this.itemInterface.create(userId, item);
+    const newItem = await this.itemInterface.create(
+      getUser.userAttatchments[0].id,
+      item
+    );
 
     return newItem;
   }

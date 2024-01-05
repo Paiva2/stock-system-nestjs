@@ -9,6 +9,14 @@ export interface IUser {
   secretQuestion: string;
   secretAnswer: string;
   stocks?: [];
+  userAttatchments?: IUserAttatchments[];
+}
+
+export interface IUserAttatchments {
+  id: string;
+  userId: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IUserUpdate {

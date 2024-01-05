@@ -11,6 +11,8 @@ import { StockItemInterface } from "src/stock_item/stock_item.interface";
 import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 import { CategoryInterface } from "src/category/category.interface";
 import { InMemoryCategory } from "src/category/category.in-memory";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Filter stocks service", () => {
   let sut: StockService;
@@ -27,6 +29,7 @@ describe("Filter stocks service", () => {
         { provide: StockInterface, useClass: InMemoryStock },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
         { provide: CategoryInterface, useClass: InMemoryCategory },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         StockService,
         UserService,
       ],

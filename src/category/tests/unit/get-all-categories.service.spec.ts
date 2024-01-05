@@ -7,6 +7,8 @@ import { UserService } from "../../../user/user.service";
 import { CategoryService } from "../../category.service";
 import { CategoryInterface } from "../../category.interface";
 import { InMemoryCategory } from "../../category.in-memory";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Get categories service", () => {
   let sut: CategoryService;
@@ -19,6 +21,7 @@ describe("Get categories service", () => {
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: CategoryInterface, useClass: InMemoryCategory },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         CategoryService,
         UserService,
       ],

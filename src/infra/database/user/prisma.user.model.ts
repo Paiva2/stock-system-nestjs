@@ -44,6 +44,9 @@ export class PrismaUserModel implements UserInterface {
       where: {
         id: userId,
       },
+      include: {
+        userAttatchments: true,
+      },
     });
 
     if (!findUserById) return null;

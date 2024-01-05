@@ -3,6 +3,8 @@ import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { UserInterface } from "../../user.interface";
 import { UserService } from "../../user.service";
 import { InMemoryUser } from "../../user.in-memory";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Auth user service", () => {
   let sut: UserService;
@@ -12,6 +14,7 @@ describe("Auth user service", () => {
     module = await Test.createTestingModule({
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         UserService,
       ],
     }).compile();
@@ -37,16 +40,18 @@ describe("Auth user service", () => {
       password: "123456",
     });
 
-    expect(authUser).toEqual({
-      id: expect.any(String),
-      fullName: "John Doe",
-      email: "johndoe@email.com",
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      role: "default",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-    });
+    expect(authUser).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        fullName: "John Doe",
+        email: "johndoe@email.com",
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        role: "default",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
+      })
+    );
   });
 
   it("should not auth user if request isn't correctly provided", async () => {
@@ -70,7 +75,7 @@ describe("Auth user service", () => {
         password: "12345",
       });
     }).rejects.toEqual(
-      new BadRequestException("Password must have at least 6 characters."),
+      new BadRequestException("Password must have at least 6 characters.")
     );
   });
 

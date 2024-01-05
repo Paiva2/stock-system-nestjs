@@ -2,9 +2,14 @@ import { IUserCreation, IUser, IUserUpdate } from "src/@types/types";
 import { Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { UserInterface } from "./user.interface";
+import { UserAttatchmentsInterface } from "../user-attatchments/user-attatchments.interface";
 
 @Injectable()
 export class InMemoryUser implements UserInterface {
+  constructor(
+    private readonly inMemoryUserAttatchments: UserAttatchmentsInterface
+  ) {}
+
   private users = [] as IUser[];
 
   async create({
@@ -15,7 +20,7 @@ export class InMemoryUser implements UserInterface {
     secretQuestion,
     role = "default",
   }: IUserCreation): Promise<IUser> {
-    const newUser = {
+    const newUser: IUser = {
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -26,6 +31,10 @@ export class InMemoryUser implements UserInterface {
       secretAnswer,
       secretQuestion,
     };
+
+    const attatchment = await this.inMemoryUserAttatchments.create(newUser.id);
+
+    newUser.userAttatchments = Array(attatchment);
 
     this.users.push(newUser);
 

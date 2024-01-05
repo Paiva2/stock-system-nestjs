@@ -2,9 +2,12 @@ import { randomUUID } from "crypto";
 import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
 import { StockInterface } from "./stock.interface";
 import { Injectable } from "@nestjs/common";
+import { StockItemInterface } from "../stock_item/stock_item.interface";
 
 @Injectable()
 export class InMemoryStock implements StockInterface {
+  constructor(private readonly inMemoryStockItem: StockItemInterface) {}
+
   private stocks = [] as IStock[];
 
   async create(userId: string, stock: IStockCreate): Promise<IStock> {
@@ -24,6 +27,7 @@ export class InMemoryStock implements StockInterface {
     return newStock;
   }
 
+  //FIX PRISMA JOIN
   async getAll(
     userId: string,
     page: number
@@ -36,6 +40,30 @@ export class InMemoryStock implements StockInterface {
       (page - 1) * perPage,
       page * perPage
     );
+
+    const stockIds = paginatedStocks.map((stock) => stock.id);
+
+    const getAllStockIdItems = await this.inMemoryStockItem.getManyById(stockIds);
+
+    if (getAllStockIdItems.length) {
+      getAllStockIdItems.forEach((item) => {
+        const getItemStock = paginatedStocks.find(
+          (stock) => stock.id === item.stockId
+        );
+
+        if (getItemStock) {
+          getItemStock.totalItems++;
+          getItemStock.totalItemsQuantity += item.quantity;
+        }
+      });
+    } else {
+      paginatedStocks.map((stock) => {
+        stock.totalItems = 0;
+        stock.totalItemsQuantity = 0;
+
+        return stock;
+      });
+    }
 
     return {
       page,

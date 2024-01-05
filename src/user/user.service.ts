@@ -24,14 +24,12 @@ export class UserService {
 
     if (!user.secretAnswer || !user.secretQuestion) {
       throw new BadRequestException(
-        "Security question and answer must be provided.",
+        "Security question and answer must be provided."
       );
     }
 
     if (user.password.length < 6) {
-      throw new BadRequestException(
-        "Password must have at least 6 characters.",
-      );
+      throw new BadRequestException("Password must have at least 6 characters.");
     }
 
     const isUserRegistered = await this.userInterface.findByEmail(user.email);
@@ -50,10 +48,7 @@ export class UserService {
     return createUser;
   }
 
-  async authUserService(user: {
-    email: string;
-    password: string;
-  }): Promise<IUser> {
+  async authUserService(user: { email: string; password: string }): Promise<IUser> {
     if (!user.email) {
       throw new BadRequestException("Invalid e-mail provided.");
     }
@@ -63,9 +58,7 @@ export class UserService {
     }
 
     if (user.password.length < 6) {
-      throw new BadRequestException(
-        "Password must have at least 6 characters.",
-      );
+      throw new BadRequestException("Password must have at least 6 characters.");
     }
 
     const getUser = await this.userInterface.findByEmail(user.email);
@@ -80,11 +73,12 @@ export class UserService {
       throw new ForbiddenException("Invalid credentials.");
     }
 
-    this.deletePrivateKey(getUser, ["password"]);
+    this.deletePrivateKey(getUser, ["password", "userAttatchments"]);
 
     return getUser;
   }
 
+  //FIX PRISMA JOIN
   async getUserProfile(userId: string): Promise<IUser> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
@@ -104,7 +98,7 @@ export class UserService {
   async forgotUserPassword(
     userEmail: string,
     newPassword: string,
-    secretAnswer: string,
+    secretAnswer: string
   ): Promise<IUser> {
     if (!userEmail) {
       throw new BadRequestException("Invalid user email.");
@@ -115,9 +109,7 @@ export class UserService {
     }
 
     if (newPassword.length < 6) {
-      throw new BadRequestException(
-        "New password must have at least 6 characters.",
-      );
+      throw new BadRequestException("New password must have at least 6 characters.");
     }
 
     const getUser = await this.userInterface.findByEmail(userEmail);
@@ -136,16 +128,15 @@ export class UserService {
 
     const updateUserPassword = await this.userInterface.updatePassword(
       userEmail,
-      hashNewPassword,
+      hashNewPassword
     );
+
+    this.deletePrivateKey(getUser, ["userAttatchments"]);
 
     return updateUserPassword;
   }
 
-  async updateUserProfile(
-    userId: string,
-    userUpdate: IUserUpdate,
-  ): Promise<IUser> {
+  async updateUserProfile(userId: string, userUpdate: IUserUpdate): Promise<IUser> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
     }
@@ -162,7 +153,7 @@ export class UserService {
 
     if (userUpdate.email && userUpdate.email !== getUser.email) {
       const doesEmailAlreadyExists = await this.userInterface.findByEmail(
-        userUpdate.email,
+        userUpdate.email
       );
 
       if (doesEmailAlreadyExists) {
@@ -171,6 +162,8 @@ export class UserService {
     }
 
     const updateUser = await this.userInterface.update(userId, userUpdate);
+
+    this.deletePrivateKey(getUser, ["userAttatchments"]);
 
     return updateUser;
   }
@@ -190,6 +183,7 @@ export class UserService {
       "password",
       "secretAnswer",
       "secretQuestion",
+      "userAttatchments",
     ]);
 
     return getUser;

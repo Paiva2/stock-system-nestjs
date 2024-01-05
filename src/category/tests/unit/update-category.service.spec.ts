@@ -12,6 +12,8 @@ import { UserService } from "../../../user/user.service";
 import { CategoryService } from "../../category.service";
 import { CategoryInterface } from "../../category.interface";
 import { InMemoryCategory } from "../../category.in-memory";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Update category service", () => {
   let sut: CategoryService;
@@ -25,6 +27,7 @@ describe("Update category service", () => {
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: CategoryInterface, useClass: InMemoryCategory },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         CategoryService,
         UserService,
       ],
@@ -114,7 +117,7 @@ describe("Update category service", () => {
         name: "Shirts",
       });
     }).rejects.toEqual(
-      new ConflictException("An category with this name already exists."),
+      new ConflictException("An category with this name already exists.")
     );
   });
 

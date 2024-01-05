@@ -11,6 +11,8 @@ import { StockItemInterface } from "src/stock_item/stock_item.interface";
 import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 import { InMemoryCategory } from "src/category/category.in-memory";
 import { CategoryInterface } from "src/category/category.interface";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Update stock service", () => {
   let sut: StockService;
@@ -25,6 +27,7 @@ describe("Update stock service", () => {
         { provide: StockInterface, useClass: InMemoryStock },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
         { provide: CategoryInterface, useClass: InMemoryCategory },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         InMemoryStock,
         StockService,
         UserService,

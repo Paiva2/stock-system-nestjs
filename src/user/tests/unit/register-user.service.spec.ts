@@ -4,6 +4,8 @@ import { compare } from "bcrypt";
 import { UserInterface } from "../../user.interface";
 import { UserService } from "../../user.service";
 import { InMemoryUser } from "../../user.in-memory";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Register user service", () => {
   let sut: UserService;
@@ -13,6 +15,7 @@ describe("Register user service", () => {
     module = await Test.createTestingModule({
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         UserService,
       ],
     }).compile();
@@ -36,17 +39,19 @@ describe("Register user service", () => {
     const matchPasswords = await compare("123456", userCreation.password);
 
     expect(matchPasswords).toBeTruthy();
-    expect(userCreation).toEqual({
-      id: expect.any(String),
-      fullName: "John Doe",
-      email: "johndoe@email.com",
-      password: expect.any(String),
-      createdAt: expect.any(Date),
-      updatedAt: expect.any(Date),
-      role: "default",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-    });
+    expect(userCreation).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        fullName: "John Doe",
+        email: "johndoe@email.com",
+        password: expect.any(String),
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        role: "default",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
+      })
+    );
   });
 
   it("should not create a new user if e-mail already exists.", async () => {
@@ -99,7 +104,7 @@ describe("Register user service", () => {
         secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(
-      new ConflictException("Password must have at least 6 characters."),
+      new ConflictException("Password must have at least 6 characters.")
     );
   });
 
@@ -113,7 +118,7 @@ describe("Register user service", () => {
         secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(
-      new ConflictException("Password must have at least 6 characters."),
+      new ConflictException("Password must have at least 6 characters.")
     );
   });
 
@@ -127,7 +132,7 @@ describe("Register user service", () => {
         secretAnswer: "The Beatles",
       });
     }).rejects.toEqual(
-      new ConflictException("Security question and answer must be provided."),
+      new ConflictException("Security question and answer must be provided.")
     );
 
     await expect(() => {
@@ -139,7 +144,7 @@ describe("Register user service", () => {
         secretAnswer: "",
       });
     }).rejects.toEqual(
-      new ConflictException("Security question and answer must be provided."),
+      new ConflictException("Security question and answer must be provided.")
     );
   });
 });

@@ -4,6 +4,8 @@ import { UserInterface } from "../../user.interface";
 import { UserService } from "../../user.service";
 import { InMemoryUser } from "../../user.in-memory";
 import { IUser } from "../../../@types/types";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
 describe("Get user by id service", () => {
   let sut: UserService;
@@ -15,6 +17,7 @@ describe("Get user by id service", () => {
     module = await Test.createTestingModule({
       providers: [
         { provide: UserInterface, useClass: InMemoryUser },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         UserService,
       ],
     }).compile();

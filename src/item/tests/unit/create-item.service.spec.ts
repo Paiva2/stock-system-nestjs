@@ -8,8 +8,10 @@ import { InMemoryUser } from "../../../user/user.in-memory";
 import { InMemoryCategory } from "../../../category/category.in-memory";
 import { InMemoryItem } from "../../item.in-memory";
 import { ItemService } from "../../item.service";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
-describe.only("Create item service", () => {
+describe("Create item service", () => {
   let user: IUser;
   let category: ICategory;
 
@@ -25,6 +27,7 @@ describe.only("Create item service", () => {
         { provide: UserInterface, useClass: InMemoryUser },
         { provide: CategoryInterface, useClass: InMemoryCategory },
         { provide: ItemInterface, useClass: InMemoryItem },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         ItemService,
       ],
     }).compile();
@@ -56,7 +59,7 @@ describe.only("Create item service", () => {
     expect(itemCreation).toEqual(
       expect.objectContaining({
         id: itemCreation.id,
-        userAttatchmentsId: user.id,
+        userAttatchmentsId: user.userAttatchments[0].id,
         itemName: "Orange",
         description: "A Simple Orange",
         categoryId: category.id,

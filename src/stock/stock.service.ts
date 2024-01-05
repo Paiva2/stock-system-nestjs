@@ -6,10 +6,11 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import { IStock, IStockCreate, IStockUpdate } from "../@types/types";
-import { StockInterface } from "./stock.interface";
+
+import { StockItemInterface } from "../stock_item/stock_item.interface";
+import { CategoryInterface } from "../category/category.interface";
 import { UserInterface } from "../user/user.interface";
-import { StockItemInterface } from "src/stock_item/stock_item.interface";
-import { CategoryInterface } from "src/category/category.interface";
+import { StockInterface } from "./stock.interface";
 
 @Injectable()
 export class StockService {
@@ -70,28 +71,6 @@ export class StockService {
     }
 
     const getAllStocks = await this.stockInterface.getAll(userId, page);
-
-    const getAllStockItems = await this.stockItemInterface.getAll();
-
-    if (getAllStockItems.length) {
-      getAllStockItems.forEach((item) => {
-        const getItemStock = getAllStocks.stocks.find(
-          (stock) => stock.id === item.stockId
-        );
-
-        if (getItemStock) {
-          getItemStock.totalItems++;
-          getItemStock.totalItemsQuantity += item.quantity;
-        }
-      });
-    } else {
-      getAllStocks.stocks.map((stock) => {
-        stock.totalItems = 0;
-        stock.totalItemsQuantity = 0;
-
-        return stock;
-      });
-    }
 
     return getAllStocks;
   }

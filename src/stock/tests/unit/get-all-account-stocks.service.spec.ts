@@ -1,17 +1,19 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { IUser } from "../../../@types/types";
-import { StockInterface } from "../../stock.interface";
-import { UserInterface } from "../../../user/user.interface";
-import { InMemoryUser } from "../../../user/user.in-memory";
-import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
-import { StockItemInterface } from "src/stock_item/stock_item.interface";
-import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
+import { StockItemInterface } from "../../../stock_item/stock_item.interface";
+import { UserInterface } from "../../../user/user.interface";
+import { InMemoryUser } from "../../../user/user.in-memory";
+import { InMemoryStockItem } from "../../../stock_item/stock_item.in-memory";
+import { StockInterface } from "../../stock.interface";
+import { InMemoryStock } from "../../stock.in-memory";
+import { CategoryInterface } from "../../../category/category.interface";
+import { InMemoryCategory } from "../../../category/category.in-memory";
+import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
+import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 import { randomUUID } from "crypto";
-import { CategoryInterface } from "src/category/category.interface";
-import { InMemoryCategory } from "src/category/category.in-memory";
 
 describe("Get all account stocks service", () => {
   let sut: StockService;
@@ -27,6 +29,7 @@ describe("Get all account stocks service", () => {
         { provide: StockInterface, useClass: InMemoryStock },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
         { provide: CategoryInterface, useClass: InMemoryCategory },
+        { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
         StockService,
         UserService,
       ],

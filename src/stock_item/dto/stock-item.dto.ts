@@ -7,7 +7,7 @@ import {
   IsOptional,
   IsString,
   IsUUID,
-  Max,
+  MaxLength,
   Min,
   ValidateNested,
 } from "class-validator";
@@ -26,7 +26,7 @@ class StockItemDto {
 
   @IsOptional()
   @IsString()
-  @Max(500, { message: "description can't have more than 500 characters." })
+  @MaxLength(500, { message: "description can't have more than 500 characters." })
   description: string;
 
   @IsUUID()
@@ -71,7 +71,7 @@ class StockItemUpdateDto {
 
   @IsOptional()
   @IsString()
-  @Max(500, { message: "description can't have more than 500 characters." })
+  @MaxLength(500, { message: "description can't have more than 500 characters." })
   description?: string;
 
   @IsOptional()

@@ -5,8 +5,8 @@ import {
   IStockItemUpdate,
   IStock,
 } from "../@types/types";
-import { StockItemInterface } from "./stock_item.interface";
 import { Injectable } from "@nestjs/common";
+import { StockItemInterface } from "./stock_item.interface";
 
 @Injectable()
 export class InMemoryStockItem implements StockItemInterface {
@@ -70,5 +70,13 @@ export class InMemoryStockItem implements StockItemInterface {
     this.stockItems = updateStockItemsList;
 
     return findItem;
+  }
+
+  async getManyById(stockIds: string[]): Promise<IStockItem[]> {
+    const getStockItemsByIds = this.stockItems.filter((item) =>
+      stockIds.includes(item.stockId)
+    );
+
+    return getStockItemsByIds;
   }
 }
