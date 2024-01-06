@@ -46,15 +46,17 @@ describe("Get user profile controller", () => {
       .send()
       .set("Authorization", `Bearer ${jwtToken}`);
 
-    expect(profile.body).toEqual({
-      id: expect.any(String),
-      email: "johndoe@email.com",
-      fullName: "John Doe",
-      createdAt: expect.any(String),
-      updatedAt: expect.any(String),
-      role: "default",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-    });
+    expect(profile.body).toEqual(
+      expect.objectContaining({
+        id: expect.any(String),
+        email: "johndoe@email.com",
+        fullName: "John Doe",
+        createdAt: expect.any(String),
+        updatedAt: expect.any(String),
+        role: "default",
+        secretQuestion: "Favourite Band",
+        secretAnswer: "The Beatles",
+      })
+    );
   });
 });

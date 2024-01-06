@@ -19,7 +19,6 @@ export class InMemoryStock implements StockInterface {
       updatedAt: new Date(),
       active: true,
       totalItems: 0,
-      totalItemsQuantity: 0,
     };
 
     this.stocks.push(newStock);
@@ -27,7 +26,6 @@ export class InMemoryStock implements StockInterface {
     return newStock;
   }
 
-  //FIX PRISMA JOIN
   async getAll(
     userId: string,
     page: number
@@ -36,10 +34,13 @@ export class InMemoryStock implements StockInterface {
 
     const perPage = 10;
 
-    const paginatedStocks = getAllStocks.splice(
-      (page - 1) * perPage,
-      page * perPage
-    );
+    const paginatedStocks = getAllStocks
+      .map((stock) => {
+        stock.totalItems = 0;
+
+        return stock;
+      })
+      .splice((page - 1) * perPage, page * perPage);
 
     const stockIds = paginatedStocks.map((stock) => stock.id);
 
@@ -53,15 +54,7 @@ export class InMemoryStock implements StockInterface {
 
         if (getItemStock) {
           getItemStock.totalItems++;
-          getItemStock.totalItemsQuantity += item.quantity;
         }
-      });
-    } else {
-      paginatedStocks.map((stock) => {
-        stock.totalItems = 0;
-        stock.totalItemsQuantity = 0;
-
-        return stock;
       });
     }
 
@@ -125,21 +118,50 @@ export class InMemoryStock implements StockInterface {
     return updatedStock;
   }
 
-  async getActives(
+  async getByStatus(
     userId: string,
-    page: number
+    page: number,
+    active: boolean
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
-    const findStocks = this.stocks.filter(
-      (stock) => stock.active && stock.stockOwner === userId
-    );
+    const findStocks = this.stocks.filter((stock) => {
+      const filterByStatus = active ? stock.active : !stock.active;
+
+      return filterByStatus && stock.stockOwner === userId;
+    });
 
     const perPage = 10;
     const totalStocks = findStocks.length;
 
+    let stocksPaginated = findStocks
+      .map((stock) => {
+        stock.totalItems = 0;
+
+        return stock;
+      })
+      .splice((page - 1) * perPage, perPage * page);
+
+    const getStocksIds = stocksPaginated.map((stock) => stock.id);
+
+    const getStockItems = await this.inMemoryStockItem.getManyById(getStocksIds);
+
+    if (getStockItems.length) {
+      getStockItems.forEach((item) => {
+        const getItemStock = stocksPaginated.find(
+          (stock) => stock.id === item.stockId
+        );
+
+        if (getItemStock) {
+          getItemStock.totalItems++;
+        }
+
+        return item;
+      });
+    }
+
     return {
       page,
       totalStocks,
-      stocks: findStocks.splice((page - 1) * perPage, perPage * page),
+      stocks: stocksPaginated,
     };
   }
 

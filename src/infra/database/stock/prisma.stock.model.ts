@@ -49,7 +49,6 @@ export class PrismaStockModel implements StockInterface {
     });
 
     createStock.totalItems = 0;
-    createStock.totalItemsQuantity = 0;
 
     return createStock;
   }
@@ -114,46 +113,39 @@ export class PrismaStockModel implements StockInterface {
     }
   }
 
-  async getActives(
+  async getByStatus(
     userId: string,
-    page: number
+    page: number,
+    active: boolean
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
     const perPage = 10;
 
-    const getStocksByFilter = await this.prismaService.stock.findMany({
+    const filterStocks: IStock[] = await this.prismaService.stock.findMany({
       where: {
-        active: true,
+        active,
         AND: {
           stockOwner: userId,
         },
       },
-    });
-
-    return {
-      page,
-      totalStocks: getStocksByFilter.length,
-      stocks: getStocksByFilter.splice((page - 1) * perPage, perPage * page),
-    };
-  }
-  async getInactives(
-    userId: string,
-    page: number
-  ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
-    const perPage = 10;
-
-    const getStocksByFilter = await this.prismaService.stock.findMany({
-      where: {
-        active: false,
-        AND: {
-          stockOwner: userId,
-        },
+      include: {
+        items: true,
       },
+      skip: (page - 1) * perPage,
+      take: page * perPage,
+    });
+
+    const formatStocksWithItemCount = filterStocks.map((stock) => {
+      stock.totalItems = stock.items.length;
+
+      delete stock.items;
+
+      return stock;
     });
 
     return {
       page,
-      totalStocks: getStocksByFilter.length,
-      stocks: getStocksByFilter.splice((page - 1) * perPage, perPage * page),
+      totalStocks: formatStocksWithItemCount.length,
+      stocks: formatStocksWithItemCount,
     };
   }
 }

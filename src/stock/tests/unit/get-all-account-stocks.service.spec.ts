@@ -107,7 +107,6 @@ describe("Get all account stocks service", () => {
           updatedAt: expect.any(Date),
           active: true,
           totalItems: 2,
-          totalItemsQuantity: 7,
         },
         {
           id: expect.any(String),
@@ -117,7 +116,6 @@ describe("Get all account stocks service", () => {
           updatedAt: expect.any(Date),
           active: true,
           totalItems: 2,
-          totalItemsQuantity: 10,
         },
       ]),
     });

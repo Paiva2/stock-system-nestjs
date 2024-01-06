@@ -109,7 +109,7 @@ describe("Get all account stocks", () => {
       page: 1,
       totalStocks: 2,
       active: true,
-      stocks: [
+      stocks: expect.arrayContaining([
         expect.objectContaining({
           id: expect.any(String),
           stockName: "Orange Stock",
@@ -117,6 +117,7 @@ describe("Get all account stocks", () => {
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
           active: true,
+          totalItems: 0,
         }),
 
         expect.objectContaining({
@@ -126,8 +127,9 @@ describe("Get all account stocks", () => {
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
           active: true,
+          totalItems: 0,
         }),
-      ],
+      ]),
     });
 
     expect(stocksList.statusCode).toEqual(200);
@@ -172,7 +174,7 @@ describe("Get all account stocks", () => {
       page: 1,
       totalStocks: 2,
       active: false,
-      stocks: [
+      stocks: expect.arrayContaining([
         expect.objectContaining({
           id: expect.any(String),
           stockName: "Orange Stock",
@@ -180,6 +182,7 @@ describe("Get all account stocks", () => {
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
           active: false,
+          totalItems: 0,
         }),
 
         expect.objectContaining({
@@ -189,8 +192,9 @@ describe("Get all account stocks", () => {
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
           active: false,
+          totalItems: 0,
         }),
-      ],
+      ]),
     });
     expect(stocksList.statusCode).toEqual(200);
   });

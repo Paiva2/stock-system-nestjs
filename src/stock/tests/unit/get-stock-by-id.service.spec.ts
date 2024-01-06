@@ -7,16 +7,16 @@ import {
 import { IUser } from "../../../@types/types";
 import { StockInterface } from "../../stock.interface";
 import { UserInterface } from "../../../user/user.interface";
-import { CategoryInterface } from "src/category/category.interface";
-import { StockItemInterface } from "src/stock_item/stock_item.interface";
 import { InMemoryUser } from "../../../user/user.in-memory";
-import { InMemoryCategory } from "src/category/category.in-memory";
-import { InMemoryStockItem } from "src/stock_item/stock_item.in-memory";
 import { InMemoryStock } from "../../stock.in-memory";
 import { StockService } from "../../stock.service";
 import { UserService } from "../../../user/user.service";
 import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
 import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
+import { StockItemInterface } from "../../../stock_item/stock_item.interface";
+import { CategoryInterface } from "../../../category/category.interface";
+import { InMemoryStockItem } from "../../../stock_item/stock_item.in-memory";
+import { InMemoryCategory } from "../../../category/category.in-memory";
 
 describe("Get stock by id service", () => {
   let sut: StockService;
@@ -85,7 +85,6 @@ describe("Get stock by id service", () => {
       updatedAt: expect.any(Date),
       active: true,
       totalItems: 1,
-      totalItemsQuantity: 10,
       stockItems: [
         expect.objectContaining({
           id: stockItem.id,

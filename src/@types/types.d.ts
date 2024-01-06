@@ -43,7 +43,6 @@ export interface IStock {
   updatedAt: Date;
   active: boolean;
   totalItems?: number;
-  totalItemsQuantity?: number;
   items?: IStockItem[];
 }
 

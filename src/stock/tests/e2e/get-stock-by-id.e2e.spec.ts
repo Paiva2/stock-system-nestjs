@@ -6,7 +6,6 @@ import { PrismaService } from "../../../infra/database/prisma.service";
 import { StockModule } from "../../stock.module";
 import { UserModule } from "../../../user/user.module";
 import { IStock } from "src/@types/types";
-import { randomUUID } from "crypto";
 
 describe("Get stock by id", () => {
   let app: INestApplication;
@@ -37,6 +36,12 @@ describe("Get stock by id", () => {
       },
     });
 
+    const userAttatchments = await prisma.userAttatchments.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
     const signIn = await request(app.getHttpServer()).post("/sign-in").send({
       email: "johndoe@email.com",
       password: "123456",
@@ -54,6 +59,7 @@ describe("Get stock by id", () => {
     const category = await prisma.category.create({
       data: {
         name: "Fruits",
+        userAttatchmentsId: userAttatchments.id,
       },
     });
 
@@ -90,7 +96,6 @@ describe("Get stock by id", () => {
       createdAt: expect.any(String),
       updatedAt: expect.any(String),
       totalItems: 2,
-      totalItemsQuantity: 25,
       active: true,
       stockItems: [
         expect.objectContaining({

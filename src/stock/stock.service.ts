@@ -99,6 +99,7 @@ export class StockService {
     return deletedStock;
   }
 
+  //FIX JOIN
   async getStockById(userId: string, stockId: string) {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
@@ -157,15 +158,9 @@ export class StockService {
 
     const totalItems = formatStockItemsInformations.length;
 
-    const totalItemsQuantity = formatStockItemsInformations.reduce(
-      (acc, item) => (acc += item.quantity),
-      0
-    );
-
     return {
       ...getStockById,
       totalItems,
-      totalItemsQuantity,
       stockItems: formatStockItemsInformations,
     };
   }
@@ -194,7 +189,6 @@ export class StockService {
     return updateStock;
   }
 
-  //FIX JOIN
   async filterStocks(
     userId: string,
     active: boolean,
@@ -227,33 +221,7 @@ export class StockService {
       stocks: IStock[];
     };
 
-    if (active) {
-      stocksMetadata = await this.stockInterface.getActives(userId, page);
-    } else {
-      stocksMetadata = await this.stockInterface.getInactives(userId, page);
-    }
-
-    const getAllStockItems = await this.stockItemInterface.getAll();
-
-    if (getAllStockItems.length) {
-      getAllStockItems.forEach((item) => {
-        const getItemStock = stocksMetadata.stocks.find(
-          (stock) => stock.id === item.stockId
-        );
-
-        if (getItemStock) {
-          getItemStock.totalItems++;
-          getItemStock.totalItemsQuantity += item.quantity;
-        }
-      });
-    } else {
-      stocksMetadata.stocks.map((stock) => {
-        stock.totalItems = 0;
-        stock.totalItemsQuantity = 0;
-
-        return stock;
-      });
-    }
+    stocksMetadata = await this.stockInterface.getByStatus(userId, page, active);
 
     return {
       active,

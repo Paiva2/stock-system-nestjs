@@ -24,6 +24,12 @@ export class PrismaUserModel implements UserInterface {
       },
     });
 
+    await this.prismaService.userAttatchments.create({
+      data: {
+        userId: createUser.id,
+      },
+    });
+
     return createUser;
   }
 

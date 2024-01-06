@@ -5,17 +5,14 @@ export abstract class StockInterface {
 
   abstract getAll(
     userId: string,
-    page: number,
+    page: number
   ): Promise<{
     page: number;
     totalStocks: number;
     stocks: IStock[];
   }>;
 
-  abstract getByStockName(
-    stockName: string,
-    userId: string,
-  ): Promise<IStock | null>;
+  abstract getByStockName(stockName: string, userId: string): Promise<IStock | null>;
 
   abstract delete(stockId: string, userId: string): Promise<IStock | null>;
 
@@ -23,18 +20,10 @@ export abstract class StockInterface {
 
   abstract update(userId: string, stock: IStockUpdate): Promise<IStock | null>;
 
-  abstract getActives(
+  abstract getByStatus(
     userId: string,
     page: number,
-  ): Promise<{
-    page: number;
-    totalStocks: number;
-    stocks: IStock[];
-  }>;
-
-  abstract getInactives(
-    userId: string,
-    page: number,
+    active: boolean
   ): Promise<{
     page: number;
     totalStocks: number;
