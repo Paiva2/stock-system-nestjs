@@ -24,7 +24,7 @@ describe("Delete category controller", () => {
   it("[DELETE]/category/delete/:categoryId", async () => {
     const hashPassword = await hash("123456", 8);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email: "johndoe@email.com",
         fullName: "John Doe",
@@ -32,6 +32,12 @@ describe("Delete category controller", () => {
         secretQuestion: "Favourite Band",
         secretAnswer: "The Beatles",
         role: "admin",
+      },
+    });
+
+    const userAttatchment = await prisma.userAttatchments.create({
+      data: {
+        userId: user.id,
       },
     });
 
@@ -45,6 +51,7 @@ describe("Delete category controller", () => {
     const categoryCreation = await prisma.category.create({
       data: {
         name: "Fruits",
+        userAttatchmentsId: userAttatchment.id,
       },
     });
 
@@ -53,14 +60,13 @@ describe("Delete category controller", () => {
       .set("Authorization", `Bearer ${jwtToken}`)
       .send();
 
-    expect(deleteCategory.body.message).toEqual(
-      "Category successfully deleted.",
-    );
+    expect(deleteCategory.body.message).toEqual("Category successfully deleted.");
     expect(deleteCategory.statusCode).toEqual(200);
 
     const getDeletedCategory = await prisma.category.findFirst({
       where: {
         name: "Fruits",
+        userAttatchmentsId: userAttatchment.id,
       },
     });
 

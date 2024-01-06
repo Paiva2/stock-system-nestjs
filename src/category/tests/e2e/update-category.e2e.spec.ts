@@ -24,7 +24,7 @@ describe("Update category controller", () => {
   it("[PATCH]/category", async () => {
     const hashPassword = await hash("123456", 8);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email: "johndoe@email.com",
         fullName: "John Doe",
@@ -32,6 +32,12 @@ describe("Update category controller", () => {
         secretQuestion: "Favourite Band",
         secretAnswer: "The Beatles",
         role: "admin",
+      },
+    });
+
+    const userAttatchment = await prisma.userAttatchments.create({
+      data: {
+        userId: user.id,
       },
     });
 
@@ -45,6 +51,7 @@ describe("Update category controller", () => {
     const categoryCreation = await prisma.category.create({
       data: {
         name: "Fruits",
+        userAttatchmentsId: userAttatchment.id,
       },
     });
 
@@ -56,14 +63,13 @@ describe("Update category controller", () => {
         name: "Shirts",
       });
 
-    expect(categoryUpdate.body.message).toEqual(
-      "Category successfully updated.",
-    );
+    expect(categoryUpdate.body.message).toEqual("Category successfully updated.");
     expect(categoryUpdate.statusCode).toEqual(200);
 
     const getCategoryUpdated = await prisma.category.findFirst({
       where: {
         id: categoryCreation.id,
+        userAttatchmentsId: userAttatchment.id,
       },
     });
 
@@ -72,7 +78,8 @@ describe("Update category controller", () => {
         id: getCategoryUpdated.id,
         name: "Shirts",
         createdAt: expect.any(Date),
-      }),
+        userAttatchmentsId: userAttatchment.id,
+      })
     );
   });
 });

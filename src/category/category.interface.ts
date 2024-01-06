@@ -20,9 +20,15 @@ export abstract class CategoryInterface {
     categories: ICategory[];
   }>;
 
-  abstract delete(categoryId: string): Promise<ICategory | null>;
+  abstract delete(
+    userAttatchmentId: string,
+    categoryId: string
+  ): Promise<ICategory | null>;
 
-  abstract update(category: { id: string; name: string }): Promise<ICategory>;
+  abstract update(
+    userAttatchmentId: string,
+    category: { id: string; name: string }
+  ): Promise<ICategory>;
 
   abstract findById(categoryId: string): Promise<ICategory | null>;
 

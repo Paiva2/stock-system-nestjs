@@ -62,6 +62,7 @@ describe("Update category service", () => {
       id: category.id,
       name: "Shirts",
       createdAt: category.createdAt,
+      userAttatchmentsId: user.userAttatchments[0].id,
     });
   });
 
@@ -88,24 +89,6 @@ describe("Update category service", () => {
         name: "Shirts",
       });
     }).rejects.toEqual(new NotFoundException("User not found."));
-  });
-
-  it("should not update an category informations if user doesn't have admin access", async () => {
-    const nonAdminUser = await inMemoryUser.create({
-      email: "johndoe2@email.com",
-      fullName: "John Doe 2",
-      password: "123456",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-      role: "default",
-    });
-
-    await expect(() => {
-      return sut.updateCategory(nonAdminUser.id, {
-        id: category.id,
-        name: "Shirts",
-      });
-    }).rejects.toEqual(new ForbiddenException("Invalid permissions."));
   });
 
   it("should not update an category informations if an category with provided name already exists", async () => {

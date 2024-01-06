@@ -89,11 +89,10 @@ export class CategoryService {
       throw new NotFoundException("User not found.");
     }
 
-    if (getUser.role !== "admin") {
-      throw new ForbiddenException("Invalid permissions.");
-    }
-
-    const deleteCategory = await this.categoryInterface.delete(categoryId);
+    const deleteCategory = await this.categoryInterface.delete(
+      getUser.userAttatchments[0].id,
+      categoryId
+    );
 
     if (!deleteCategory) {
       throw new NotFoundException("Category not found.");
@@ -124,7 +123,10 @@ export class CategoryService {
       throw new ForbiddenException("Invalid permissions.");
     }
 
+    const userAttatchmentId = getUser.userAttatchments[0].id;
+
     const hasACategoryWithThisName = await this.categoryInterface.findByName(
+      userAttatchmentId,
       categoryUpdate.name
     );
 
@@ -132,7 +134,10 @@ export class CategoryService {
       throw new ConflictException("An category with this name already exists.");
     }
 
-    const updateCategoryName = await this.categoryInterface.update(categoryUpdate);
+    const updateCategoryName = await this.categoryInterface.update(
+      userAttatchmentId,
+      categoryUpdate
+    );
 
     if (!updateCategoryName) {
       throw new NotFoundException("Category not found.");

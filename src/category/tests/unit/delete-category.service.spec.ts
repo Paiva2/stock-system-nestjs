@@ -57,6 +57,7 @@ describe("Delete category service", () => {
       id: newCategory.id,
       name: "Fruits",
       createdAt: newCategory.createdAt,
+      userAttatchmentsId: user.userAttatchments[0].id,
     });
   });
 
@@ -80,20 +81,5 @@ describe("Delete category service", () => {
     await expect(() => {
       return sut.deleteCategory(user.id, "Inexistent category id");
     }).rejects.toEqual(new NotFoundException("Category not found."));
-  });
-
-  it("should not delete category if user isn't an admin", async () => {
-    const nonAdminUser = await inMemoryUser.create({
-      email: "johndoe2@email.com",
-      fullName: "John Doe 2",
-      password: "123456",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-      role: "default",
-    });
-
-    await expect(() => {
-      return sut.deleteCategory(nonAdminUser.id, "Any category id");
-    }).rejects.toEqual(new ForbiddenException("Invalid permissions."));
   });
 });

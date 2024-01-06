@@ -57,9 +57,14 @@ export class InMemoryCategory implements CategoryInterface {
     };
   }
 
-  async delete(categoryId: string): Promise<ICategory | null> {
+  async delete(
+    userAttatchmentId: string,
+    categoryId: string
+  ): Promise<ICategory | null> {
     const categoryToRemove = this.categories.find(
-      (category) => category.id === categoryId
+      (category) =>
+        category.id === categoryId &&
+        category.userAttatchmentsId === userAttatchmentId
     );
 
     if (!categoryToRemove) return null;
@@ -71,9 +76,14 @@ export class InMemoryCategory implements CategoryInterface {
     return categoryToRemove;
   }
 
-  async update(category: { id: string; name: string }): Promise<ICategory> {
+  async update(
+    userAttatchmentId: string,
+    category: { id: string; name: string }
+  ): Promise<ICategory> {
     const findCategoryToUpdate = this.categories.find(
-      (categoryUpdating) => categoryUpdating.id === category.id
+      (categoryUpdating) =>
+        categoryUpdating.id === category.id &&
+        categoryUpdating.userAttatchmentsId === userAttatchmentId
     );
 
     if (!findCategoryToUpdate) return null;

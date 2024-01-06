@@ -17,10 +17,16 @@ export class PrismaCategoryModel implements CategoryInterface {
     return createCategory;
   }
 
-  async findByName(categoryName: string): Promise<ICategory> {
+  async findByName(
+    userAttatchmentId: string,
+    categoryName: string
+  ): Promise<ICategory> {
     const findCategory = await this.prismaService.category.findFirst({
       where: {
         name: categoryName,
+        AND: {
+          userAttatchmentsId: userAttatchmentId,
+        },
       },
     });
 
@@ -29,14 +35,21 @@ export class PrismaCategoryModel implements CategoryInterface {
     return findCategory;
   }
 
-  async getAll(page: number): Promise<{
+  async getAll(
+    page: number,
+    userAttatchmentId: string
+  ): Promise<{
     page: number;
     totalCategories: number;
     categories: ICategory[];
   }> {
     const perPage = 10;
 
-    const categories = await this.prismaService.category.findMany({});
+    const categories = await this.prismaService.category.findMany({
+      where: {
+        userAttatchmentsId: userAttatchmentId,
+      },
+    });
 
     const categoriesCount = categories.length;
 
@@ -52,11 +65,12 @@ export class PrismaCategoryModel implements CategoryInterface {
     };
   }
 
-  async delete(categoryId: string): Promise<ICategory> {
+  async delete(userAttatchmentId: string, categoryId: string): Promise<ICategory> {
     try {
       const deleteCategory = await this.prismaService.category.delete({
         where: {
           id: categoryId,
+          userAttatchmentsId: userAttatchmentId,
         },
       });
 
@@ -66,11 +80,17 @@ export class PrismaCategoryModel implements CategoryInterface {
     }
   }
 
-  async update(category: { id: string; name: string }): Promise<ICategory> {
+  async update(
+    userAttatchmentId: string,
+    category: { id: string; name: string }
+  ): Promise<ICategory> {
     try {
       const updateCategory = await this.prismaService.category.update({
         where: {
           id: category.id,
+          AND: {
+            userAttatchmentsId: userAttatchmentId,
+          },
         },
         data: category,
       });
