@@ -66,7 +66,10 @@ export class CategoryService {
       throw new NotFoundException("User not found.");
     }
 
-    const categories = await this.categoryInterface.getAll(page);
+    const categories = await this.categoryInterface.getAll(
+      page,
+      getUser.userAttatchments[0].id
+    );
 
     return categories;
   }

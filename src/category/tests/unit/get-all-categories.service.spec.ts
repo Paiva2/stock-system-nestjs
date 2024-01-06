@@ -58,11 +58,13 @@ describe("Get categories service", () => {
           id: expect.any(String),
           name: "Fruits",
           createdAt: expect.any(Date),
+          userAttatchmentsId: user.userAttatchments[0].id,
         }),
         expect.objectContaining({
           id: expect.any(String),
           name: "Shirts",
           createdAt: expect.any(Date),
+          userAttatchmentsId: user.userAttatchments[0].id,
         }),
       ],
     });

@@ -24,7 +24,7 @@ describe("Get all categories controller", () => {
   it("[GET]/categories", async () => {
     const hashPassword = await hash("123456", 8);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email: "johndoe@email.com",
         fullName: "John Doe",
@@ -32,6 +32,12 @@ describe("Get all categories controller", () => {
         secretQuestion: "Favourite Band",
         secretAnswer: "The Beatles",
         role: "default",
+      },
+    });
+
+    const userAttatchments = await prisma.userAttatchments.create({
+      data: {
+        userId: user.id,
       },
     });
 
@@ -45,12 +51,14 @@ describe("Get all categories controller", () => {
     await prisma.category.create({
       data: {
         name: "Fruits",
+        userAttatchmentsId: userAttatchments.id,
       },
     });
 
     await prisma.category.create({
       data: {
         name: "Shirts",
+        userAttatchmentsId: userAttatchments.id,
       },
     });
 
@@ -69,12 +77,14 @@ describe("Get all categories controller", () => {
           id: expect.any(String),
           name: "Fruits",
           createdAt: expect.any(String),
+          userAttatchmentsId: userAttatchments.id,
         }),
 
         expect.objectContaining({
           id: expect.any(String),
           name: "Shirts",
           createdAt: expect.any(String),
+          userAttatchmentsId: userAttatchments.id,
         }),
       ],
     });

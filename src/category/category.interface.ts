@@ -11,7 +11,10 @@ export abstract class CategoryInterface {
     categoryName: string
   ): Promise<ICategory | null>;
 
-  abstract getAll(page: number): Promise<{
+  abstract getAll(
+    page: number,
+    userAttatchmentId: string
+  ): Promise<{
     page: number;
     totalCategories: number;
     categories: ICategory[];

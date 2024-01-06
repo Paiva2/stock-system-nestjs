@@ -35,7 +35,10 @@ export class InMemoryCategory implements CategoryInterface {
     return findCategory;
   }
 
-  async getAll(page: number): Promise<{
+  async getAll(
+    page: number,
+    userAttatchmentId: string
+  ): Promise<{
     page: number;
     totalCategories: number;
     categories: ICategory[];
@@ -43,10 +46,14 @@ export class InMemoryCategory implements CategoryInterface {
     const totalCategories = this.categories.length;
     const perPage = 10;
 
+    const findUserCategories = this.categories
+      .filter((category) => category.userAttatchmentsId === userAttatchmentId)
+      .splice((page - 1) * perPage, page * perPage);
+
     return {
       page,
       totalCategories,
-      categories: this.categories.splice((page - 1) * perPage, page * perPage),
+      categories: findUserCategories,
     };
   }
 
