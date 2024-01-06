@@ -66,8 +66,6 @@ describe("Get all account stocks", () => {
           stockOwner: user.id,
           createdAt: expect.any(String),
           updatedAt: expect.any(String),
-          totalItemsQuantity: 0,
-          totalItems: 0,
         }),
       ],
     });

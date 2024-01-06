@@ -78,7 +78,6 @@ export class UserService {
     return getUser;
   }
 
-  //FIX PRISMA JOIN
   async getUserProfile(userId: string): Promise<IUser> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");

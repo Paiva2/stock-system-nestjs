@@ -194,6 +194,7 @@ export class StockService {
     return updateStock;
   }
 
+  //FIX JOIN
   async filterStocks(
     userId: string,
     active: boolean,

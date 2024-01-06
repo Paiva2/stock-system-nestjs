@@ -13,20 +13,30 @@ export class PrismaStockModel implements StockInterface {
   ): Promise<{ page: number; totalStocks: number; stocks: IStock[] }> {
     const perPage = 10;
 
-    const stocks = await this.prismaService.stock.findMany({
+    let stocks: IStock[] = await this.prismaService.stock.findMany({
       where: {
         stockOwner: userId,
       },
+      include: {
+        items: true,
+      },
+
+      skip: (page - 1) * perPage,
+      take: page * perPage,
     });
 
-    const stocksCount = stocks.length;
+    const formatStocksWithItemCount = stocks.map((stock) => {
+      stock.totalItems = stock.items.length;
 
-    const paginatedStocks = stocks.splice((page - 1) * perPage, page * perPage);
+      delete stock.items;
+
+      return stock;
+    });
 
     return {
       page,
-      totalStocks: stocksCount,
-      stocks: paginatedStocks,
+      totalStocks: stocks.length,
+      stocks: formatStocksWithItemCount,
     };
   }
 
