@@ -54,7 +54,16 @@ export class InMemoryUser implements UserInterface {
 
     if (!findUser) return null;
 
-    return findUser;
+    const getUserAttatchment = await this.inMemoryUserAttatchments.findByUserId(
+      findUser.id
+    );
+
+    const formatUser: IUser = {
+      ...findUser,
+      userAttatchments: [getUserAttatchment],
+    };
+
+    return formatUser;
   }
 
   async updatePassword(userEmail: string, newPassword: string): Promise<IUser> {

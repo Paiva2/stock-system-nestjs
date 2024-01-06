@@ -7,11 +7,12 @@ import { Injectable } from "@nestjs/common";
 export class InMemoryCategory implements CategoryInterface {
   private categories = [] as ICategory[];
 
-  async create(categoryName: string): Promise<ICategory> {
+  async create(userAttatchmentId: string, categoryName: string): Promise<ICategory> {
     const newCategory = {
       id: randomUUID(),
       name: categoryName,
       createdAt: new Date(),
+      userAttatchmentsId: userAttatchmentId,
     };
 
     this.categories.push(newCategory);
@@ -19,9 +20,14 @@ export class InMemoryCategory implements CategoryInterface {
     return newCategory;
   }
 
-  async findByName(categoryName: string): Promise<ICategory> {
+  async findByName(
+    userAttatchmentId: string,
+    categoryName: string
+  ): Promise<ICategory> {
     const findCategory = this.categories.find(
-      (category) => category.name === categoryName
+      (category) =>
+        category.name === categoryName &&
+        category.userAttatchmentsId === userAttatchmentId
     );
 
     if (!findCategory) return null;

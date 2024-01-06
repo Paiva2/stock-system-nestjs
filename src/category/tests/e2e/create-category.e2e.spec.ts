@@ -24,7 +24,7 @@ describe("Create category controller", () => {
   it("[POST]/category", async () => {
     const hashPassword = await hash("123456", 8);
 
-    await prisma.user.create({
+    const user = await prisma.user.create({
       data: {
         email: "johndoe@email.com",
         fullName: "John Doe",
@@ -33,6 +33,10 @@ describe("Create category controller", () => {
         secretAnswer: "The Beatles",
         role: "admin",
       },
+    });
+
+    const userAttatchmentId = await prisma.userAttatchments.create({
+      data: { userId: user.id },
     });
 
     const signIn = await request(app.getHttpServer()).post("/sign-in").send({
@@ -47,9 +51,7 @@ describe("Create category controller", () => {
       .send({ categoryName: "Fruits" })
       .set("Authorization", `Bearer ${jwtToken}`);
 
-    expect(categoryCreation.body.message).toEqual(
-      "Category successfully created.",
-    );
+    expect(categoryCreation.body.message).toEqual("Category successfully created.");
     expect(categoryCreation.statusCode).toEqual(201);
 
     const getNewCategory = await prisma.category.findFirst({
@@ -63,7 +65,8 @@ describe("Create category controller", () => {
         id: expect.any(String),
         name: "Fruits",
         createdAt: expect.any(Date),
-      }),
+        userAttatchmentsId: userAttatchmentId.id,
+      })
     );
   });
 });

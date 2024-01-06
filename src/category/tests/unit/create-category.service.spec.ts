@@ -56,6 +56,7 @@ describe("Create category service", () => {
       id: expect.any(String),
       name: "Fruits",
       createdAt: expect.any(Date),
+      userAttatchmentsId: user.userAttatchments[0].id,
     });
   });
 
@@ -79,20 +80,5 @@ describe("Create category service", () => {
     await expect(() => {
       return sut.create("Inexistent user id", "Fruits");
     }).rejects.toEqual(new NotFoundException("User not found."));
-  });
-
-  it("should not create a new category if user isn't an admin", async () => {
-    const nonAdminUser = await inMemoryUser.create({
-      email: "johndoe2@email.com",
-      fullName: "John Doe 2",
-      password: "123456",
-      secretQuestion: "Favourite Band",
-      secretAnswer: "The Beatles",
-      role: "default",
-    });
-
-    await expect(() => {
-      return sut.create(nonAdminUser.id, "Fruits");
-    }).rejects.toEqual(new ForbiddenException("Invalid permissions."));
   });
 });

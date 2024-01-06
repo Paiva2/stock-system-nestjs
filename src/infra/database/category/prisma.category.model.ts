@@ -6,11 +6,11 @@ import { ICategory } from "../../../@types/types";
 @Injectable()
 export class PrismaCategoryModel implements CategoryInterface {
   constructor(private readonly prismaService: PrismaService) {}
-
-  async create(categoryName: string): Promise<ICategory> {
+  async create(userAttatchmentId: string, categoryName: string): Promise<ICategory> {
     const createCategory = await this.prismaService.category.create({
       data: {
         name: categoryName,
+        userAttatchmentsId: userAttatchmentId,
       },
     });
 

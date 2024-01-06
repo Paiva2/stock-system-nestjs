@@ -17,6 +17,9 @@ export interface IUserAttatchments {
   userId: string;
   createdAt: Date;
   updatedAt: Date;
+
+  categories?: ICategory[];
+  item?: IItem[];
 }
 
 export interface IUserUpdate {
@@ -60,11 +63,14 @@ export interface ICategory {
   id: string;
   name: string;
   createdAt: Date;
+  userAttatchmentsId: string;
+
   stockItem?: [];
 }
 
 export interface ICategoryCreation {
   name: string;
+  userAttatchmentsId: string;
 }
 
 export interface IITem {

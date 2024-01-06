@@ -19,4 +19,14 @@ export class InMemoryUserAttatchments implements UserAttatchmentsInterface {
 
     return newUserAttatchment;
   }
+
+  async findByUserId(userId: string): Promise<IUserAttatchments | null> {
+    const findAttatchment = this.userAttatchments.find(
+      (attatchment) => attatchment.userId === userId
+    );
+
+    if (!findAttatchment) return null;
+
+    return findAttatchment;
+  }
 }

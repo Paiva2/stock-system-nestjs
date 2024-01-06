@@ -13,19 +13,12 @@ import { ICategory } from "../@types/types";
 export class CategoryService {
   constructor(
     private userInterface: UserInterface,
-    private categoryInterface: CategoryInterface,
+    private categoryInterface: CategoryInterface
   ) {}
 
   async create(userId: string, categoryName: string): Promise<ICategory> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
-    }
-
-    const hasCategoryCreated =
-      await this.categoryInterface.findByName(categoryName);
-
-    if (hasCategoryCreated) {
-      throw new ConflictException("An category with this name already exists.");
     }
 
     const getUser = await this.userInterface.findById(userId);
@@ -34,18 +27,28 @@ export class CategoryService {
       throw new NotFoundException("User not found.");
     }
 
-    if (getUser.role !== "admin") {
-      throw new ForbiddenException("Invalid permissions.");
+    const userAttatchmentId = getUser.userAttatchments[0].id;
+
+    const hasCategoryCreated = await this.categoryInterface.findByName(
+      userAttatchmentId,
+      categoryName
+    );
+
+    if (hasCategoryCreated) {
+      throw new ConflictException("An category with this name already exists.");
     }
 
-    const createCategory = await this.categoryInterface.create(categoryName);
+    const createCategory = await this.categoryInterface.create(
+      userAttatchmentId,
+      categoryName
+    );
 
     return createCategory;
   }
 
   async getAllCategories(
     userId: string,
-    page = 1,
+    page = 1
   ): Promise<{
     page: number;
     totalCategories: number;
@@ -98,7 +101,7 @@ export class CategoryService {
 
   async updateCategory(
     userId: string,
-    categoryUpdate: { id: string; name: string },
+    categoryUpdate: { id: string; name: string }
   ): Promise<ICategory> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
@@ -119,15 +122,14 @@ export class CategoryService {
     }
 
     const hasACategoryWithThisName = await this.categoryInterface.findByName(
-      categoryUpdate.name,
+      categoryUpdate.name
     );
 
     if (hasACategoryWithThisName) {
       throw new ConflictException("An category with this name already exists.");
     }
 
-    const updateCategoryName =
-      await this.categoryInterface.update(categoryUpdate);
+    const updateCategoryName = await this.categoryInterface.update(categoryUpdate);
 
     if (!updateCategoryName) {
       throw new NotFoundException("Category not found.");
