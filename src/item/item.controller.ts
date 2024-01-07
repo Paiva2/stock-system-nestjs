@@ -22,14 +22,10 @@ export class ItemController {
     @Body(ValidationPipe) createItemDto: CreateItemDto,
     @Req() req: Request
   ) {
-    try {
-      const tokenParsed: IJwtSchema = req["user"];
+    const tokenParsed: IJwtSchema = req["user"];
 
-      await this.itemService.createItem(tokenParsed.sub, createItemDto);
+    await this.itemService.createItem(tokenParsed.sub, createItemDto);
 
-      return { message: "Item successfully created." };
-    } catch (e) {
-      console.log(e);
-    }
+    return { message: "Item successfully created." };
   }
 }

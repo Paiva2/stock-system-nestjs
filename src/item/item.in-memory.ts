@@ -24,4 +24,12 @@ export class InMemoryItem implements ItemInterface {
 
     return newItem;
   }
+
+  async findAllByUserId(userAttatchmentId: string): Promise<IITem[]> {
+    const filterByUserAttatchment = this.items.filter(
+      (item) => item.userAttatchmentsId === userAttatchmentId
+    );
+
+    return filterByUserAttatchment;
+  }
 }

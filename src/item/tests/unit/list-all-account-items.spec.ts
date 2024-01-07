@@ -11,7 +11,7 @@ import { ItemService } from "../../item.service";
 import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
 import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
-describe("Create item service", () => {
+describe("List all account items service", () => {
   let user: IUser;
   let category: ICategory;
 
@@ -49,61 +49,54 @@ describe("Create item service", () => {
     category = await inMemoryCategory.create(user.userAttatchments[0].id, "Fruits");
   });
 
-  it("should create a new item for account", async () => {
-    const itemCreation = await sut.createItem(user.id, {
+  it("should list all account items", async () => {
+    await sut.createItem(user.id, {
       categoryId: category.id,
       itemName: "Orange",
       description: "A Simple Orange",
     });
 
-    expect(itemCreation).toEqual(
-      expect.objectContaining({
-        id: itemCreation.id,
-        userAttatchmentsId: user.userAttatchments[0].id,
-        itemName: "Orange",
-        description: "A Simple Orange",
-        categoryId: category.id,
-        createdAt: expect.any(Date),
-        updatedAt: expect.any(Date),
-      })
+    await sut.createItem(user.id, {
+      categoryId: category.id,
+      itemName: "Apple",
+      description: "A Simple Apple",
+    });
+
+    const listAllItems = await sut.listAllAcountItems(user.id);
+
+    expect(listAllItems).toEqual(
+      expect.arrayContaining([
+        (expect.objectContaining({
+          id: expect.any(String),
+          userAttatchmentsId: user.userAttatchments[0].id,
+          itemName: "Orange",
+          description: "A Simple Orange",
+          categoryId: category.id,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        }),
+        expect.objectContaining({
+          id: expect.any(String),
+          userAttatchmentsId: user.userAttatchments[0].id,
+          itemName: "Apple",
+          description: "A Simple Apple",
+          categoryId: category.id,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        })),
+      ])
     );
   });
 
-  it("should not create a new item for account without correctly provided parameters", async () => {
+  it("should not list all account items without correctly provided parameters", async () => {
     await expect(() => {
-      return sut.createItem("", {
-        categoryId: category.id,
-        itemName: "Orange",
-        description: "A Simple Orange",
-      });
+      return sut.listAllAcountItems("");
     }).rejects.toEqual(new BadRequestException("Invalid user id."));
-
-    await expect(() => {
-      return sut.createItem(user.id, {
-        categoryId: "",
-        itemName: "Orange",
-        description: "A Simple Orange",
-      });
-    }).rejects.toEqual(new BadRequestException("Invalid category id."));
   });
 
-  it("should not create a new item for account if user does't exists", async () => {
+  it("should not list all account items if user isn't registered", async () => {
     await expect(() => {
-      return sut.createItem("Inexistent user id", {
-        categoryId: category.id,
-        itemName: "Orange",
-        description: "A Simple Orange",
-      });
+      return sut.listAllAcountItems("Inexistent user id.");
     }).rejects.toEqual(new NotFoundException("User not found."));
-  });
-
-  it("should not create a new item for account if category does't exists", async () => {
-    await expect(() => {
-      return sut.createItem(user.id, {
-        categoryId: "Inexistent category id",
-        itemName: "Orange",
-        description: "A Simple Orange",
-      });
-    }).rejects.toEqual(new NotFoundException("Category not found."));
   });
 });

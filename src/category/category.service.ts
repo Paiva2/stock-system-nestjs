@@ -119,10 +119,6 @@ export class CategoryService {
       throw new NotFoundException("User not found.");
     }
 
-    if (getUser.role !== "admin") {
-      throw new ForbiddenException("Invalid permissions.");
-    }
-
     const userAttatchmentId = getUser.userAttatchments[0].id;
 
     const hasACategoryWithThisName = await this.categoryInterface.findByName(

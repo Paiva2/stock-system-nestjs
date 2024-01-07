@@ -12,7 +12,7 @@ export class ItemService {
     private readonly itemInterface: ItemInterface
   ) {}
 
-  async createItem(userId: string, item: IITem) {
+  async createItem(userId: string, item: IITem): Promise<IITem> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
     }
@@ -39,5 +39,23 @@ export class ItemService {
     );
 
     return newItem;
+  }
+
+  async listAllAcountItems(userId: string): Promise<IITem[]> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    const getUser = await this.userInteface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getAllItems = await this.itemInterface.findAllByUserId(
+      getUser.userAttatchments[0].id
+    );
+
+    return getAllItems;
   }
 }
