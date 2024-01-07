@@ -19,4 +19,14 @@ export class PrismaItemModel implements ItemInterface {
 
     return createItem;
   }
+
+  async findAllByUserId(userAttatchmentId: string): Promise<IITem[]> {
+    const findItems = await this.prismaService.item.findMany({
+      where: {
+        userAttatchmentsId: userAttatchmentId,
+      },
+    });
+
+    return findItems;
+  }
 }

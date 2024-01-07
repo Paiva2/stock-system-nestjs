@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Post,
   Req,
   UseGuards,
@@ -27,5 +28,15 @@ export class ItemController {
     await this.itemService.createItem(tokenParsed.sub, createItemDto);
 
     return { message: "Item successfully created." };
+  }
+
+  @Get("/items")
+  @UseGuards(AuthGuard)
+  async getAllAccountItemsController(@Req() req: Request) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const listItems = await this.itemService.listAllAcountItems(tokenParsed.sub);
+
+    return { items: listItems };
   }
 }
