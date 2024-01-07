@@ -101,10 +101,13 @@ export class PrismaCategoryModel implements CategoryInterface {
     }
   }
 
-  async findById(categoryId: string): Promise<ICategory> {
+  async findById(userAttatchmentId: string, categoryId: string): Promise<ICategory> {
     const findCategory = await this.prismaService.category.findUnique({
       where: {
         id: categoryId,
+        AND: {
+          userAttatchmentsId: userAttatchmentId,
+        },
       },
     });
 

@@ -97,6 +97,7 @@ export interface IStockItem {
 }
 
 export interface IStockItemCreate {
+  itemId?: string;
   itemName: string;
   quantity: number;
   stockId?: string;

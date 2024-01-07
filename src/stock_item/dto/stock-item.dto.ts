@@ -31,6 +31,10 @@ class StockItemDto {
 
   @IsUUID()
   categoryId: string;
+
+  @IsOptional()
+  @IsUUID()
+  itemId: string;
 }
 
 export class InsertStockItemDto {

@@ -9,6 +9,7 @@ import { UserInterface } from "../user/user.interface";
 import { StockInterface } from "../stock/stock.interface";
 import { CategoryInterface } from "../category/category.interface";
 import { StockItemInterface } from "./stock_item.interface";
+import { ItemInterface } from "../item/item.interface";
 
 @Injectable()
 export class StockItemService {
@@ -16,7 +17,8 @@ export class StockItemService {
     private readonly userInterface: UserInterface,
     private readonly stockInterface: StockInterface,
     private readonly categoryInterface: CategoryInterface,
-    private readonly stockItemInterface: StockItemInterface
+    private readonly stockItemInterface: StockItemInterface,
+    private readonly itemInterface: ItemInterface
   ) {}
 
   async insertStockItem(
@@ -56,19 +58,42 @@ export class StockItemService {
       );
     }
 
-    const getCategory = await this.categoryInterface.findById(stockItem.categoryId);
+    const getCategory = await this.categoryInterface.findById(
+      getUser.userAttatchments[0].id,
+      stockItem.categoryId
+    );
 
     if (!getCategory) {
       throw new NotFoundException("Category not found.");
     }
 
-    const insertStockItem = await this.stockItemInterface.insert({
+    let itemToInsert: IStockItemCreate = {
       categoryId: stockItem.categoryId,
       itemName: stockItem.itemName,
       quantity: stockItem.quantity,
       stockId,
       description: stockItem.description,
-    });
+    };
+
+    if (stockItem.itemId) {
+      const getItem = await this.itemInterface.findById(
+        getUser.userAttatchments[0].id,
+        stockItem.itemId
+      );
+
+      if (!getItem) {
+        throw new NotFoundException("Item not found.");
+      }
+
+      itemToInsert = {
+        ...itemToInsert,
+        categoryId: getItem.categoryId,
+        itemName: getItem.itemName,
+        description: getItem.description,
+      };
+    }
+
+    const insertStockItem = await this.stockItemInterface.insert(itemToInsert);
 
     return insertStockItem;
   }
@@ -163,18 +188,4 @@ export class StockItemService {
 
     return getStockItem;
   }
-
-  /*   async listCreatedStockItemsInAccount(userId: string, item: IStockItemCreate) {
-    if (!userId) {
-      throw new BadRequestException("Invalid user id.");
-    }
-
-    const getUser = await this.userInterface.findById(userId);
-
-    if (!getUser) {
-      throw new NotFoundException("User not found.");
-    }
-
-    const getStockItemsFromAccount = await this.stockItemInterface.
-  } */
 }

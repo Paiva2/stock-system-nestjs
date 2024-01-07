@@ -13,7 +13,10 @@ export class PrismaStockItemModel implements StockItemInterface {
 
   async insert(stockItem: IStockItemCreate): Promise<IStockItem> {
     const newStockItem = await this.prismaService.stockItem.create({
-      data: stockItem,
+      data: {
+        ...stockItem,
+        stockId: stockItem.stockId,
+      },
     });
 
     return newStockItem;
@@ -63,5 +66,15 @@ export class PrismaStockItemModel implements StockItemInterface {
     } catch (e) {
       if (e.code === "P2025") return null;
     }
+  }
+
+  async getManyById(stockIds: string[]): Promise<IStockItem[]> {
+    const findItems = await this.prismaService.stockItem.findMany({
+      where: {
+        id: { in: stockIds },
+      },
+    });
+
+    return findItems;
   }
 }

@@ -17,6 +17,8 @@ import { InMemoryStockItem } from "../../stock_item.in-memory";
 import { StockItemService } from "../../stock_item.service";
 import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
 import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
+import { ItemInterface } from "../../../item/item.interface";
+import { InMemoryItem } from "../../../item/item.in-memory";
 
 describe("Insert stock item service", () => {
   let sut: StockItemService;
@@ -26,6 +28,7 @@ describe("Insert stock item service", () => {
 
   let inMemoryCategory: InMemoryCategory;
   let inMemoryStock: InMemoryStock;
+  let inMemoryItem: InMemoryItem;
 
   beforeEach(async () => {
     module = await Test.createTestingModule({
@@ -35,6 +38,7 @@ describe("Insert stock item service", () => {
         { provide: CategoryInterface, useClass: InMemoryCategory },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
         { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
+        { provide: ItemInterface, useClass: InMemoryItem },
         UserService,
         StockItemService,
       ],
@@ -44,6 +48,7 @@ describe("Insert stock item service", () => {
     userService = module.get<UserService>(UserService);
     inMemoryCategory = module.get(CategoryInterface);
     inMemoryStock = module.get(StockInterface);
+    inMemoryItem = module.get(ItemInterface);
 
     user = await userService.registerUserService({
       email: "johndoe@email.com",
@@ -58,12 +63,15 @@ describe("Insert stock item service", () => {
     expect(sut).toBeDefined();
   });
 
-  it("should insert a new stock item on stock", async () => {
+  it("should insert a new stock item on stock [MANUALLY]", async () => {
     const newStock = await inMemoryStock.create(user.id, {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Apples");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
 
     const insertItem = await sut.insertStockItem(user.id, newStock.id, {
       categoryId: category.id,
@@ -85,12 +93,75 @@ describe("Insert stock item service", () => {
     });
   });
 
+  it("should insert a new stock item on stock [EXISTENT ITEM]", async () => {
+    const newStock = await inMemoryStock.create(user.id, {
+      stockName: "Apple Stock",
+    });
+
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
+
+    const existentItem = await inMemoryItem.create(user.userAttatchments[0].id, {
+      categoryId: category.id,
+      itemName: "Orange",
+      description: "A simple orange",
+      categoryName: category.name,
+    });
+
+    const insertItem = await sut.insertStockItem(user.id, newStock.id, {
+      itemId: existentItem.id, // IT SHOULD IGNORE ALL INFOS BELOW AND FILL WITH EXISTENT ITEM INFOS
+      categoryId: category.id,
+      itemName: "Green Apple",
+      quantity: 1,
+      stockId: newStock.id,
+      description: "Simple green apple",
+    });
+
+    expect(insertItem).toEqual({
+      id: expect.any(String),
+      itemName: "Orange",
+      quantity: 1,
+      stockId: newStock.id,
+      description: "A simple orange",
+      categoryId: category.id,
+      createdAt: expect.any(Date),
+      updatedAt: expect.any(Date),
+    });
+  });
+
+  it("should insert a new stock item on stock if existent item provided id doesn't exists", async () => {
+    const newStock = await inMemoryStock.create(user.id, {
+      stockName: "Apple Stock",
+    });
+
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
+
+    await expect(() => {
+      return sut.insertStockItem(user.id, newStock.id, {
+        itemId: "INVALID ID",
+        categoryId: category.id,
+        itemName: "Green Apple",
+        quantity: 1,
+        stockId: newStock.id,
+        description: "Simple green apple",
+      });
+    }).rejects.toEqual(new NotFoundException("Item not found."));
+  });
+
   it("should not insert a new stock item on stock without correctly provided parameters", async () => {
     const newStock = await inMemoryStock.create(user.id, {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Apples");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
 
     await expect(() => {
       return sut.insertStockItem("", newStock.id, {
@@ -142,7 +213,10 @@ describe("Insert stock item service", () => {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Apples");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
 
     await expect(() => {
       return sut.insertStockItem("Inexistent user id", newStock.id, {
@@ -160,7 +234,10 @@ describe("Insert stock item service", () => {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Apples");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
 
     await expect(() => {
       return sut.insertStockItem(user.id, "Inexistent stock id", {
@@ -186,7 +263,10 @@ describe("Insert stock item service", () => {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Apples");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
 
     await expect(() => {
       return sut.insertStockItem(user.id, newStock.id, {

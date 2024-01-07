@@ -27,7 +27,10 @@ export class ItemService {
       throw new NotFoundException("User not found.");
     }
 
-    const getCategory = await this.categoryInterface.findById(item.categoryId);
+    const getCategory = await this.categoryInterface.findById(
+      getUser.userAttatchments[0].id,
+      item.categoryId
+    );
 
     if (!getCategory) {
       throw new NotFoundException("Category not found.");

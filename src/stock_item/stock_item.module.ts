@@ -11,6 +11,8 @@ import { CategoryInterface } from "../category/category.interface";
 import { PrismaCategoryModel } from "../infra/database/category/prisma.category.model";
 import { StockItemInterface } from "./stock_item.interface";
 import { PrismaStockItemModel } from "../infra/database/stock_item/prisma.stock-item.model";
+import { ItemInterface } from "../item/item.interface";
+import { PrismaItemModel } from "../infra/database/item/prisma.item.model";
 
 @Module({
   imports: [PrismaModule, AuthModule],
@@ -31,6 +33,10 @@ import { PrismaStockItemModel } from "../infra/database/stock_item/prisma.stock-
     {
       provide: StockItemInterface,
       useClass: PrismaStockItemModel,
+    },
+    {
+      provide: ItemInterface,
+      useClass: PrismaItemModel,
     },
     StockItemService,
   ],

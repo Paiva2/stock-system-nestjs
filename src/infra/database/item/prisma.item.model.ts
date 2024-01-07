@@ -29,4 +29,19 @@ export class PrismaItemModel implements ItemInterface {
 
     return findItems;
   }
+
+  async findById(userAttatchmentId: string, itemId: string): Promise<IITem | null> {
+    const findItem = await this.prismaService.item.findUnique({
+      where: {
+        id: itemId,
+        AND: {
+          userAttatchmentsId: userAttatchmentId,
+        },
+      },
+    });
+
+    if (!findItem) return null;
+
+    return findItem;
+  }
 }

@@ -7,7 +7,7 @@ import { ItemInterface } from "./item.interface";
 export class InMemoryItem implements ItemInterface {
   private items = [] as IITem[];
 
-  async create(userId: string, item: IITem): Promise<IITem> {
+  async create(userAttatchmentId: string, item: IITem): Promise<IITem> {
     const { itemName, description, categoryId } = item;
 
     const newItem: IITem = {
@@ -15,7 +15,7 @@ export class InMemoryItem implements ItemInterface {
       itemName,
       description,
       categoryId,
-      userAttatchmentsId: userId,
+      userAttatchmentsId: userAttatchmentId,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -31,5 +31,15 @@ export class InMemoryItem implements ItemInterface {
     );
 
     return filterByUserAttatchment;
+  }
+
+  async findById(userAttatchmentId: string, itemId: string): Promise<IITem | null> {
+    const findItem = this.items.find(
+      (item) => item.id === itemId && item.userAttatchmentsId === userAttatchmentId
+    );
+
+    if (!findItem) return null;
+
+    return findItem;
   }
 }
