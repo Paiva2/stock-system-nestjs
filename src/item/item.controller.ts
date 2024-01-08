@@ -1,7 +1,11 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
+  Param,
   Post,
   Query,
   Req,
@@ -10,7 +14,11 @@ import {
 } from "@nestjs/common";
 import { Request } from "express";
 import { IJwtSchema } from "../@types/types";
-import { CreateItemDto, FilterByCategoryParamDto } from "./dto/item.dto";
+import {
+  CreateItemDto,
+  DeleteItemParamDto,
+  FilterByCategoryParamDto,
+} from "./dto/item.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { ItemService } from "./item.service";
 
@@ -29,6 +37,20 @@ export class ItemController {
     await this.itemService.createItem(tokenParsed.sub, createItemDto);
 
     return { message: "Item successfully created." };
+  }
+
+  @Delete("/item/:itemId")
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async deleteItemController(
+    @Req() req: Request,
+    @Param() deleteItemDto: DeleteItemParamDto
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    await this.itemService.deleteItem(tokenParsed.sub, deleteItemDto.itemId);
+
+    return { message: "Item successfully removed." };
   }
 
   @Get("/items")

@@ -23,11 +23,17 @@ export class CreateItemDto {
 }
 
 export class FilterByCategoryParamDto {
-  @IsOptional()
+  @IsDefined()
   @IsUUID()
   category: string;
 
-  @IsOptional()
+  @IsDefined()
   @IsNumberString()
   page: string;
+}
+
+export class DeleteItemParamDto {
+  @IsDefined()
+  @IsUUID()
+  itemId: string;
 }
