@@ -9,4 +9,10 @@ export abstract class ItemInterface {
     userAttatchmentId: string,
     itemId: string
   ): Promise<IITem | null>;
+
+  abstract filterManyByCategory(
+    userAttatchmentId: string,
+    categoryId: string,
+    page: number
+  ): Promise<IITem[]>;
 }

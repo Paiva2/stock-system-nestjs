@@ -61,4 +61,49 @@ export class ItemService {
 
     return getAllItems;
   }
+
+  async filterByCategory(
+    userId: string,
+    categoryId: string,
+    page: number
+  ): Promise<{
+    items: IITem[];
+    categoryName: string;
+    page: number;
+    totalItems: number;
+  }> {
+    if (page < 1 || !page) page = 1;
+
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    const getUser = await this.userInteface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getCategory = await this.categoryInterface.findById(
+      getUser.userAttatchments[0].id,
+      categoryId
+    );
+
+    if (!getCategory) {
+      throw new NotFoundException("Category not found.");
+    }
+
+    const filterItem = await this.itemInterface.filterManyByCategory(
+      getUser.userAttatchments[0].id,
+      categoryId,
+      page
+    );
+
+    return {
+      page,
+      totalItems: filterItem.length,
+      categoryName: getCategory.name,
+      items: filterItem,
+    };
+  }
 }

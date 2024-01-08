@@ -1,4 +1,11 @@
-import { IsDefined, IsString, IsUUID, MaxLength } from "class-validator";
+import {
+  IsDefined,
+  IsNumberString,
+  IsString,
+  IsUUID,
+  MaxLength,
+  Min,
+} from "class-validator";
 
 export class CreateItemDto {
   @IsString()
@@ -12,4 +19,15 @@ export class CreateItemDto {
 
   @IsUUID()
   categoryId: string;
+}
+
+export class FilterByCategoryParamDto {
+  @IsDefined({ message: "categoryId can't be empty." })
+  @IsUUID()
+  categoryId: string;
+
+  @IsDefined()
+  @IsNumberString()
+  @Min(1, { message: "Page must be at least 1." })
+  page: string;
 }

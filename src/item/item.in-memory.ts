@@ -42,4 +42,22 @@ export class InMemoryItem implements ItemInterface {
 
     return findItem;
   }
+
+  async filterManyByCategory(
+    userAttatchmentId: string,
+    categoryId: string,
+    page: number
+  ): Promise<IITem[]> {
+    const perPage = 10;
+
+    const filterByCategory = this.items
+      .filter(
+        (item) =>
+          item.userAttatchmentsId === userAttatchmentId &&
+          item.categoryId === categoryId
+      )
+      .splice((page - 1) * perPage, page * perPage);
+
+    return filterByCategory;
+  }
 }

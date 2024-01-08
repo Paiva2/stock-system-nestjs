@@ -3,13 +3,14 @@ import {
   Controller,
   Get,
   Post,
+  Query,
   Req,
   UseGuards,
   ValidationPipe,
 } from "@nestjs/common";
 import { Request } from "express";
 import { IJwtSchema } from "../@types/types";
-import { CreateItemDto } from "./dto/item.dto";
+import { CreateItemDto, FilterByCategoryParamDto } from "./dto/item.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { ItemService } from "./item.service";
 
@@ -36,6 +37,25 @@ export class ItemController {
     const tokenParsed: IJwtSchema = req["user"];
 
     const listItems = await this.itemService.listAllAcountItems(tokenParsed.sub);
+
+    return { items: listItems };
+  }
+
+  @Get("/items/filter")
+  @UseGuards(AuthGuard)
+  async filterByCategoryController(
+    @Req() req: Request,
+    @Query(ValidationPipe) filterByCategoryQueryDto: FilterByCategoryParamDto
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const { categoryId, page } = filterByCategoryQueryDto;
+
+    const listItems = await this.itemService.filterByCategory(
+      tokenParsed.sub,
+      categoryId,
+      +page
+    );
 
     return { items: listItems };
   }
