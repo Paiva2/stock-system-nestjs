@@ -1,6 +1,7 @@
 import {
   IsDefined,
   IsNumberString,
+  IsOptional,
   IsString,
   IsUUID,
   MaxLength,
@@ -22,12 +23,11 @@ export class CreateItemDto {
 }
 
 export class FilterByCategoryParamDto {
-  @IsDefined({ message: "categoryId can't be empty." })
+  @IsOptional()
   @IsUUID()
-  categoryId: string;
+  category: string;
 
-  @IsDefined()
+  @IsOptional()
   @IsNumberString()
-  @Min(1, { message: "Page must be at least 1." })
   page: string;
 }

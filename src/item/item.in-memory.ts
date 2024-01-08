@@ -60,4 +60,18 @@ export class InMemoryItem implements ItemInterface {
 
     return filterByCategory;
   }
+
+  async delete(userAttatchmentId: string, itemId: string): Promise<IITem> {
+    const getItemToRemove = this.items.find(
+      (item) => item.id === itemId && item.userAttatchmentsId === userAttatchmentId
+    );
+
+    if (!getItemToRemove) return null;
+
+    const listUpdated = this.items.filter((item) => item.id !== getItemToRemove.id);
+
+    this.items = listUpdated;
+
+    return getItemToRemove;
+  }
 }

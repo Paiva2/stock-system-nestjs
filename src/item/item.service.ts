@@ -44,6 +44,29 @@ export class ItemService {
     return newItem;
   }
 
+  async deleteItem(userId: string, itemId: string): Promise<IITem> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    const getUser = await this.userInteface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const deleteItem = await this.itemInterface.delete(
+      getUser.userAttatchments[0].id,
+      itemId
+    );
+
+    if (!deleteItem) {
+      throw new NotFoundException("Item not found.");
+    }
+
+    return deleteItem;
+  }
+
   async listAllAcountItems(userId: string): Promise<IITem[]> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");

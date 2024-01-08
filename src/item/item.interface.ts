@@ -15,4 +15,6 @@ export abstract class ItemInterface {
     categoryId: string,
     page: number
   ): Promise<IITem[]>;
+
+  abstract delete(userAttatchmentId: string, itemId: string): Promise<IITem>;
 }

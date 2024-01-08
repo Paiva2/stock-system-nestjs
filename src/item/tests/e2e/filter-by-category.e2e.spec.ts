@@ -64,7 +64,7 @@ describe("Filter items by category", () => {
     });
 
     const listItemsByCategory = await request(app.getHttpServer())
-      .post(`/items/filter?category=${category.id}&page=1`)
+      .get(`/items/filter?category=${category.id}&page=1`)
       .set("Authorization", `Bearer ${jwtToken}`)
       .send({});
 

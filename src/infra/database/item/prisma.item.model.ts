@@ -44,4 +44,43 @@ export class PrismaItemModel implements ItemInterface {
 
     return findItem;
   }
+
+  async filterManyByCategory(
+    userAttatchmentId: string,
+    categoryId: string,
+    page: number
+  ): Promise<IITem[]> {
+    const perPage = 10;
+
+    const filterMany = await this.prismaService.item.findMany({
+      where: {
+        categoryId,
+        AND: {
+          userAttatchmentsId: userAttatchmentId,
+        },
+      },
+
+      skip: (page - 1) * perPage,
+      take: page * perPage,
+    });
+
+    return filterMany;
+  }
+
+  async delete(userAttatchmentId: string, itemId: string): Promise<IITem> {
+    try {
+      const removeItem = await this.prismaService.item.delete({
+        where: {
+          id: itemId,
+          AND: {
+            userAttatchmentsId: userAttatchmentId,
+          },
+        },
+      });
+
+      return removeItem;
+    } catch (e) {
+      if (e.code === "P2025") return null;
+    }
+  }
 }

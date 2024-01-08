@@ -41,7 +41,7 @@ export class ItemController {
     return { items: listItems };
   }
 
-  @Get("/items/filter")
+  @Get("/items/filter") //?category=categoryId?page=
   @UseGuards(AuthGuard)
   async filterByCategoryController(
     @Req() req: Request,
@@ -49,14 +49,14 @@ export class ItemController {
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
-    const { categoryId, page } = filterByCategoryQueryDto;
+    const { category, page } = filterByCategoryQueryDto;
 
     const listItems = await this.itemService.filterByCategory(
       tokenParsed.sub,
-      categoryId,
+      category,
       +page
     );
 
-    return { items: listItems };
+    return listItems;
   }
 }
