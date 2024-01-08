@@ -34,6 +34,12 @@ describe("Edit stock item controller", () => {
       },
     });
 
+    const userAttatchments = await prisma.userAttatchments.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
     const signIn = await request(app.getHttpServer()).post("/sign-in").send({
       email: "johndoe@email.com",
       password: "123456",
@@ -51,12 +57,14 @@ describe("Edit stock item controller", () => {
     const categoryCreation = await prisma.category.create({
       data: {
         name: "Fruit",
+        userAttatchmentsId: userAttatchments.id,
       },
     });
 
     const diffCategoryCreation = await prisma.category.create({
       data: {
         name: "Only Little Oranges",
+        userAttatchmentsId: userAttatchments.id,
       },
     });
 

@@ -172,6 +172,7 @@ export class StockItemService {
 
     if (stockItem.categoryId) {
       const isCategoryValid = await this.categoryInterface.findById(
+        getUser.userAttatchments[0].id,
         stockItem.categoryId
       );
 

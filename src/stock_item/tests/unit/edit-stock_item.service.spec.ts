@@ -13,6 +13,8 @@ import { UserService } from "../../../user/user.service";
 import { StockItemService } from "../../stock_item.service";
 import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
 import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
+import { ItemInterface } from "../../../item/item.interface";
+import { InMemoryItem } from "../../../item/item.in-memory";
 
 describe("Edit stock item service", () => {
   let sut: StockItemService;
@@ -31,6 +33,7 @@ describe("Edit stock item service", () => {
         { provide: CategoryInterface, useClass: InMemoryCategory },
         { provide: StockItemInterface, useClass: InMemoryStockItem },
         { provide: UserAttatchmentsInterface, useClass: InMemoryUserAttatchments },
+        { provide: ItemInterface, useClass: InMemoryItem },
         UserService,
         StockItemService,
       ],
@@ -59,9 +62,15 @@ describe("Edit stock item service", () => {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Apples");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
 
-    const diffCategory = await inMemoryCategory.create("Fruits");
+    const diffCategory = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Fruits"
+    );
 
     const insertItem = await sut.insertStockItem(user.id, newStock.id, {
       categoryId: category.id,
@@ -163,7 +172,10 @@ describe("Edit stock item service", () => {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Apples");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Apples"
+    );
 
     await expect(() => {
       return sut.editStockItem(user.id, newStock.id, {

@@ -34,6 +34,12 @@ describe("Remove stock item controller", () => {
       },
     });
 
+    const userAttatchments = await prisma.userAttatchments.create({
+      data: {
+        userId: user.id,
+      },
+    });
+
     const stockCreation = await prisma.stock.create({
       data: {
         stockName: "Orange Stock",
@@ -44,6 +50,7 @@ describe("Remove stock item controller", () => {
     const categoryCreation = await prisma.category.create({
       data: {
         name: "Fruit",
+        userAttatchmentsId: userAttatchments.id,
       },
     });
 
