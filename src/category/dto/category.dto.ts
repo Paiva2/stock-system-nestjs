@@ -26,3 +26,14 @@ export class UpdateCategoryDto {
   @MinLength(3, { message: "name must have at least 3 characters" })
   name: string;
 }
+
+export class FilterCategoryDto {
+  @IsUUID()
+  categoryId: string;
+}
+
+export class FilterCategoryByNameQueryDto {
+  @IsOptional()
+  @IsString()
+  categoryName: string;
+}

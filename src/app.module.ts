@@ -6,7 +6,6 @@ import { StockModule } from "./stock/stock.module";
 import { StockItemModule } from "./stock_item/stock_item.module";
 import { CategoryModule } from "./category/category.module";
 import { ItemModule } from "./item/item.module";
-import { UserAttatchmentsModule } from "./user-attatchments/user-attatchments.module";
 
 @Module({
   imports: [
@@ -17,7 +16,6 @@ import { UserAttatchmentsModule } from "./user-attatchments/user-attatchments.mo
     StockItemModule,
     CategoryModule,
     ItemModule,
-    //UserAttatchmentsModule,
   ],
 })
 export class AppModule {}

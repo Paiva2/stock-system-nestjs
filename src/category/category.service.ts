@@ -141,4 +141,61 @@ export class CategoryService {
 
     return updateCategoryName;
   }
+
+  async filterCategoryById(userId: string, categoryId: string): Promise<ICategory> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!categoryId) {
+      throw new BadRequestException("Invalid category id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getCategory = await this.categoryInterface.findById(
+      getUser.userAttatchments[0].id,
+      categoryId
+    );
+
+    if (!getCategory) {
+      throw new NotFoundException("Category not found.");
+    }
+
+    return getCategory;
+  }
+
+  async filterCategoryByName(
+    userId: string,
+    categoryName: string
+  ): Promise<ICategory> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!categoryName) {
+      throw new BadRequestException("Invalid category name.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getCategory = await this.categoryInterface.findByName(
+      getUser.userAttatchments[0].id,
+      categoryName
+    );
+
+    if (!getCategory) {
+      throw new NotFoundException("Category not found.");
+    }
+
+    return getCategory;
+  }
 }

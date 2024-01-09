@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ConflictException,
-  NotFoundException,
-} from "@nestjs/common";
+import { BadRequestException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import { IUser } from "../../../@types/types";
 import { UserInterface } from "../../../user/user.interface";
@@ -14,7 +10,7 @@ import { InMemoryCategory } from "../../category.in-memory";
 import { UserAttatchmentsInterface } from "../../../user-attatchments/user-attatchments.interface";
 import { InMemoryUserAttatchments } from "../../../user-attatchments/user-attatchments.in-memory";
 
-describe("Create category service", () => {
+describe("Filter category by name service", () => {
   let sut: CategoryService;
   let module: TestingModule;
   let inMemoryUser: UserInterface;
@@ -48,36 +44,40 @@ describe("Create category service", () => {
     expect(sut).toBeDefined();
   });
 
-  it("should create a new category", async () => {
+  it("should filter an category by name", async () => {
     const newCategory = await sut.create(user.id, "Fruits");
 
-    expect(newCategory).toEqual({
-      id: expect.any(String),
+    const categoryDeleted = await sut.filterCategoryByName(user.id, "Fruits");
+
+    expect(categoryDeleted).toEqual({
+      id: newCategory.id,
       name: "Fruits",
-      createdAt: expect.any(Date),
+      createdAt: newCategory.createdAt,
       userAttatchmentsId: user.userAttatchments[0].id,
     });
   });
 
-  it("should not create a new category without correctly provided parameters", async () => {
+  it("should not filter an category by id without correctly provided parameters", async () => {
+    const newCategory = await sut.create(user.id, "Fruits");
+
     await expect(() => {
-      return sut.create("", "Fruits");
+      return sut.filterCategoryByName("", newCategory.id);
     }).rejects.toEqual(new BadRequestException("Invalid user id."));
-  });
-
-  it("should not create a new category if an category with this name already exists", async () => {
-    await sut.create(user.id, "Fruits");
 
     await expect(() => {
-      return sut.create(user.id, "Fruits");
-    }).rejects.toEqual(
-      new ConflictException("An category with this name already exists.")
-    );
+      return sut.filterCategoryByName(user.id, "");
+    }).rejects.toEqual(new BadRequestException("Invalid category name."));
   });
 
-  it("should not create a new category if user doesn't exists", async () => {
+  it("should not filter an category by id if user doesn't exists", async () => {
     await expect(() => {
-      return sut.create("Inexistent user id", "Fruits");
+      return sut.filterCategoryByName("Inexistent user", "Any category id");
     }).rejects.toEqual(new NotFoundException("User not found."));
+  });
+
+  it("should not filter an category by id if user category't exists", async () => {
+    await expect(() => {
+      return sut.filterCategoryByName(user.id, "Inexistent caregory");
+    }).rejects.toEqual(new NotFoundException("Category not found."));
   });
 });

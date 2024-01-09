@@ -18,6 +18,8 @@ import { IJwtSchema } from "../@types/types";
 import {
   CreateCategoryDto,
   DeleteCategoryParamDto,
+  FilterCategoryByNameQueryDto,
+  FilterCategoryDto,
   GetAllCategoriesQueryDto,
   UpdateCategoryDto,
 } from "./dto/category.dto";
@@ -32,23 +34,44 @@ export class CategoryController {
   @UseGuards(AuthGuard)
   async createCategoryController(
     @Body(ValidationPipe) createCategoryDto: CreateCategoryDto,
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
     await this.categoryService.create(
       tokenParsed.sub,
-      createCategoryDto.categoryName,
+      createCategoryDto.categoryName
     );
 
     return { message: "Category successfully created." };
+  }
+
+  @Get("/category") // ?categoryName=
+  @UseGuards(AuthGuard)
+  async filterCategoryByNameController(
+    @Query(ValidationPipe)
+    filterCategoryByNameQueryDto: FilterCategoryByNameQueryDto,
+    @Req() req: Request
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const { categoryName } = filterCategoryByNameQueryDto;
+
+    if (categoryName) {
+      const findByName = await this.categoryService.filterCategoryByName(
+        tokenParsed.sub,
+        categoryName
+      );
+
+      return findByName;
+    }
   }
 
   @Get("/categories")
   @UseGuards(AuthGuard)
   async getAllCategoriesController(
     @Query() query: GetAllCategoriesQueryDto,
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
@@ -56,10 +79,28 @@ export class CategoryController {
 
     const getCategories = await this.categoryService.getAllCategories(
       tokenParsed.sub,
-      page,
+      page
     );
 
     return getCategories;
+  }
+
+  @Get("/category/:categoryId")
+  @UseGuards(AuthGuard)
+  async filterCategoryById(
+    @Param() filterCategoryDto: FilterCategoryDto,
+    @Req() req: Request
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const { categoryId } = filterCategoryDto;
+
+    const getCategory = await this.categoryService.filterCategoryById(
+      tokenParsed.sub,
+      categoryId
+    );
+
+    return getCategory;
   }
 
   @Delete("/categories/delete/:categoryId")
@@ -67,14 +108,11 @@ export class CategoryController {
   @HttpCode(HttpStatus.OK)
   async deleteCategoryController(
     @Param() params: DeleteCategoryParamDto,
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
-    await this.categoryService.deleteCategory(
-      tokenParsed.sub,
-      params.categoryId,
-    );
+    await this.categoryService.deleteCategory(tokenParsed.sub, params.categoryId);
 
     return { message: "Category successfully deleted." };
   }
@@ -84,13 +122,13 @@ export class CategoryController {
   @HttpCode(HttpStatus.OK)
   async updateCategoryController(
     @Body(ValidationPipe) updateCategoryControllerDto: UpdateCategoryDto,
-    @Req() req: Request,
+    @Req() req: Request
   ) {
     const tokenParsed: IJwtSchema = req["user"];
 
     await this.categoryService.updateCategory(
       tokenParsed.sub,
-      updateCategoryControllerDto,
+      updateCategoryControllerDto
     );
 
     return { message: "Category successfully updated." };
