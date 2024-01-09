@@ -6,6 +6,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -17,6 +18,7 @@ import { IJwtSchema } from "../@types/types";
 import {
   CreateItemDto,
   DeleteItemParamDto,
+  EditItemDto,
   FilterByCategoryParamDto,
 } from "./dto/item.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
@@ -80,5 +82,21 @@ export class ItemController {
     );
 
     return listItems;
+  }
+
+  @Patch("/item")
+  @UseGuards(AuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async editItemController(
+    @Req() req: Request,
+    @Body(ValidationPipe) editITemDto: EditItemDto
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const { item } = editITemDto;
+
+    await this.itemService.editItem(tokenParsed.sub, item);
+
+    return { message: "Item successfully updated." };
   }
 }

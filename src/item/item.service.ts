@@ -67,6 +67,44 @@ export class ItemService {
     return deleteItem;
   }
 
+  async editItem(userId: string, item: Partial<IITem>): Promise<IITem> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!item.id) {
+      throw new BadRequestException("Invalid item id.");
+    }
+
+    const getUser = await this.userInteface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    if (item.categoryId) {
+      const findCategory = await this.categoryInterface.findById(
+        getUser.userAttatchments[0].id,
+        item.categoryId
+      );
+
+      if (!findCategory) {
+        throw new NotFoundException("Category not found.");
+      }
+    }
+
+    const editItem = await this.itemInterface.update(
+      getUser.userAttatchments[0].id,
+      item
+    );
+
+    if (!editItem) {
+      throw new NotFoundException("Item not found.");
+    }
+
+    return editItem;
+  }
+
   async listAllAcountItems(userId: string): Promise<IITem[]> {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");

@@ -83,4 +83,19 @@ export class PrismaItemModel implements ItemInterface {
       if (e.code === "P2025") return null;
     }
   }
+
+  async update(userAttatchmentId: string, item: Partial<IITem>): Promise<IITem> {
+    const updateItem = await this.prismaService.item.update({
+      where: {
+        id: item.id,
+        AND: {
+          userAttatchmentsId: userAttatchmentId,
+        },
+      },
+
+      data: item,
+    });
+
+    return updateItem;
+  }
 }

@@ -1,11 +1,15 @@
+import { Type } from "class-transformer";
 import {
   IsDefined,
+  IsNotEmptyObject,
   IsNumberString,
+  IsObject,
   IsOptional,
   IsString,
   IsUUID,
   MaxLength,
   Min,
+  ValidateNested,
 } from "class-validator";
 
 export class CreateItemDto {
@@ -20,6 +24,33 @@ export class CreateItemDto {
 
   @IsUUID()
   categoryId: string;
+}
+
+export class EditItem {
+  @IsUUID()
+  id: string;
+
+  @IsOptional()
+  @IsString()
+  itemName: string;
+
+  @IsOptional()
+  @IsString()
+  @MaxLength(500, { message: "description can't have more than 500 characters." })
+  description?: string;
+
+  @IsOptional()
+  @IsUUID()
+  categoryId: string;
+}
+
+export class EditItemDto {
+  @IsDefined()
+  @IsNotEmptyObject()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => EditItem)
+  item: EditItem;
 }
 
 export class FilterByCategoryParamDto {

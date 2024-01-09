@@ -74,4 +74,32 @@ export class InMemoryItem implements ItemInterface {
 
     return getItemToRemove;
   }
+
+  async update(userAttatchmentId: string, item: IITem): Promise<IITem> {
+    const updateItemsList = this.items.map((listItem) => {
+      const isItemToUpdate =
+        listItem.id === item.id && listItem.userAttatchmentsId === userAttatchmentId;
+
+      if (isItemToUpdate) {
+        listItem = {
+          ...listItem,
+          ...item,
+        };
+      }
+
+      return listItem;
+    });
+
+    this.items = updateItemsList;
+
+    const findItemToUpdate = this.items.find(
+      (itemToUpdate) =>
+        itemToUpdate.id === item.id &&
+        itemToUpdate.userAttatchmentsId === userAttatchmentId
+    );
+
+    if (!findItemToUpdate) return null;
+
+    return findItemToUpdate;
+  }
 }

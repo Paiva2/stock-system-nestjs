@@ -17,4 +17,9 @@ export abstract class ItemInterface {
   ): Promise<IITem[]>;
 
   abstract delete(userAttatchmentId: string, itemId: string): Promise<IITem>;
+
+  abstract update(
+    userAttatchmentId: string,
+    item: Partial<IITem>
+  ): Promise<IITem | null>;
 }
