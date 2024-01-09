@@ -70,4 +70,22 @@ describe("Delete item service", () => {
       })
     );
   });
+
+  it("should not delete an item by id without correctly provided parameters", async () => {
+    await expect(() => {
+      return sut.deleteItem("", "Any item id");
+    }).rejects.toEqual(new BadRequestException("Invalid user id."));
+  });
+
+  it("should not delete an item by id if user doesn't exists", async () => {
+    await expect(() => {
+      return sut.deleteItem("Inexistent user", "Any item id");
+    }).rejects.toEqual(new NotFoundException("User not found."));
+  });
+
+  it("should not delete an item by id if item doesn't exists", async () => {
+    await expect(() => {
+      return sut.deleteItem(user.id, "Inexistent item id");
+    }).rejects.toEqual(new NotFoundException("Item not found."));
+  });
 });
