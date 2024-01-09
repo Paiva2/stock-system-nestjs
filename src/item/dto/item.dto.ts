@@ -68,3 +68,9 @@ export class DeleteItemParamDto {
   @IsUUID()
   itemId: string;
 }
+
+export class GetItemByIdDto {
+  @IsDefined({ message: "itemId can't be empty." })
+  @IsUUID()
+  itemId: string;
+}

@@ -167,4 +167,31 @@ export class ItemService {
       items: filterItem,
     };
   }
+
+  async getItemById(userId: string, itemId: string): Promise<IITem> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!itemId) {
+      throw new BadRequestException("Invalid item id.");
+    }
+
+    const getUser = await this.userInteface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getItem = await this.itemInterface.findById(
+      getUser.userAttatchments[0].id,
+      itemId
+    );
+
+    if (!getItem) {
+      throw new NotFoundException("Item not found.");
+    }
+
+    return getItem;
+  }
 }

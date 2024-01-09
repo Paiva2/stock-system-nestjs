@@ -20,6 +20,7 @@ import {
   DeleteItemParamDto,
   EditItemDto,
   FilterByCategoryParamDto,
+  GetItemByIdDto,
 } from "./dto/item.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { ItemService } from "./item.service";
@@ -98,5 +99,20 @@ export class ItemController {
     await this.itemService.editItem(tokenParsed.sub, item);
 
     return { message: "Item successfully updated." };
+  }
+
+  @Get("/item/:itemId")
+  @UseGuards(AuthGuard)
+  async getItemByIdController(
+    @Req() req: Request,
+    @Param(ValidationPipe) getItemByIdDto: GetItemByIdDto
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const { itemId } = getItemByIdDto;
+
+    const getItem = await this.itemService.getItemById(tokenParsed.sub, itemId);
+
+    return getItem;
   }
 }

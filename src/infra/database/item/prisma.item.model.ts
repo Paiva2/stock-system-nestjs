@@ -38,11 +38,25 @@ export class PrismaItemModel implements ItemInterface {
           userAttatchmentsId: userAttatchmentId,
         },
       },
+      include: {
+        category: { select: { name: true } },
+      },
     });
 
     if (!findItem) return null;
 
-    return findItem;
+    const formatItem: IITem = {
+      id: findItem.id,
+      userAttatchmentsId: findItem.userAttatchmentsId,
+      itemName: findItem.itemName,
+      description: findItem.description,
+      categoryId: findItem.categoryId,
+      createdAt: findItem.createdAt,
+      updatedAt: findItem.updatedAt,
+      categoryName: findItem.category.name,
+    };
+
+    return formatItem;
   }
 
   async filterManyByCategory(

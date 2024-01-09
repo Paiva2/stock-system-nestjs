@@ -2,9 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import { IITem } from "src/@types/types";
 import { ItemInterface } from "./item.interface";
+import { CategoryInterface } from "../category/category.interface";
 
 @Injectable()
 export class InMemoryItem implements ItemInterface {
+  constructor(private readonly categoryInterface?: CategoryInterface) {}
+
   private items = [] as IITem[];
 
   async create(userAttatchmentId: string, item: IITem): Promise<IITem> {
@@ -37,10 +40,17 @@ export class InMemoryItem implements ItemInterface {
     const findItem = this.items.find(
       (item) => item.id === itemId && item.userAttatchmentsId === userAttatchmentId
     );
-
     if (!findItem) return null;
 
-    return findItem;
+    const getItemCategory = await this.categoryInterface.findById(
+      userAttatchmentId,
+      findItem.categoryId
+    );
+
+    return {
+      ...findItem,
+      categoryName: getItemCategory.name,
+    };
   }
 
   async filterManyByCategory(
