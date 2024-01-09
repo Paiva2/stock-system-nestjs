@@ -88,6 +88,9 @@ export class PrismaStockModel implements StockInterface {
       where: {
         id: stockId,
       },
+      include: {
+        items: true,
+      },
     });
 
     if (!getStock) return null;

@@ -65,7 +65,10 @@ describe("Get stock by id service", () => {
       stockName: "Apple Stock",
     });
 
-    const category = await inMemoryCategory.create("Fruits");
+    const category = await inMemoryCategory.create(
+      user.userAttatchments[0].id,
+      "Fruits"
+    );
 
     const stockItem = await inMemoryStockItem.insert({
       categoryId: category.id,
@@ -85,7 +88,7 @@ describe("Get stock by id service", () => {
       updatedAt: expect.any(Date),
       active: true,
       totalItems: 1,
-      stockItems: [
+      items: [
         expect.objectContaining({
           id: stockItem.id,
           itemName: "Apple",

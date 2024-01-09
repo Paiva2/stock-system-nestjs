@@ -99,7 +99,6 @@ export class StockService {
     return deletedStock;
   }
 
-  //FIX JOIN
   async getStockById(userId: string, stockId: string) {
     if (!userId) {
       throw new BadRequestException("Invalid user id.");
@@ -125,13 +124,9 @@ export class StockService {
       throw new ForbiddenException("Invalid permissions.");
     }
 
-    const getStockItems = await this.stockItemInterface.getByStockId(
-      getStockById.id
-    );
-
     let stockItemsCategories: string[] = [];
 
-    getStockItems.forEach((item) => {
+    getStockById.items.forEach((item) => {
       const isCategoryAlreadyAdded = stockItemsCategories.find(
         (category) => category === item.categoryId
       );
@@ -144,7 +139,7 @@ export class StockService {
     const getCategories =
       await this.categoryInterface.findManyById(stockItemsCategories);
 
-    const formatStockItemsInformations = getStockItems.map((item) => {
+    const formatStockItemsInformations = getStockById.items.map((item) => {
       const findItemCategory = getCategories.find(
         (category) => category.id === item.categoryId
       );
@@ -161,7 +156,6 @@ export class StockService {
     return {
       ...getStockById,
       totalItems,
-      stockItems: formatStockItemsInformations,
     };
   }
 

@@ -97,7 +97,7 @@ describe("Get stock by id", () => {
       updatedAt: expect.any(String),
       totalItems: 2,
       active: true,
-      stockItems: [
+      items: [
         expect.objectContaining({
           id: firstStockItem.id,
           itemName: "Orange",

@@ -43,16 +43,6 @@ export class PrismaStockItemModel implements StockItemInterface {
     return this.prismaService.stockItem.findMany({});
   }
 
-  async getByStockId(stockId: string): Promise<IStockItem[]> {
-    const findStockItems = await this.prismaService.stockItem.findMany({
-      where: {
-        stockId,
-      },
-    });
-
-    return findStockItems;
-  }
-
   async updateById(stockItem: IStockItemUpdate): Promise<IStockItem> {
     try {
       const editedStockItem = await this.prismaService.stockItem.update({

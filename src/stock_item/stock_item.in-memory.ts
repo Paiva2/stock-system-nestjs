@@ -43,12 +43,6 @@ export class InMemoryStockItem implements StockItemInterface {
     return this.stockItems;
   }
 
-  async getByStockId(stockId: string): Promise<IStockItem[]> {
-    const getStockItems = this.stockItems.filter((item) => item.stockId === stockId);
-
-    return getStockItems;
-  }
-
   async updateById(stockItem: IStockItemUpdate): Promise<IStockItem> {
     let findItem: IStockItem;
 
@@ -78,5 +72,13 @@ export class InMemoryStockItem implements StockItemInterface {
     );
 
     return getStockItemsByIds;
+  }
+
+  async getAllFromStockId(stockId: string): Promise<IStockItem[]> {
+    const findAllFromStock = this.stockItems.filter(
+      (item) => item.stockId === stockId
+    );
+
+    return findAllFromStock;
   }
 }

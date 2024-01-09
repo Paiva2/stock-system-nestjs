@@ -94,7 +94,14 @@ export class InMemoryStock implements StockInterface {
 
     if (!getStockById) return null;
 
-    return getStockById;
+    const getStockItems = await this.inMemoryStockItem.getAllFromStockId(
+      getStockById.id
+    );
+
+    return {
+      ...getStockById,
+      items: getStockItems,
+    };
   }
 
   async update(userId: string, stock: IStockUpdate): Promise<IStock | null> {
