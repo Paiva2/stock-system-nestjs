@@ -81,4 +81,14 @@ export class InMemoryStockItem implements StockItemInterface {
 
     return findAllFromStock;
   }
+
+  async findById(stockId: string, stockItemId: string): Promise<IStockItem> {
+    const findItem = this.stockItems.find(
+      (item) => item.id === stockItemId && item.stockId === stockId
+    );
+
+    if (!findItem) return null;
+
+    return findItem;
+  }
 }

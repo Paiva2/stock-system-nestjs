@@ -12,4 +12,9 @@ export abstract class StockItemInterface {
   abstract getManyById(stockIds: string[]): Promise<IStockItem[]>;
 
   abstract getAllFromStockId(stockId: string): Promise<IStockItem[]>;
+
+  abstract findById(
+    stockId: string,
+    stockItemId: string
+  ): Promise<IStockItem | null>;
 }

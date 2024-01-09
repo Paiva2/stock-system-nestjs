@@ -67,4 +67,24 @@ export class PrismaStockItemModel implements StockItemInterface {
 
     return findItems;
   }
+
+  async findById(stockId: string, stockItemId: string): Promise<IStockItem> {
+    const findItemById = await this.prismaService.stockItem.findFirst({
+      where: {
+        id: stockItemId,
+        AND: {
+          stockId,
+        },
+      },
+    });
+
+    if (!findItemById) return null;
+
+    return findItemById;
+  }
+
+  // USED ONLY ON INTEGRATION TESTS
+  getAllFromStockId(stockId: string): Promise<IStockItem[]> {
+    throw new Error("Method not implemented");
+  }
 }

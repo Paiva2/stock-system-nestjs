@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -13,6 +14,7 @@ import {
 } from "@nestjs/common";
 import {
   EditStockItemDto,
+  FilterStockItemByIdDto,
   InsertStockItemDto,
   RemoveStockItemBodyDto,
   RemoveStockItemParamDto,
@@ -77,5 +79,24 @@ export class StockItemController {
     await this.stockItemService.editStockItem(tokenParsed.sub, stockId, stockItem);
 
     return { message: "Stock Item successfully updated." };
+  }
+
+  @Get("/stock-item/:stockId/:stockItemId")
+  @UseGuards(AuthGuard)
+  async filterStockItemByIdController(
+    @Param(ValidationPipe) filterStockItemByIdDto: FilterStockItemByIdDto,
+    @Req() req: Request
+  ) {
+    const tokenParsed: IJwtSchema = req["user"];
+
+    const { stockItemId, stockId } = filterStockItemByIdDto;
+
+    const findStockItem = await this.stockItemService.filterStockItemById(
+      tokenParsed.sub,
+      stockId,
+      stockItemId
+    );
+
+    return findStockItem;
   }
 }

@@ -93,3 +93,13 @@ export class EditStockItemDto {
   @Type(() => StockItemUpdateDto)
   stockItem: StockItemUpdateDto;
 }
+
+export class FilterStockItemByIdDto {
+  @IsDefined()
+  @IsUUID()
+  stockId: string;
+
+  @IsDefined()
+  @IsUUID()
+  stockItemId: string;
+}

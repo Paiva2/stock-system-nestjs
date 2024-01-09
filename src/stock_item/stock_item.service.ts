@@ -189,4 +189,45 @@ export class StockItemService {
 
     return getStockItem;
   }
+
+  async filterStockItemById(
+    userId: string,
+    stockId: string,
+    stockItemId: string
+  ): Promise<IStockItem> {
+    if (!userId) {
+      throw new BadRequestException("Invalid user id.");
+    }
+
+    if (!stockItemId) {
+      throw new BadRequestException("Invalid stock item id.");
+    }
+
+    if (!stockId) {
+      throw new BadRequestException("Invalid stock id.");
+    }
+
+    const getUser = await this.userInterface.findById(userId);
+
+    if (!getUser) {
+      throw new NotFoundException("User not found.");
+    }
+
+    const getStock = await this.stockInterface.getById(stockId);
+
+    if (!getStock) {
+      throw new NotFoundException("Stock not found.");
+    }
+
+    const getStockItem = await this.stockItemInterface.findById(
+      stockId,
+      stockItemId
+    );
+
+    if (!getStockItem) {
+      throw new NotFoundException("Stock item not found.");
+    }
+
+    return getStockItem;
+  }
 }
