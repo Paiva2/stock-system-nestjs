@@ -20,14 +20,35 @@ import {
   RemoveStockItemParamDto,
 } from "./dto/stock-item.dto";
 import { Request } from "express";
+import { ApiBearerAuth, ApiBody, ApiParam, ApiTags } from "@nestjs/swagger";
 import { IJwtSchema } from "../@types/types";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { StockItemService } from "./stock_item.service";
-
+@ApiTags("Stock Item")
 @Controller()
 export class StockItemController {
   constructor(private readonly stockItemService: StockItemService) {}
 
+  @ApiBody({
+    type: InsertStockItemDto,
+    examples: {
+      createCategoryDto: {
+        value: {
+          stockId: "my stock id",
+          stockItem: {
+            itemName: "My Item",
+            quantity: "10",
+            stockId: "my stock id",
+            description: "My Item Description",
+            categoryId: "category id",
+            itemId:
+              "PRE-BUILT ITEM ID (THIS ITEM WILL OVERRIDE ALL OTHER PROVIDED PARAMS)",
+          },
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
   @Post("/stock-item/insert")
   @UseGuards(AuthGuard)
   async insertStockItemController(
@@ -46,6 +67,12 @@ export class StockItemController {
     return { message: "Stock Item successfully added." };
   }
 
+  @ApiParam({
+    name: "stockItemId",
+    allowEmptyValue: false,
+    example: "stockItemId",
+  })
+  @ApiBearerAuth()
   @Delete("/stock-item/remove/:stockItemId")
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
@@ -65,6 +92,24 @@ export class StockItemController {
     return { message: "Stock Item successfully removed." };
   }
 
+  @ApiBody({
+    type: EditStockItemDto,
+    examples: {
+      editStockItemDto: {
+        value: {
+          stockId: "Item stockId",
+          stockItem: {
+            id: "item to update id",
+            itemName: "My new item name",
+            quantity: "10",
+            description: "My new item description",
+            categoryId: "My new category id",
+          },
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
   @Patch("/stock-item")
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
@@ -81,6 +126,12 @@ export class StockItemController {
     return { message: "Stock Item successfully updated." };
   }
 
+  @ApiParam({
+    name: "stockItemId",
+    allowEmptyValue: false,
+    example: "stockItemId",
+  })
+  @ApiBearerAuth()
   @Get("/stock-item/:stockId/:stockItemId")
   @UseGuards(AuthGuard)
   async filterStockItemByIdController(

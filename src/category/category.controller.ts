@@ -14,6 +14,13 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { Request } from "express";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from "@nestjs/swagger";
 import { IJwtSchema } from "../@types/types";
 import {
   CreateCategoryDto,
@@ -25,11 +32,22 @@ import {
 } from "./dto/category.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { CategoryService } from "./category.service";
-
+@ApiTags("Category")
 @Controller()
 export class CategoryController {
   constructor(private readonly categoryService: CategoryService) {}
 
+  @ApiBody({
+    type: CreateCategoryDto,
+    examples: {
+      createCategoryDto: {
+        value: {
+          categoryName: "Fruits",
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
   @Post("/category")
   @UseGuards(AuthGuard)
   async createCategoryController(
@@ -46,6 +64,13 @@ export class CategoryController {
     return { message: "Category successfully created." };
   }
 
+  @ApiQuery({
+    name: "categoryName",
+    type: String,
+    required: false,
+    example: "Fruits",
+  })
+  @ApiBearerAuth()
   @Get("/category") // ?categoryName=
   @UseGuards(AuthGuard)
   async filterCategoryByNameController(
@@ -67,6 +92,13 @@ export class CategoryController {
     }
   }
 
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: true,
+    example: "1",
+  })
+  @ApiBearerAuth()
   @Get("/categories")
   @UseGuards(AuthGuard)
   async getAllCategoriesController(
@@ -85,6 +117,12 @@ export class CategoryController {
     return getCategories;
   }
 
+  @ApiParam({
+    name: "categoryId",
+    allowEmptyValue: false,
+    example: "categoryId",
+  })
+  @ApiBearerAuth()
   @Get("/category/:categoryId")
   @UseGuards(AuthGuard)
   async filterCategoryById(
@@ -103,6 +141,12 @@ export class CategoryController {
     return getCategory;
   }
 
+  @ApiParam({
+    name: "categoryId",
+    allowEmptyValue: false,
+    example: "categoryId",
+  })
+  @ApiBearerAuth()
   @Delete("/categories/delete/:categoryId")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -117,6 +161,18 @@ export class CategoryController {
     return { message: "Category successfully deleted." };
   }
 
+  @ApiBody({
+    type: UpdateCategoryDto,
+    examples: {
+      updateCategoryDto: {
+        value: {
+          id: "my category id",
+          name: "new category name",
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
   @Patch("/category")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)

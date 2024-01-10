@@ -18,6 +18,8 @@ This NestJS-based Stock System provides a comprehensive set of functionalities f
 
 - Pre-built Item Handling: Create, edit, remove, and filter pre-built items.
 
+### Docs: localhost:<portrunning>/docs
+
 ## Technologies
 
 - TypeScript

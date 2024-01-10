@@ -14,6 +14,13 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from "@nestjs/swagger";
+import {
   CreateStockDto,
   DeleteAccountStockDto,
   GetAllAccountStocksDto,
@@ -26,10 +33,22 @@ import { IJwtSchema } from "../@types/types";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { StockService } from "./stock.service";
 
+@ApiTags("Stock")
 @Controller()
 export class StockController {
   constructor(private readonly stockService: StockService) {}
 
+  @ApiBody({
+    type: CreateStockDto,
+    examples: {
+      createStockDto: {
+        value: {
+          stockName: "My First Stock",
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
   @Post("/stock")
   @UseGuards(AuthGuard)
   async createStockController(
@@ -43,6 +62,13 @@ export class StockController {
     return { message: "Stock successfully created." };
   }
 
+  @ApiQuery({
+    name: "active",
+    type: Boolean,
+    required: false,
+    example: "true",
+  })
+  @ApiBearerAuth()
   @Get("/stocks") // ?active=true or ?active=false
   @UseGuards(AuthGuard)
   async getAllAccountStocksController(
@@ -72,6 +98,11 @@ export class StockController {
     return allStocks;
   }
 
+  @ApiParam({
+    name: "stockId",
+    allowEmptyValue: false,
+    example: "stockId",
+  })
   @Get("/stock/:stockId")
   @UseGuards(AuthGuard)
   async getStockByIdController(
@@ -89,6 +120,11 @@ export class StockController {
     return filteredStock;
   }
 
+  @ApiParam({
+    name: "stockId",
+    allowEmptyValue: false,
+    example: "stockId",
+  })
   @Delete("/stock/delete/:stockId")
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)
@@ -104,6 +140,22 @@ export class StockController {
     return { message: "Stock deleted successfully." };
   }
 
+  @ApiBody({
+    type: UpdateStockDto,
+    examples: {
+      updateStockDto: {
+        value: {
+          stockName: "New Stock Name",
+          active: "false",
+        },
+      },
+    },
+  })
+  @ApiParam({
+    name: "stockId",
+    allowEmptyValue: false,
+    example: "stockId",
+  })
   @Patch("/stock/:stockId")
   @HttpCode(HttpStatus.OK)
   @UseGuards(AuthGuard)

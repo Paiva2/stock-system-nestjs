@@ -14,6 +14,13 @@ import {
   ValidationPipe,
 } from "@nestjs/common";
 import { Request } from "express";
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiParam,
+  ApiQuery,
+  ApiTags,
+} from "@nestjs/swagger";
 import { IJwtSchema } from "../@types/types";
 import {
   CreateItemDto,
@@ -24,11 +31,24 @@ import {
 } from "./dto/item.dto";
 import { AuthGuard } from "../infra/http/auth/auth.guard";
 import { ItemService } from "./item.service";
-
+@ApiTags("Item")
 @Controller()
 export class ItemController {
   constructor(private readonly itemService: ItemService) {}
 
+  @ApiBody({
+    type: CreateItemDto,
+    examples: {
+      createItemDto: {
+        value: {
+          itemName: "My Item",
+          description: "My item description",
+          categoryId: "One valid cateogory id",
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
   @Post("/item")
   @UseGuards(AuthGuard)
   async createItemController(
@@ -42,6 +62,12 @@ export class ItemController {
     return { message: "Item successfully created." };
   }
 
+  @ApiParam({
+    name: "itemId",
+    allowEmptyValue: false,
+    example: "itemId",
+  })
+  @ApiBearerAuth()
   @Delete("/item/:itemId")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -56,6 +82,7 @@ export class ItemController {
     return { message: "Item successfully removed." };
   }
 
+  @ApiBearerAuth()
   @Get("/items")
   @UseGuards(AuthGuard)
   async getAllAccountItemsController(@Req() req: Request) {
@@ -66,6 +93,19 @@ export class ItemController {
     return { items: listItems };
   }
 
+  @ApiQuery({
+    name: "page",
+    type: Number,
+    required: true,
+    example: "1",
+  })
+  @ApiQuery({
+    name: "category",
+    type: String,
+    required: true,
+    example: "categoryId",
+  })
+  @ApiBearerAuth()
   @Get("/items/filter") //?category=categoryId?page=
   @UseGuards(AuthGuard)
   async filterByCategoryController(
@@ -85,6 +125,20 @@ export class ItemController {
     return listItems;
   }
 
+  @ApiBody({
+    type: EditItemDto,
+    examples: {
+      editItemDto: {
+        value: {
+          id: "item to edit id",
+          itemName: "new item name",
+          description: "new item description",
+          categoryId: "new category id",
+        },
+      },
+    },
+  })
+  @ApiBearerAuth()
   @Patch("/item")
   @UseGuards(AuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -101,6 +155,11 @@ export class ItemController {
     return { message: "Item successfully updated." };
   }
 
+  @ApiParam({
+    name: "itemId",
+    allowEmptyValue: false,
+    example: "itemId",
+  })
   @Get("/item/:itemId")
   @UseGuards(AuthGuard)
   async getItemByIdController(
